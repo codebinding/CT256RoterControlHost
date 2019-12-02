@@ -522,6 +522,8 @@ namespace RCBTool {
                 }
 
                 grdErrorCode.Children.Add(label);
+
+                //tbxInfo.AppendText($"{entry.Key:X4}, {entry.Value}\n");
             }
             #endregion Error Code
         }
