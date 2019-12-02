@@ -628,9 +628,7 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Error Code">
-                <Grid Name="grdErrorCode">
-                    <Label Content="Return:" HorizontalAlignment="Left" Margin="80,50,0,0" VerticalAlignment="Top"/>
-                </Grid>
+                <Grid Name="grdErrorCode" />
             </TabItem>
         </TabControl>
         <Button Visibility="Visible" Margin="671,0,0,46" x:Name="iconXrayOn" Style="{StaticResource FMI_Xray_On}" Width="64" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Left" />
