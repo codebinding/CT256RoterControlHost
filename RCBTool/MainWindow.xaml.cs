@@ -498,6 +498,32 @@ namespace RCBTool {
             }
 
             #endregion Exposure
+
+            #region Error Code
+            int left = 80;
+            int top = 50;
+
+            foreach (KeyValuePair<ushort, string> entry in RoterControllerException.ErrorTable) {
+
+                Label label = new Label();
+                label.HorizontalAlignment = HorizontalAlignment.Left;
+                label.VerticalAlignment = VerticalAlignment.Top;
+                label.Content = $"{entry.Key:X4}, {entry.Value}";
+                label.Margin = new Thickness(left, top, 0, 0);
+
+                if (top > 650) {
+
+                    top = 50;
+                    left += 250;
+                }
+                else {
+
+                    top += 20;
+                }
+
+                grdErrorCode.Children.Add(label);
+            }
+            #endregion Error Code
         }
 
         private void Initialize() {

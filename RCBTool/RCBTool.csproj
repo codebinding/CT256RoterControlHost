@@ -52,7 +52,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="InternalException.cs" />
     <Compile Include="RcbException.cs" />
     <Page Include="..\..\..\FAWKESBASE\FMIResourceFiles\FMIResourceDictionary.xaml">
       <Link>FMIResourceDictionary.xaml</Link>
