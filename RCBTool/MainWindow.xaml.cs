@@ -56,8 +56,12 @@ namespace RCBTool {
         public ComboBox cbxDitherType;
         public Label lblTimePerRotationInMSec;
         public TextBox tbxTimePerRotationInMSec;
+        public Label lblTimeoutBetweenArmXrayOn;
+        public TextBox tbxTimeoutBetweenArmXrayOn;
         public Label lblDelayBeforeNextSeries;
         public TextBox tbxDelayBeforeNextSeries;
+        public Label lblCineScan;
+        public ComboBox cbxCineScan;
 
         public Label lblCardiacScan;
         public ComboBox cbxCardiacScan;
@@ -170,6 +174,7 @@ namespace RCBTool {
             lblIntegrationTime = new Label() { Content = "Integration Time", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most, top_most + 120, 0, 0) };
             lblDitherType = new Label() { Content = "Dither Type", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 150, top_most + 120, 0, 0) };
             lblTimePerRotationInMSec = new Label() { Content = "Time/Rotation(mS)", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 300, top_most + 120, 0, 0) };
+            lblTimeoutBetweenArmXrayOn = new Label() { Content = "Arm Timeout(mS)", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 450, top_most + 120, 0, 0) };
             lblDelayBeforeNextSeries = new Label() { Content = "Delay Before Next Series", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 120, 0, 0) };
 
             // Line 6
@@ -181,81 +186,90 @@ namespace RCBTool {
             cbxDitherType.Items.Add("z-Def");
 
             tbxTimePerRotationInMSec = new TextBox() { Text = "500", Margin = new Thickness(left_most + 300, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxTimeoutBetweenArmXrayOn = new TextBox() { Text = "120000", Margin = new Thickness(left_most + 450, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
             tbxDelayBeforeNextSeries = new TextBox() { Text = "0", Margin = new Thickness(left_most + 600, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
             // Line 7
-            lblCardiacScan = new Label() { Content = "Cardiac Scan", Margin = new Thickness(left_most, top_most + 210, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblPhasePercentage = new Label() { Content = "Phase Percentage", Margin = new Thickness(left_most + 150, top_most + 210, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblApertureMode = new Label() { Content = "Aperture Mode", Margin = new Thickness(left_most + 300, top_most + 210, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblFilterMode = new Label() { Content = "Filter Mode", Margin = new Thickness(left_most + 450, top_most + 210, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblRowNumber = new Label() { Content = "Row Number", Margin = new Thickness(left_most + 600, top_most + 210, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblCineScan = new Label() { Content = "Cine Scan", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most, top_most + 180, 0, 0) };
 
             // Line 8
-            cbxCardiacScan = new ComboBox() { Margin = new Thickness(left_most, top_most + 230, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxCineScan = new ComboBox() { Margin = new Thickness(left_most, top_most + 200, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxCineScan.Items.Add("No");
+            cbxCineScan.Items.Add("Yes");
+
+            // Line 9
+            lblCardiacScan = new Label() { Content = "Cardiac Scan", Margin = new Thickness(left_most, top_most + 240, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblPhasePercentage = new Label() { Content = "Phase Percentage", Margin = new Thickness(left_most + 150, top_most + 240, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblApertureMode = new Label() { Content = "Aperture Mode", Margin = new Thickness(left_most + 300, top_most + 240, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblFilterMode = new Label() { Content = "Filter Mode", Margin = new Thickness(left_most + 450, top_most + 240, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblRowNumber = new Label() { Content = "Row Number", Margin = new Thickness(left_most + 600, top_most + 240, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+
+            // Line 10
+            cbxCardiacScan = new ComboBox() { Margin = new Thickness(left_most, top_most + 260, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
             cbxCardiacScan.Items.Add("No");
             cbxCardiacScan.Items.Add("Yes");
 
-            tbxPhasePercentage = new TextBox() { Text = "0", Margin = new Thickness(left_most + 150, top_most + 230, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxApertureMode = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 230, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxFilterMode = new TextBox() { Text = "0", Margin = new Thickness(left_most + 450, top_most + 230, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxRowNumber = new TextBox() { Text = "0", Margin = new Thickness(left_most + 600, top_most + 230, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxPhasePercentage = new TextBox() { Text = "0", Margin = new Thickness(left_most + 150, top_most + 260, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxApertureMode = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 260, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxFilterMode = new TextBox() { Text = "0", Margin = new Thickness(left_most + 450, top_most + 260, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxRowNumber = new TextBox() { Text = "0", Margin = new Thickness(left_most + 600, top_most + 260, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            // Line 9
-            lblErrorRegisterReset = new Label() { Content = "Error Register Reset", Margin = new Thickness(left_most, top_most + 270, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblStartingSlice = new Label() { Content = "Starting Slice", Margin = new Thickness(left_most + 150, top_most + 270, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblEndingSlice = new Label() { Content = "Cardiac Scan", Margin = new Thickness(left_most + 300, top_most + 270, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblDataSource = new Label() { Content = "Data Source", Margin = new Thickness(left_most + 450, top_most + 270, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblInputSource = new Label() { Content = "Input Source", Margin = new Thickness(left_most + 600, top_most + 270, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            // Line 11
+            lblErrorRegisterReset = new Label() { Content = "Error Register Reset", Margin = new Thickness(left_most, top_most + 300, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblStartingSlice = new Label() { Content = "Starting Slice", Margin = new Thickness(left_most + 150, top_most + 300, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblEndingSlice = new Label() { Content = "End Slice", Margin = new Thickness(left_most + 300, top_most + 300, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblDataSource = new Label() { Content = "Data Source", Margin = new Thickness(left_most + 450, top_most + 300, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblInputSource = new Label() { Content = "Input Source", Margin = new Thickness(left_most + 600, top_most + 300, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
 
-            // Line 10
-            cbxErrorRegisterReset = new ComboBox() { Margin = new Thickness(left_most, top_most + 290, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            // Line 12
+            cbxErrorRegisterReset = new ComboBox() { Margin = new Thickness(left_most, top_most + 320, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
             cbxErrorRegisterReset.Items.Add("Reset");
             cbxErrorRegisterReset.Items.Add("No Reset");
 
-            tbxStartingSlice = new TextBox() { Text = "0", Margin = new Thickness(left_most + 150, top_most + 290, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxEndingSlice = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 290, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxStartingSlice = new TextBox() { Text = "0", Margin = new Thickness(left_most + 150, top_most + 320, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxEndingSlice = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 320, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            cbxDataSource = new ComboBox() { Margin = new Thickness(left_most + 450, top_most + 290, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxDataSource = new ComboBox() { Margin = new Thickness(left_most + 450, top_most + 320, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
             cbxDataSource.Items.Add("Slice Data");
             cbxDataSource.Items.Add("Aggregator Data");
 
-            tbxInputSource = new TextBox() { Text = "0", Margin = new Thickness(left_most + 600, top_most + 290, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxInputSource = new TextBox() { Text = "0", Margin = new Thickness(left_most + 600, top_most + 320, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            // Line 11
-            lblSampleMode = new Label() { Content = "Sample Mode", Margin = new Thickness(left_most, top_most + 330, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblDecimation = new Label() { Content = "Decimation", Margin = new Thickness(left_most + 150, top_most + 330, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblClockSpeed = new Label() { Content = "Clock Speed", Margin = new Thickness(left_most + 300, top_most + 330, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblRange = new Label() { Content = "Range", Margin = new Thickness(left_most + 450, top_most + 330, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblPostConversionShutdown = new Label() { Content = "Post Conversion Shutdown", Margin = new Thickness(left_most + 600, top_most + 330, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            // Line 13
+            lblSampleMode = new Label() { Content = "Sample Mode", Margin = new Thickness(left_most, top_most + 360, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblDecimation = new Label() { Content = "Decimation", Margin = new Thickness(left_most + 150, top_most + 360, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblClockSpeed = new Label() { Content = "Clock Speed", Margin = new Thickness(left_most + 300, top_most + 360, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblRange = new Label() { Content = "Range", Margin = new Thickness(left_most + 450, top_most + 360, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblPostConversionShutdown = new Label() { Content = "Post Conversion Shutdown", Margin = new Thickness(left_most + 600, top_most + 360, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
 
-            // Line 12
-            tbxSampleMode = new TextBox() { Text = "0", Margin = new Thickness(left_most, top_most + 350, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxDecimation = new TextBox() { Text = "7", Margin = new Thickness(left_most + 150, top_most + 350, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxClockSpeed = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 350, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxRange = new TextBox() { Text = "5", Margin = new Thickness(left_most + 450, top_most + 350, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            // Line 14
+            tbxSampleMode = new TextBox() { Text = "0", Margin = new Thickness(left_most, top_most + 380, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxDecimation = new TextBox() { Text = "7", Margin = new Thickness(left_most + 150, top_most + 380, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxClockSpeed = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 380, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxRange = new TextBox() { Text = "5", Margin = new Thickness(left_most + 450, top_most + 380, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            cbxPostConversionShutdown = new ComboBox() { Margin = new Thickness(left_most + 600, top_most + 350, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxPostConversionShutdown = new ComboBox() { Margin = new Thickness(left_most + 600, top_most + 380, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
             cbxPostConversionShutdown.Items.Add("Shutdown");
             cbxPostConversionShutdown.Items.Add("No Shutdown");
 
-            // Line 13
-            lblIntegrationAveraging = new Label() { Content = "Integration Averaging", Margin = new Thickness(left_most, top_most + 390, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblDetectorSource = new Label() { Content = "DetectorSource", Margin = new Thickness(left_most + 150, top_most + 390, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblIntegrationLimit = new Label() { Content = "Integration Limit", Margin = new Thickness(left_most + 300, top_most + 390, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            lblOffsetIntegrationLimit = new Label() { Content = "Offset Integration Limit", Margin = new Thickness(left_most + 450, top_most + 390, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            // Line 15
+            lblIntegrationAveraging = new Label() { Content = "Integration Averaging", Margin = new Thickness(left_most, top_most + 420, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblDetectorSource = new Label() { Content = "DetectorSource", Margin = new Thickness(left_most + 150, top_most + 420, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblIntegrationLimit = new Label() { Content = "Integration Limit", Margin = new Thickness(left_most + 300, top_most + 420, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblOffsetIntegrationLimit = new Label() { Content = "Offset Integration Limit", Margin = new Thickness(left_most + 450, top_most + 420, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
 
-            // Line 14
-            tbxIntegrationAveraging = new TextBox() { Text = "1", Margin = new Thickness(left_most, top_most + 410, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            cbxDetectorDataSource = new ComboBox() { Margin = new Thickness(left_most + 150, top_most + 410, 0, 0), Width = 120, Height = 25, SelectedIndex = 1, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            // Line 16
+            tbxIntegrationAveraging = new TextBox() { Text = "1", Margin = new Thickness(left_most, top_most + 440, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            cbxDetectorDataSource = new ComboBox() { Margin = new Thickness(left_most + 150, top_most + 440, 0, 0), Width = 120, Height = 25, SelectedIndex = 1, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
             cbxDetectorDataSource.Items.Add("Null");
             cbxDetectorDataSource.Items.Add("ADC Data");
             cbxDetectorDataSource.Items.Add("Test Data");
 
-            tbxIntegrationLimit = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 410, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxOffsetIntegrationLimit = new TextBox() { Text = "0", Margin = new Thickness(left_most + 450, top_most + 410, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxIntegrationLimit = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 440, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxOffsetIntegrationLimit = new TextBox() { Text = "0", Margin = new Thickness(left_most + 450, top_most + 440, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            ckbIma = new CheckBox() { Content = "imA", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 410, 0, 0) };
-            ckbEmergencyScan = new CheckBox() { Content = "Emergency", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 650, top_most + 410, 0, 0) };
+            ckbIma = new CheckBox() { Content = "imA", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 450, 0, 0) };
+            ckbEmergencyScan = new CheckBox() { Content = "Emergency", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 650, top_most + 450, 0, 0) };
         }
     }
 
@@ -433,12 +447,18 @@ namespace RCBTool {
                 gd.Children.Add(ec.lblIntegrationTime);
                 gd.Children.Add(ec.lblDitherType);
                 gd.Children.Add(ec.lblTimePerRotationInMSec);
+                gd.Children.Add(ec.lblTimeoutBetweenArmXrayOn);
                 gd.Children.Add(ec.lblDelayBeforeNextSeries);
 
                 gd.Children.Add(ec.tbxIntegrationTime);
                 gd.Children.Add(ec.cbxDitherType);
                 gd.Children.Add(ec.tbxTimePerRotationInMSec);
+                gd.Children.Add(ec.tbxTimeoutBetweenArmXrayOn);
                 gd.Children.Add(ec.tbxDelayBeforeNextSeries);
+
+                gd.Children.Add(ec.lblCineScan);
+
+                gd.Children.Add(ec.cbxCineScan);
 
                 gd.Children.Add(ec.lblCardiacScan);
                 gd.Children.Add(ec.lblPhasePercentage);
@@ -586,6 +606,9 @@ namespace RCBTool {
 
                     m_x_step = (int)value;
                     UpdateXStep(m_x_step);
+
+                    SimulateMStepCStep(m_x_step);
+
                     break;
 
                 case RoterController.NTF_AP1POS:
@@ -687,6 +710,18 @@ namespace RCBTool {
         private void UpdateXStep(int p_value) {
 
             this.Dispatcher.Invoke(new Action(() => tbxXStep.Text = $"{p_value}"));
+        }
+
+        private void SimulateMStepCStep(int p_xstep) {
+
+            this.Dispatcher.Invoke(new Action(() => {
+
+                if (cbxSimulation.IsChecked == true) {
+
+                    m_rcb.NotifyCStep(m_x_step + 1);
+                    m_rcb.NotifyMStep(m_x_step);
+                }
+            }));
         }
 
         private void UpdateApe1Position(int p_value) {
@@ -1761,6 +1796,9 @@ namespace RCBTool {
                 series_parameter.ScanType = (ec.ckbIma.IsChecked == true) ? 1 : 0;
                 series_parameter.DitherType = (byte)ec.cbxDitherType.SelectedIndex;
                 series_parameter.EncoderSource = (byte)ec.cbxEncoderSource.SelectedIndex;
+                series_parameter.TimeoutBetweenArmXrayOn = Convert.ToInt32(ec.tbxTimeoutBetweenArmXrayOn.Text);
+
+                series_parameter.CineScan = (byte)ec.cbxCineScan.SelectedIndex;
 
                 switch (ec.cbxTriggerMode.Text) {
 
@@ -1848,46 +1886,6 @@ namespace RCBTool {
             }
 
             this.Dispatcher.Invoke(new Action(() => btnScan.IsEnabled = true));
-        }
-
-        private void btnResume_Click(object sender, RoutedEventArgs e) {
-
-            new Thread(() => Resume()).Start();
-        }
-
-        private void Resume() {
-
-            this.Dispatcher.Invoke(new Action(() => btnResume.IsEnabled = false));
-
-            try {
-
-                int total_scan_time = 0;
-
-                foreach (SeriesParameter series in m_scan_parameters) {
-
-                    total_scan_time += series.SeriesTimeInMSec + series.DelayBeforeNextSeries + 2000;  // boost time ~= 2 sec.
-                }
-
-                m_rcb.Resume(total_scan_time);
-            }
-            catch (Exception ex) {
-
-                MessageBox.Show(ex.Message);
-            }
-
-            this.Dispatcher.Invoke(new Action(() => btnResume.IsEnabled = true));
-        }
-
-        private void btnPause_Click(object sender, RoutedEventArgs e) {
-
-            try {
-
-                m_rcb.Pause();
-            }
-            catch (Exception ex) {
-
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void btnAbortScan_Click(object sender, RoutedEventArgs e) {

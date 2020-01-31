@@ -280,13 +280,12 @@
                             <System:Int32>4</System:Int32>
                             <System:Int32>5</System:Int32>
                         </ComboBox>
-                        <Button x:Name="btnEstimate" Content="Estimate" Margin="640,30,0,0" Click="btnEstimate_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
-                        <TabControl x:Name="tabScanParameter" Margin="185,70,0,0" SelectedIndex="0" HorizontalAlignment="Left" Width="850" Height="520" VerticalAlignment="Top">
+                        <CheckBox x:Name="cbxSimulation" Content="Motion/Data Simulation" HorizontalAlignment="Left" Margin="850,35,0,0" VerticalAlignment="Top"/>
+                        <Button x:Name="btnEstimate" Content="Estimate" Margin="350,665,0,0" Click="btnEstimate_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
+                        <TabControl x:Name="tabScanParameter" Margin="185,70,0,0" SelectedIndex="0" HorizontalAlignment="Left" Width="850" Height="540" VerticalAlignment="Top">
                         </TabControl>
                         <Button x:Name="btnScan" Content="Scan" Margin="185,665,0,0" Click="btnScan_Click" HorizontalAlignment="Left" Width="120" Height="30" VerticalAlignment="Top"/>
-                        <Button x:Name="btnResume" Content="Resume" Margin="350,665,0,0" Click="btnResume_Click" HorizontalAlignment="Left" Width="120" Height="30" VerticalAlignment="Top"/>
-                        <Button x:Name="btnPause" Content="Pause" Margin="520,665,0,0" Click="btnPause_Click" HorizontalAlignment="Left" Width="120" Height="30" VerticalAlignment="Top"/>
-                        <Button x:Name="btnAbortScan" Content="Abort" Margin="700,630,0,0" Click="btnAbortScan_Click" Height="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnAbortScan" Content="Abort" Margin="915,630,0,0" Click="btnAbortScan_Click" Height="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
                         <ProgressBar x:Name="pgbXrayProgress" Margin="25,474,0,0" HorizontalAlignment="Left" Width="120" Height="20" VerticalAlignment="Top" Visibility="Visible"/>
                         <TextBlock x:Name="tblXrayProgress" Text="0%" VerticalAlignment="Top" Margin="60,474,0,0" Visibility="Visible" HorizontalAlignment="Left" Width="47" TextAlignment="Center" />
                     </Grid>
@@ -646,7 +645,6 @@
         <Label Content="Gantry Position:" HorizontalAlignment="Left" Margin="480,0,0,80" VerticalAlignment="Bottom"/>
         <TextBox x:Name="tbxGantryPosition" HorizontalAlignment="Left" Height="23" Margin="480,0,0,45" TextWrapping="NoWrap" IsReadOnly="True" Width="80" MinWidth="0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center"/>
         <Label x:Name="lblDeviceId" Content="Peak CAN Id:" HorizontalAlignment="Right" Margin="0,0,100,50" VerticalAlignment="Bottom" FontWeight="Bold"/>
-        <Label x:Name="lblFPGAVersion" Content="FPGA Version:" HorizontalAlignment="Left" Margin="629,10,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="tbxDeviceId" HorizontalAlignment="Right" Height="18" Margin="0,0,50,50" TextWrapping="Wrap" Text="1a" VerticalAlignment="Bottom" Width="40" MinWidth="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Button x:Name="btnRegisterYellowPage" Content="Register YP" HorizontalAlignment="Right" Margin="0,0,450,50" Width="100" Click="btnRegisterYellowPage_Click" Height="30" VerticalAlignment="Bottom"/>
         <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Right" Margin="0,0,320,50" VerticalAlignment="Bottom" Width="100" Click="btnConnect_Click" Height="30"/>

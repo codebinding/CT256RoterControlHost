@@ -78,8 +78,6 @@ namespace RoterControlSupport
         public const ushort CMD_RESET = 0x1105;
         public const ushort CMD_REBOOT = 0x1106;
         public const ushort CMD_ABORT = 0x1107;
-        public const ushort CMD_RESUME = 0x1108;
-        public const ushort CMD_PAUSE = 0x1109;
         public const ushort CMD_WARMUP = 0x110a;
         public const ushort CMD_SEASON = 0x110b;
         public const ushort CMD_FILCAL = 0x110c;
@@ -857,7 +855,7 @@ namespace RoterControlSupport
 
             foreach (SeriesParameter series in p_scan_parameters) {
 
-                request.Add(7);
+                request.Add(8);
 
                 data64 = (ulong)series.Kv << 0 | (ulong)(series.Ma & 0xffff) << 8 | (ulong)(series.Fss & 3) << 24;
                 data64 |= (ulong)(series.ApertureMode & 0xff) << 32 | (ulong)(series.FilterMode & 0xff) << 40 | (ulong)(series.RowNumber & 0xff) << 48;
@@ -867,24 +865,27 @@ namespace RoterControlSupport
                 data64 = (ulong)(series.ShotTimeInMSec & 0x03ffff) << 0 | (ulong)(series.NumberOfShots & 0xff) << 18 | (ulong)(series.SeriesTimeInMSec & 0x03ffff) << 26 | (ulong)(series.DelayBeforeNextSeries & 0x0fffff) << 44;
                 request.Add(data64); // 1
 
+                data64 = (ulong)(series.TimeoutBetweenArmXrayOn & 0x0fffff);
+                request.Add(data64); // 2
+
                 data64 = (ulong)(series.TriggerPosition & 0xffffffff) << 0 | (ulong)(series.TriggerMode & 3) << 32 | (ulong)(series.ScanType & 1) << 34;
                 data64 |= (ulong)(series.DitherType & 0xf) << 35 | (ulong)(series.IsRelative & 1) << 43;
-                data64 |= (ulong)(series.TicksPerRotation & 0xffff) << 44 | (ulong)(series.CardiacScan & 1) << 60 | (ulong)(series.EmergencyScan & 1) << 61;
-                request.Add(data64); // 2
+                data64 |= (ulong)(series.TicksPerRotation & 0xffff) << 44 | (ulong)(series.CardiacScan & 1) << 60 | (ulong)(series.EmergencyScan & 1) << 61 | (ulong)(series.CineScan & 1) << 62;
+                request.Add(data64); // 3
 
                 data64 = (ulong)(series.ErrorRegisterReset & 1) << 0 | (ulong)(series.EncoderSource & 1) << 1 | (ulong)(series.IntegrationTime & 0xffffff) << 2 | (ulong)(series.StartingSlice & 0x1f) << 26 | (ulong)(series.EndingSlice & 0x1f) << 31;
                 data64 |= (ulong)(series.DataSource & 1) << 36 | (ulong)(series.InputSource & 0xf) << 37 | (ulong)(series.SampleMode & 1) << 41;
                 data64 |= (ulong)(series.Decimation & 0x7) << 42 | (ulong)(series.ClockSpeed & 3) << 45 | (ulong)(series.Range & 0x7) << 47 | (ulong)(series.PostConversionShutdown & 1) << 50;
-                request.Add(data64); // 3
-
-                data64 = (ulong)(series.IntegrationAveraging & 7) << 0 | (ulong)(series.DetectorDataSource & 7) << 3 | (ulong)(series.IntegrationLimit & 0xffffff) << 6 | (ulong)(series.OffsetIntegrationLimit & 0x0fff) << 30;
                 request.Add(data64); // 4
 
+                data64 = (ulong)(series.IntegrationAveraging & 7) << 0 | (ulong)(series.DetectorDataSource & 7) << 3 | (ulong)(series.IntegrationLimit & 0xffffff) << 6 | (ulong)(series.OffsetIntegrationLimit & 0x0fff) << 30;
+                request.Add(data64); // 5
+
                 data64 = (ulong)(series.StartingMa & 0xffff) << 0 | (ulong)(series.PeakMa & 0xffff) << 16 | (ulong)(series.AverageMa & 0xffff) << 32 | (ulong)(series.MinMa & 0xffff) << 48;
-                request.Add(data64);     // 5
+                request.Add(data64); // 6
 
                 data64 = (ulong)(series.PhaseMinus & 0xff) << 0 | (ulong)(series.PhasePlus & 0xff) << 8 | (ulong)(series.TreQuater & 0x1ff) << 16 | (ulong)(series.Tup & 0x3ff) << 25 | (ulong)(series.Segments & 0xff) << 35 | (ulong)(series.TubeHomePosition & 0x7ff) << 43;
-                request.Add(data64);     // 6
+                request.Add(data64); // 7
             }
 
             SendRequestSync(CMD_PREPARE, request, out response, 15000);
@@ -898,26 +899,6 @@ namespace RoterControlSupport
             List<ulong> response;
 
             SendRequestSync(CMD_EXPOSE, request, out response, p_scan_time_ms);
-
-            CheckErrorCode(response[0]);
-        }
-
-        public void Resume(int p_scan_time_ms) {
-
-            List<ulong> request = new List<ulong> { 0 };
-            List<ulong> response;
-
-            SendRequestSync(CMD_RESUME, request, out response, p_scan_time_ms);
-
-            CheckErrorCode(response[0]);
-        }
-
-        public void Pause() {
-
-            List<ulong> request = new List<ulong> { 0 };
-            List<ulong> response;
-
-            SendRequestSync(CMD_PAUSE, request, out response);
 
             CheckErrorCode(response[0]);
         }
@@ -1310,6 +1291,20 @@ namespace RoterControlSupport
             List<ulong> request = new List<ulong> { p_closed ? (ulong)1 : (ulong)0 };
 
             SendNotification(NTF_DOOR, request);
+        }
+
+        public void NotifyCStep(int p_step) {
+
+            List<ulong> request = new List<ulong> { (ulong)p_step };
+
+            SendNotification(NTF_CSTEP, request);
+        }
+
+        public void NotifyMStep(int p_step) {
+
+            List<ulong> request = new List<ulong> { (ulong)p_step };
+
+            SendNotification(NTF_MSTEP, request);
         }
 
         public void ResetTablePosition() {

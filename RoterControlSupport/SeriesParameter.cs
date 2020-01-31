@@ -23,6 +23,9 @@ namespace RoterControlSupport {
         public int DelayBeforeNextSeries;   // 20-bit, 0 ~ 1,048,575mS
 
         // #2
+        public int TimeoutBetweenArmXrayOn;
+
+        // #3
         public int TriggerPosition;
         public int TriggerMode;
         public int ScanType;           // 0 = Normal, 1 = Dose Modulation
@@ -31,8 +34,9 @@ namespace RoterControlSupport {
         public short TicksPerRotation;
         public byte CardiacScan;
         public int EmergencyScan;
+        public byte CineScan;
 
-        // #3
+        // #4
         public int ErrorRegisterReset;
         public byte EncoderSource;
         public uint IntegrationTime;     // 24-bit
@@ -46,20 +50,20 @@ namespace RoterControlSupport {
         public byte Range;
         public byte PostConversionShutdown;
 
-        // #4
+        // #5
         public byte IntegrationAveraging; // 8-bit
         public byte DetectorDataSource;
         public uint IntegrationLimit;    // 32-bit
         public ushort OffsetIntegrationLimit;   // 12-bit
         public ushort TimePerRotationInMSec;    // 12-bit
 
-        // #5
+        // #6
         public ushort StartingMa;
         public ushort PeakMa;
         public ushort AverageMa;
         public ushort MinMa;
 
-        // #6
+        // #7
         public ushort PhaseMinus;
         public ushort PhasePlus;
         public ushort TreQuater;
@@ -85,6 +89,9 @@ namespace RoterControlSupport {
             DelayBeforeNextSeries = 0;
 
             // #2
+            TimeoutBetweenArmXrayOn = 120000;
+
+            // #3
             TriggerPosition = 0;
             TriggerMode = 0;
             ScanType = 0;
@@ -92,8 +99,9 @@ namespace RoterControlSupport {
             IsRelative = 0;
             TicksPerRotation = 0;
             CardiacScan = 0;
+            CineScan = 0;
 
-            // #3
+            // #4
             ErrorRegisterReset = 0;
             EncoderSource = 0;
             IntegrationTime = 0;
@@ -107,19 +115,19 @@ namespace RoterControlSupport {
             Range = 0;
             PostConversionShutdown = 0;
 
-            // #4
+            // #5
             IntegrationAveraging = 0;
             DetectorDataSource = 0;
             IntegrationLimit = 0;
             OffsetIntegrationLimit = 0;
 
-            // #5
+            // #6
             StartingMa = 0;
             PeakMa = 0;
             AverageMa = 0;
             MinMa = 0;
 
-            // #6
+            // #7
             PhaseMinus = 0;
             PhasePlus = 0;
             TreQuater = 0;
