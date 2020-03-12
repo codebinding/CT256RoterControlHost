@@ -50,6 +50,8 @@ namespace RoterControlSupport
         public const ushort CMD_ABORTTXRX = 0x0605;
         public const ushort CMD_SCANDIR = 0x0606;
         public const ushort CMD_DELETEFILES = 0x0607;
+        public const ushort CMD_MOUNTFAT = 0x0608;
+        public const ushort CMD_UMOUNTFAT = 0x0609;
 
         // Bryce System (0x10)
         public const ushort CMD_SETLOGLEVEL_B = 0x1041;
@@ -790,6 +792,33 @@ namespace RoterControlSupport
 
                 CheckErrorCode(response[0]);
             }
+        }
+
+        public void MountFat() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_MOUNTFAT, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void UmountFat() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_UMOUNTFAT, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void UmountFatAsync() {
+
+            List<ulong> request = new List<ulong> { 0 };
+
+            SendRequestAsync(CMD_UMOUNTFAT, request);
         }
         #endregion File
         #endregion Acadia
