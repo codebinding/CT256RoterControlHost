@@ -82,6 +82,7 @@ namespace RCBUploader {
                 m_rcb.SyncTime();
 
                 btnConnect.IsEnabled = false;
+                btnUploadBootloader.IsEnabled = true;
                 btnUploadFPGAFW.IsEnabled = true;
                 btnUpoadHPSSW.IsEnabled = true;
 
@@ -97,6 +98,29 @@ namespace RCBUploader {
             }
         }
 
+        private void btnUploadBootloader_Click(object sender, RoutedEventArgs e) {
+
+            OpenFileDialog open_dialog = new OpenFileDialog();
+
+            if (open_dialog.ShowDialog() == true) {
+
+                try {
+
+                    FileTransmit ft = new FileTransmit();
+
+                    ft.Permission = Convert.ToUInt32("0755", 8);
+                    ft.LocalFile = open_dialog.FileName;
+                    ft.RemoteFile = "/home/root/acadia";
+
+                    new Thread(() => TransmitFiles(sender, new List<FileTransmit>() { ft })).Start();
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
         private void btnUploadFPGAFW_Click(object sender, RoutedEventArgs e) {
 
             OpenFileDialog open_dialog = new OpenFileDialog();
@@ -109,9 +133,9 @@ namespace RCBUploader {
 
                     ft.Permission = Convert.ToUInt32("0644", 8);
                     ft.LocalFile = open_dialog.FileName;
-                    ft.RemoteFile = "/home/root/fmi_ct256_rcb.rbf";
+                    ft.RemoteFile = "/home/root/boot/soc_system.rbf";
 
-                    new Thread(() => TransmitFiles(sender, new List<FileTransmit>() { ft })).Start();
+                    new Thread(() => TransmitFPGA(sender, new List<FileTransmit>() { ft })).Start();
                 }
                 catch (Exception ex) {
 
@@ -203,6 +227,48 @@ namespace RCBUploader {
                 }
             }
             catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            UpdateTransmissionProgress(100);
+
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
+        }
+
+        private void TransmitFPGA(object sender, List<FileTransmit> p_file_list) {
+
+            Button button = (sender as Button);
+
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
+
+            try {
+
+                m_rcb.MountFat();
+
+                long total_file_size = 0;
+
+                foreach (FileTransmit ft in p_file_list) {
+
+                    FileInfo file_info = new FileInfo(ft.LocalFile);
+                    total_file_size += file_info.Length;
+                }
+
+                long transmitted_size = 0;
+
+                foreach (FileTransmit ft in p_file_list) {
+
+                    TransmitFile(ft, transmitted_size, total_file_size);
+
+                    FileInfo file_info = new FileInfo(ft.LocalFile);
+                    transmitted_size += file_info.Length;
+                }
+
+                m_rcb.UmountFat();
+            }
+            catch (Exception ex) {
+
+                m_rcb.UmountFatAsync();
 
                 MessageBox.Show(ex.Message);
             }

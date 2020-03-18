@@ -2008,6 +2008,16 @@ namespace RCBTool {
             new Thread(() => RebootGbox()).Start();
         }
 
+        private void btnUpgrade_Click(object sender, RoutedEventArgs e) {
+
+            m_rcb.UpgradeFW();
+        }
+
+        private void btnDowngrade_Click(object sender, RoutedEventArgs e) {
+
+            m_rcb.DowngradeFW();
+        }
+
         private void RebootGbox() {
 
             this.Dispatcher.Invoke(new Action(() => btnRebootGbox.IsEnabled = false));

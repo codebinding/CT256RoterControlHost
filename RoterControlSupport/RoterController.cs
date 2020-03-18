@@ -84,6 +84,8 @@ namespace RoterControlSupport
         public const ushort CMD_SEASON = 0x110b;
         public const ushort CMD_FILCAL = 0x110c;
         public const ushort CMD_ESTIMATE = 0x110d;
+        public const ushort CMD_UPGRADE = 0x110e;
+        public const ushort CMD_DOWNGRADE = 0x110f;
 
         // Collimator (0x12)
         public const ushort CMD_CLMTVER = 0x1200;
@@ -948,6 +950,26 @@ namespace RoterControlSupport
             List<ulong> response;
 
             SendRequestSync(CMD_REBOOT, request, out response, 40000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void UpgradeFW() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_UPGRADE, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void DowngradeFW() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_DOWNGRADE, request, out response, 1000);
 
             CheckErrorCode(response[0]);
         }

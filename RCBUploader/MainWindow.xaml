@@ -2,11 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="Main" x:Class="RCBUploader.MainWindow"
-        Title="RCB FW/SW Uploader" Height="500" Width="800" Background="{StaticResource FMISolidDarkSkyBlue}" WindowStartupLocation="CenterScreen" Closing="Main_Closing" WindowState="Normal" ResizeMode="NoResize">
+        Title="RCB FW/SW Uploader" Height="500" Width="1000" Background="{StaticResource FMISolidDarkSkyBlue}" WindowStartupLocation="CenterScreen" Closing="Main_Closing" WindowState="Normal" ResizeMode="NoResize">
     <Grid>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="40,200,0,0" VerticalAlignment="Top" Width="200" Click="btnConnect_Click" Height="100" FontSize="30"/>
-        <Button x:Name="btnUploadFPGAFW" Content="Upload FPGA FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="300,160,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUploadFPGAFW_Click" IsEnabled="False" FontSize="20"/>
-        <Button x:Name="btnUpoadHPSSW" Content="Upload HPS FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="550,160,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUploadHPSSW_Click" IsEnabled="False" FontSize="20"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="766,346,0,0" VerticalAlignment="Top" Width="200" Click="btnConnect_Click" Height="100" FontSize="30"/>
+        <Button x:Name="btnUploadBootloader" Content="Upload Bootloader" FontWeight="Bold" HorizontalAlignment="Left" Margin="100,110,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUploadBootloader_Click" IsEnabled="False" FontSize="20"/>
+        <Button x:Name="btnUploadFPGAFW" Content="Upload FPGA FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="400,110,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUploadFPGAFW_Click" IsEnabled="False" FontSize="20"/>
+        <Button x:Name="btnUpoadHPSSW" Content="Upload HPS FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="700,110,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUploadHPSSW_Click" IsEnabled="False" FontSize="20"/>
         <ProgressBar x:Name="pgbFileTransProgress" HorizontalAlignment="Left" Height="30" Margin="40,395,0,0" VerticalAlignment="Top" Width="640" Visibility="Hidden"/>
         <TextBlock x:Name="tblFileTransProgress" HorizontalAlignment="Left" Margin="700,395,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" FontSize="20" Width="80"/>
     </Grid>
