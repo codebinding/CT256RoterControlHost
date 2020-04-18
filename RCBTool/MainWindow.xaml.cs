@@ -58,10 +58,14 @@ namespace RCBTool {
         public TextBox tbxTimePerRotationInMSec;
         public Label lblTimeoutBetweenArmXrayOn;
         public TextBox tbxTimeoutBetweenArmXrayOn;
-        public Label lblDelayBeforeNextSeries;
-        public TextBox tbxDelayBeforeNextSeries;
         public Label lblCineScan;
         public ComboBox cbxCineScan;
+        public Label lblDelayBetweenShots;
+        public TextBox tbxDelayBetweenShots;
+        public Label lblDelayBeforeNextSeries;
+        public TextBox tbxDelayBeforeNextSeries;
+        public CheckBox ckbIma;
+        public CheckBox ckbEmergencyScan;
 
         public Label lblCardiacScan;
         public ComboBox cbxCardiacScan;
@@ -105,8 +109,10 @@ namespace RCBTool {
         public Label lblOffsetIntegrationLimit;
         public TextBox tbxOffsetIntegrationLimit;
 
-        public CheckBox ckbIma;
-        public CheckBox ckbEmergencyScan;
+        public Button btnLoadImaTable;
+
+        public ImaTable imaTable;
+        public bool imaLoaded;
 
         public ExposureControl() {
 
@@ -175,7 +181,7 @@ namespace RCBTool {
             lblDitherType = new Label() { Content = "Dither Type", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 150, top_most + 120, 0, 0) };
             lblTimePerRotationInMSec = new Label() { Content = "Time/Rotation(mS)", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 300, top_most + 120, 0, 0) };
             lblTimeoutBetweenArmXrayOn = new Label() { Content = "Arm Timeout(mS)", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 450, top_most + 120, 0, 0) };
-            lblDelayBeforeNextSeries = new Label() { Content = "Delay Before Next Series", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 120, 0, 0) };
+            lblCineScan = new Label() { Content = "Cine Scan", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 120, 0, 0) };
 
             // Line 6
             tbxIntegrationTime = new TextBox() { Text = "488281", Margin = new Thickness(left_most, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
@@ -187,15 +193,21 @@ namespace RCBTool {
 
             tbxTimePerRotationInMSec = new TextBox() { Text = "500", Margin = new Thickness(left_most + 300, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
             tbxTimeoutBetweenArmXrayOn = new TextBox() { Text = "120000", Margin = new Thickness(left_most + 450, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
-            tbxDelayBeforeNextSeries = new TextBox() { Text = "0", Margin = new Thickness(left_most + 600, top_most + 140, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            // Line 7
-            lblCineScan = new Label() { Content = "Cine Scan", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most, top_most + 180, 0, 0) };
-
-            // Line 8
-            cbxCineScan = new ComboBox() { Margin = new Thickness(left_most, top_most + 200, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxCineScan = new ComboBox() { Margin = new Thickness(left_most + 600, top_most + 140, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
             cbxCineScan.Items.Add("No");
             cbxCineScan.Items.Add("Yes");
+
+            // Line 7
+            lblDelayBetweenShots = new Label() { Content = "Delay Between Shots", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most, top_most + 180, 0, 0) };
+            lblDelayBeforeNextSeries = new Label() { Content = "Delay Before Next Series", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 150, top_most + 180, 0, 0) };
+
+            // Line 8
+            tbxDelayBetweenShots = new TextBox() { Text = "0", Margin = new Thickness(left_most, top_most + 200, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            tbxDelayBeforeNextSeries = new TextBox() { Text = "0", Margin = new Thickness(left_most + 150, top_most + 200, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+
+            ckbIma = new CheckBox() { Content = "imA", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 200, 0, 0) };
+            ckbEmergencyScan = new CheckBox() { Content = "Emergency", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 650, top_most + 200, 0, 0) };
 
             // Line 9
             lblCardiacScan = new Label() { Content = "Cardiac Scan", Margin = new Thickness(left_most, top_most + 240, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
@@ -268,8 +280,11 @@ namespace RCBTool {
             tbxIntegrationLimit = new TextBox() { Text = "0", Margin = new Thickness(left_most + 300, top_most + 440, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
             tbxOffsetIntegrationLimit = new TextBox() { Text = "0", Margin = new Thickness(left_most + 450, top_most + 440, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
-            ckbIma = new CheckBox() { Content = "imA", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most + 450, 0, 0) };
-            ckbEmergencyScan = new CheckBox() { Content = "Emergency", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 650, top_most + 450, 0, 0) };
+            btnLoadImaTable = new Button() { Content = "Load Ima Table", Margin = new Thickness(left_most + 600, top_most + 440, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, Width = 120, Height = 30, VerticalAlignment = VerticalAlignment.Top };
+
+            imaTable = new ImaTable();
+            imaLoaded = false; 
+
         }
     }
 
@@ -448,17 +463,18 @@ namespace RCBTool {
                 gd.Children.Add(ec.lblDitherType);
                 gd.Children.Add(ec.lblTimePerRotationInMSec);
                 gd.Children.Add(ec.lblTimeoutBetweenArmXrayOn);
-                gd.Children.Add(ec.lblDelayBeforeNextSeries);
+                gd.Children.Add(ec.lblCineScan);
 
                 gd.Children.Add(ec.tbxIntegrationTime);
                 gd.Children.Add(ec.cbxDitherType);
                 gd.Children.Add(ec.tbxTimePerRotationInMSec);
                 gd.Children.Add(ec.tbxTimeoutBetweenArmXrayOn);
-                gd.Children.Add(ec.tbxDelayBeforeNextSeries);
-
-                gd.Children.Add(ec.lblCineScan);
-
                 gd.Children.Add(ec.cbxCineScan);
+
+                gd.Children.Add(ec.lblDelayBeforeNextSeries);
+                gd.Children.Add(ec.tbxDelayBeforeNextSeries);
+                gd.Children.Add(ec.lblDelayBetweenShots);
+                gd.Children.Add(ec.tbxDelayBetweenShots);
 
                 gd.Children.Add(ec.lblCardiacScan);
                 gd.Children.Add(ec.lblPhasePercentage);
@@ -508,6 +524,9 @@ namespace RCBTool {
 
                 gd.Children.Add(ec.ckbIma);
                 gd.Children.Add(ec.ckbEmergencyScan);
+
+                ec.btnLoadImaTable.Click += new RoutedEventHandler(btnLoadImaTable_Click);
+                gd.Children.Add(ec.btnLoadImaTable);
 
                 m_exposure_tabs.Add(ti);
 
@@ -1580,6 +1599,12 @@ namespace RCBTool {
         }
         #endregion
 
+        #region TCU G-Box
+        private void btnUpdateFW_Click(object sender, RoutedEventArgs e) {
+
+        }
+        #endregion
+
         #region High Voltage
 
         private void cbxNumberOfScans_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -1795,7 +1820,7 @@ namespace RCBTool {
 
             m_scan_parameters = new List<SeriesParameter>();
 
-            for(int tab =0 ;tab < m_exposure_tabs.Count ;tab++) {
+            for (int tab = 0 ; tab < m_exposure_tabs.Count ; tab++) {
 
                 if (!m_exposure_tabs[tab].IsEnabled) {
 
@@ -1830,6 +1855,7 @@ namespace RCBTool {
                 series_parameter.TriggerPosition = Convert.ToInt32(ec.tbxTriggerPosition.Text);
                 series_parameter.SeriesTimeInMSec = Convert.ToInt32(ec.tbxScanTime.Text);
                 series_parameter.DelayBeforeNextSeries = Convert.ToInt32(ec.tbxDelayBeforeNextSeries.Text);
+                series_parameter.DelayBetweenShots = Convert.ToInt32(ec.tbxDelayBetweenShots.Text);
 
                 series_parameter.EmergencyScan = (ec.ckbEmergencyScan.IsChecked == true) ? 1 : 0;
                 series_parameter.CardiacScan = (byte)ec.cbxCardiacScan.SelectedIndex;
@@ -1882,6 +1908,16 @@ namespace RCBTool {
                 series_parameter.IntegrationAveraging = Convert.ToByte(ec.tbxIntegrationAveraging.Text);
                 series_parameter.DetectorDataSource = (byte)ec.cbxDetectorDataSource.SelectedIndex;
 
+                if (ec.ckbIma.IsChecked == true) {
+
+                    if (!ec.imaLoaded) {
+
+                        throw new Exception("Ima tabel is not loaded");
+                    }
+
+                    series_parameter.ImaTable = ec.imaTable;
+                }
+
                 m_scan_parameters.Add(series_parameter);
             }
         }
@@ -1900,6 +1936,36 @@ namespace RCBTool {
             }
 
             this.Dispatcher.Invoke(new Action(() => btnPrepare.IsEnabled = true));
+        }
+
+        private void btnLoadImaTable_Click(object sender, RoutedEventArgs e) {
+
+            int selected_index = 0;
+
+            for (int i = 0 ; i < m_exposure_tabs.Count ; i++) {
+
+                if (m_exposure_tabs[i].IsSelected) {
+
+                    selected_index = i;
+
+                    break;
+                }
+            }
+
+            OpenFileDialog open_dialog = new OpenFileDialog();
+
+            if (open_dialog.ShowDialog() == true) {
+
+                try {
+
+                    m_exposure_controls[selected_index].imaTable.ParseMapFile(open_dialog.FileName);
+                    m_exposure_controls[selected_index].imaLoaded = true;
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
 
         private void btnScan_Click(object sender, RoutedEventArgs e) {
@@ -2006,16 +2072,6 @@ namespace RCBTool {
         private void btnRebootGbox_Click(object sender, RoutedEventArgs e) {
 
             new Thread(() => RebootGbox()).Start();
-        }
-
-        private void btnUpgrade_Click(object sender, RoutedEventArgs e) {
-
-            m_rcb.UpgradeFW();
-        }
-
-        private void btnDowngrade_Click(object sender, RoutedEventArgs e) {
-
-            m_rcb.DowngradeFW();
         }
 
         private void RebootGbox() {

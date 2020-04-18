@@ -24,6 +24,7 @@ namespace RoterControlSupport {
 
         // #2
         public int TimeoutBetweenArmXrayOn;
+        public int DelayBetweenShots;
 
         // #3
         public int TriggerPosition;
@@ -57,19 +58,7 @@ namespace RoterControlSupport {
         public ushort OffsetIntegrationLimit;   // 12-bit
         public ushort TimePerRotationInMSec;    // 12-bit
 
-        // #6
-        public ushort StartingMa;
-        public ushort PeakMa;
-        public ushort AverageMa;
-        public ushort MinMa;
-
-        // #7
-        public ushort PhaseMinus;
-        public ushort PhasePlus;
-        public ushort TreQuater;
-        public ushort Tup;
-        public ushort Segments;
-        public ushort TubeHomePosition;
+        public ImaTable ImaTable;
 
         public SeriesParameter() {
 
@@ -90,6 +79,7 @@ namespace RoterControlSupport {
 
             // #2
             TimeoutBetweenArmXrayOn = 120000;
+            DelayBetweenShots = 0;
 
             // #3
             TriggerPosition = 0;
@@ -121,19 +111,7 @@ namespace RoterControlSupport {
             IntegrationLimit = 0;
             OffsetIntegrationLimit = 0;
 
-            // #6
-            StartingMa = 0;
-            PeakMa = 0;
-            AverageMa = 0;
-            MinMa = 0;
-
-            // #7
-            PhaseMinus = 0;
-            PhasePlus = 0;
-            TreQuater = 0;
-            Tup = 0;
-            Segments = 0;
-            TubeHomePosition = 0;
+            ImaTable = null;
         }
     }
 }

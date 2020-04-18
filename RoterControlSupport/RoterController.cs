@@ -67,9 +67,12 @@ namespace RoterControlSupport
         public const ushort CMD_TURNONSTDOUTPUT_D = 0x0a44;
         public const ushort CMD_TURNONCANOUTPUT_D = 0x0a45;
 
-        // Denali Engineering (0x0b)
+        // Denali Register (0x0b)
         public const ushort CMD_READREGISTER = 0x0b01;
         public const ushort CMD_WRITEREGISTER = 0x0b02;
+
+        // Denali TCU/G-Box (0x0c)
+        public const ushort CMD_GBUPDATE = 0x0c01;
 
         // X-Ray (0x11)
         public const ushort CMD_HVINIT = 0x1100;
@@ -84,8 +87,6 @@ namespace RoterControlSupport
         public const ushort CMD_SEASON = 0x110b;
         public const ushort CMD_FILCAL = 0x110c;
         public const ushort CMD_ESTIMATE = 0x110d;
-        public const ushort CMD_UPGRADE = 0x110e;
-        public const ushort CMD_DOWNGRADE = 0x110f;
 
         // Collimator (0x12)
         public const ushort CMD_CLMTVER = 0x1200;
@@ -826,6 +827,7 @@ namespace RoterControlSupport
         #endregion Acadia
 
         #region Denali
+        #region Register
         public ulong ReadRegister(int p_offset) {
 
             List<ulong> request = new List<ulong> { (ulong)p_offset };
@@ -843,7 +845,20 @@ namespace RoterControlSupport
 
             SendRequestSync(CMD_WRITEREGISTER, request, out response, 500);
         }
-        #endregion
+        #endregion Register
+
+        #region TCU/G-Box
+        public void UpdateRequest() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_GBUPDATE, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+        #endregion TCU/G-Box
+        #endregion Denali
 
         #region Bryce
         #region X-ray
@@ -886,7 +901,14 @@ namespace RoterControlSupport
 
             foreach (SeriesParameter series in p_scan_parameters) {
 
-                request.Add(8);
+                if(series.ScanType == 0) {  // 0: normal scan, 1: imA scan
+
+                    request.Add(6);
+                }
+                else {
+
+                    request.Add(6 + 2 + (ulong)series.ImaTable.MaValues.Count / 4);
+                }
 
                 data64 = (ulong)series.Kv << 0 | (ulong)(series.Ma & 0xffff) << 8 | (ulong)(series.Fss & 3) << 24;
                 data64 |= (ulong)(series.ApertureMode & 0xff) << 32 | (ulong)(series.FilterMode & 0xff) << 40 | (ulong)(series.RowNumber & 0xff) << 48;
@@ -896,7 +918,7 @@ namespace RoterControlSupport
                 data64 = (ulong)(series.ShotTimeInMSec & 0x03ffff) << 0 | (ulong)(series.NumberOfShots & 0xff) << 18 | (ulong)(series.SeriesTimeInMSec & 0x03ffff) << 26 | (ulong)(series.DelayBeforeNextSeries & 0x0fffff) << 44;
                 request.Add(data64); // 1
 
-                data64 = (ulong)(series.TimeoutBetweenArmXrayOn & 0x0fffff);
+                data64 = (ulong)(series.TimeoutBetweenArmXrayOn & 0x0fffff) << 0 | (ulong)(series.DelayBetweenShots & 0xffff) << 20;
                 request.Add(data64); // 2
 
                 data64 = (ulong)(series.TriggerPosition & 0xffffffff) << 0 | (ulong)(series.TriggerMode & 3) << 32 | (ulong)(series.ScanType & 1) << 34;
@@ -909,14 +931,25 @@ namespace RoterControlSupport
                 data64 |= (ulong)(series.Decimation & 0x7) << 42 | (ulong)(series.ClockSpeed & 3) << 45 | (ulong)(series.Range & 0x7) << 47 | (ulong)(series.PostConversionShutdown & 1) << 50;
                 request.Add(data64); // 4
 
-                data64 = (ulong)(series.IntegrationAveraging & 7) << 0 | (ulong)(series.DetectorDataSource & 7) << 3 | (ulong)(series.IntegrationLimit & 0xffffff) << 6 | (ulong)(series.OffsetIntegrationLimit & 0x0fff) << 30;
+                data64 = (ulong)(series.IntegrationAveraging & 7) << 0 | (ulong)(series.DetectorDataSource & 7) << 3 | (ulong)(series.IntegrationLimit & 0xffffff) << 6 | (ulong)(series.OffsetIntegrationLimit & 0x0fff) << 30 | (ulong)(series.TimePerRotationInMSec & 0x0fff) << 42;
                 request.Add(data64); // 5
 
-                data64 = (ulong)(series.StartingMa & 0xffff) << 0 | (ulong)(series.PeakMa & 0xffff) << 16 | (ulong)(series.AverageMa & 0xffff) << 32 | (ulong)(series.MinMa & 0xffff) << 48;
-                request.Add(data64); // 6
+                // load ima table
+                if (series.ScanType == 1) {
 
-                data64 = (ulong)(series.PhaseMinus & 0xff) << 0 | (ulong)(series.PhasePlus & 0xff) << 8 | (ulong)(series.TreQuater & 0x1ff) << 16 | (ulong)(series.Tup & 0x3ff) << 25 | (ulong)(series.Segments & 0xff) << 35 | (ulong)(series.TubeHomePosition & 0x7ff) << 43;
-                request.Add(data64); // 7
+                    data64 = (ulong)(series.ImaTable.StartingMa & 0xffff) << 0 | (ulong)(series.ImaTable.PeakMa & 0xffff) << 16 | (ulong)(series.ImaTable.AverageMa & 0xffff) << 32 | (ulong)(series.ImaTable.MinMa & 0xffff) << 48;
+                    request.Add(data64);
+
+                    data64 = (ulong)(series.ImaTable.PhaseMinus & 0xff) << 0 | (ulong)(series.ImaTable.PhasePlus & 0xff) << 8 | (ulong)(series.ImaTable.TrevQuarter & 0x1ff) << 16 | (ulong)(series.ImaTable.Tup & 0x3ff) << 25;
+                    data64 |= (ulong)(series.ImaTable.NTheta & 0xff) << 35 | (ulong)(series.ImaTable.GantryHomeAngleOffset & 0x7ff) << 43;
+                    request.Add(data64);
+
+                    for(int i = 0 ; i < series.ImaTable.MaValues.Count ; i += 4) {
+
+                        data64 = (ulong)(series.ImaTable.MaValues[i] & 0xffff) << 0 | (ulong)(series.ImaTable.MaValues[i + 1] & 0xffff) << 16 | (ulong)(series.ImaTable.MaValues[i + 2] & 0xffff) << 32 | (ulong)(series.ImaTable.MaValues[i + 3] & 0xffff) << 48;
+                        request.Add(data64);
+                    }
+                }
             }
 
             SendRequestSync(CMD_PREPARE, request, out response, 15000);
@@ -950,26 +983,6 @@ namespace RoterControlSupport
             List<ulong> response;
 
             SendRequestSync(CMD_REBOOT, request, out response, 40000);
-
-            CheckErrorCode(response[0]);
-        }
-
-        public void UpgradeFW() {
-
-            List<ulong> request = new List<ulong> { 0 };
-            List<ulong> response;
-
-            SendRequestSync(CMD_UPGRADE, request, out response, 1000);
-
-            CheckErrorCode(response[0]);
-        }
-
-        public void DowngradeFW() {
-
-            List<ulong> request = new List<ulong> { 0 };
-            List<ulong> response;
-
-            SendRequestSync(CMD_DOWNGRADE, request, out response, 1000);
 
             CheckErrorCode(response[0]);
         }
