@@ -29,7 +29,7 @@ namespace RCBTool {
     public class ExposureControl {
 
         public Label lblKv;
-        public ComboBox cbxKv;
+        public TextBox tbxKv;
         public Label lblMa;
         public TextBox tbxMa;
         public Label lblFss;
@@ -128,13 +128,7 @@ namespace RCBTool {
             lblScanTime = new Label() { Content = "Whole series Time(mS)", HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 600, top_most, 0, 0) };
 
             // Line 2
-            cbxKv = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most, top_most + 20, 0, 0), Width = 80, Height = 25, SelectedIndex = 1, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
-            cbxKv.Items.Add(70);
-            cbxKv.Items.Add(80);
-            cbxKv.Items.Add(100);
-            cbxKv.Items.Add(120);
-            cbxKv.Items.Add(140);
-
+            tbxKv = new TextBox() { HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Height = 20, Width = 80, Margin = new Thickness(left_most, top_most + 20, 0, 0), Text = "70", HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
             tbxMa = new TextBox() { HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Height = 20, Width = 80, Margin = new Thickness(left_most + 100, top_most + 20, 0, 0), Text = "100", HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
 
             cbxFss = new ComboBox() { HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Margin = new Thickness(left_most + 200, top_most + 20, 0, 0), Width = 80, Height = 25, SelectedIndex = 2, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
@@ -440,7 +434,7 @@ namespace RCBTool {
                 gd.Children.Add(ec.lblScanSteps);
                 gd.Children.Add(ec.lblScanTime);
 
-                gd.Children.Add(ec.cbxKv);
+                gd.Children.Add(ec.tbxKv);
                 gd.Children.Add(ec.tbxMa);
                 gd.Children.Add(ec.cbxFss);
                 gd.Children.Add(ec.tbxExposureTime);
@@ -1831,7 +1825,7 @@ namespace RCBTool {
 
                 SeriesParameter series_parameter = new SeriesParameter();
 
-                series_parameter.Kv = Convert.ToByte(ec.cbxKv.Text);
+                series_parameter.Kv = Convert.ToByte(ec.tbxKv.Text);
                 series_parameter.Ma = Convert.ToUInt16(ec.tbxMa.Text);
 
                 if (ec.cbxFss.Text == "Small") {
