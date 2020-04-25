@@ -298,20 +298,10 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Laser">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Grid x:Name="grdLaser" IsEnabled="False">
-                        <Button x:Name="btnTurnOnLaser" Content="Turn On Laser" Margin="150,190,0,0" Click="btnTurnOnLaser_Click" HorizontalAlignment="Left" Width="120" Height="90" VerticalAlignment="Top"/>
-                        <Button x:Name="btnTurnOffLaser" Content="Turn Off Laser" Margin="450,190,0,0" Click="btnTurnOffLaser_Click" HorizontalAlignment="Left" Width="120" Height="90" VerticalAlignment="Top"/>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Collimator">
+            <TabItem Header="Collimator&amp;Laser">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="-16,1,16,-1">
-                    <Grid x:Name="grdCollimator" IsEnabled="False">
+                    <Grid x:Name="grdCollimatorLaser" IsEnabled="False">
                         <Button x:Name="btnCollimatorVersion" Content="Version" HorizontalAlignment="Left" Margin="33,30,0,0" VerticalAlignment="Top" Width="120" Click="btnCollimatorVersion_Click" Height="30"/>
-
-
                         <Button x:Name="btnStopCollimator" Content="Stop Collimator" HorizontalAlignment="Left" Margin="907,468,0,0" VerticalAlignment="Top" Width="120" Click="btnStopCollimator_Click" Height="95"/>
                         <Label Content="Aperture 1 Actual Position:" HorizontalAlignment="Left" Margin="907,117,0,0" VerticalAlignment="Top"/>
                         <TextBox x:Name="tbxAp1ActualPosition" HorizontalAlignment="Left" Margin="907,140,0,0" Text="0" VerticalAlignment="Top" Width="120" Height="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
@@ -322,7 +312,6 @@
                         <GroupBox x:Name="grpApeture" Header="Aperture" HorizontalAlignment="Left" Margin="35,85,0,0" VerticalAlignment="Top" Height="240" Width="810">
                             <Grid>
                                 <Button x:Name="btnHomeAperture" Content="Home Aperture" HorizontalAlignment="Left" Margin="650,46,0,0" VerticalAlignment="Top" Width="120" Click="btnHomeAperture_Click" Height="95"/>
-
                                 <Button x:Name="btnMoveAperture" Content="Move Aperture" HorizontalAlignment="Left" Margin="190,111,0,0" VerticalAlignment="Top" Width="120" Click="btnMoveAperture_Click" Height="30"/>
                                 <Label Content="Aperture 1 Target Position:" HorizontalAlignment="Left" Margin="30,25,0,0" VerticalAlignment="Top"/>
                                 <TextBox x:Name="tbxAp1TargetPosition" HorizontalAlignment="Left" Margin="30,50,0,0" Text="0" VerticalAlignment="Top" Width="120" Height="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -347,15 +336,16 @@
                                 <Label x:Name="lblFilSpeed" Content="Filter Speed:" HorizontalAlignment="Left" Margin="350,90,0,0" VerticalAlignment="Top"/>
                                 <TextBox x:Name="tbxFltSpeed" HorizontalAlignment="Left" Height="23" Margin="350,115,0,0" TextWrapping="Wrap" Text="5000" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                                 <Button x:Name="btnSetFiltSpeed" Content="Set Filter Speed" HorizontalAlignment="Left" Margin="490,111,0,0" VerticalAlignment="Top" Width="120" Click="btnCMSetFiltSpeed_Click" Height="30"/>
-
                             </Grid>
                         </GroupBox>
+                        <Button x:Name="btnTurnOnLaser" Content="Turn On Laser" Margin="198,686,0,0" Click="btnTurnOnLaser_Click" HorizontalAlignment="Left" Width="120" Height="90" VerticalAlignment="Top"/>
+                        <Button x:Name="btnTurnOffLaser" Content="Turn Off Laser" Margin="498,686,0,0" Click="btnTurnOffLaser_Click" HorizontalAlignment="Left" Width="120" Height="90" VerticalAlignment="Top"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Detector">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Grid x:Name="grdDetector" IsEnabled="False">
+                    <Grid x:Name="grdDetector" IsEnabled="True">
                         <GroupBox x:Name="gbxDetConfigEnv" Header="Configure Enviroment" HorizontalAlignment="Left" Height="750" Margin="50,50,0,0" VerticalAlignment="Top" Width="225">
                             <Grid Name="grdDetConfigEnv">
                                 <Label x:Name="ldtSliceSelection" Content="Tick DISABLED Slice Board:" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top"/>
@@ -365,18 +355,14 @@
                                 <CheckBox x:Name="cbxSlipRingNotPresent" Content="Slip Ring NOT Present" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,410,0,0"/>
                                 <CheckBox x:Name="cbxRCBNotPresent" Content="RCB NOT Present" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,440,0,0"/>
                                 <Button x:Name="btnConfigEnv" Content="Set" HorizontalAlignment="Left" Margin="55,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnDetConfigEnv_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="33,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtConfigEnvResponse" HorizontalAlignment="Left" Height="23" Margin="33,0,0,28" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxInitAll" Header="Initialize ADC" HorizontalAlignment="Left" Height="220" Margin="300,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxInitAll" Header="Initialize ADC" HorizontalAlignment="Left" Height="110" Margin="300,380,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
-                                <Button x:Name="btnInitAdc" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnInitAdc_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtInitAdcResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnInitAdc" Content="Set" HorizontalAlignment="Left" Margin="33,20,0,0" VerticalAlignment="Top" Width="100" Click="btnInitAdc_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxInitializeDataAcq" Header="Initialize Data Acquisition" HorizontalAlignment="Left" Height="500" Margin="300,300,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxInitializeDataAcq" Header="Initialize Data Acquisition" HorizontalAlignment="Left" Height="420" Margin="510,380,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
                                 <Label x:Name="ldtErrorRegisterReset" Content="Error Register Reset:" Margin="30,20,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="141"/>
                                 <ComboBox x:Name="cdtErrorRegisterReset" HorizontalAlignment="Left" Margin="30,40,0,0" VerticalAlignment="Top" Width="120" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -392,12 +378,10 @@
                                     <System:String>Slice data</System:String>
                                     <System:String>Agg. test data</System:String>
                                 </ComboBox>
-                                <Button x:Name="btnInitDataAcq" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnInitDataAcq_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtInitDataAcqResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnInitDataAcq" Content="Set" HorizontalAlignment="Left" Margin="33,310,0,0" VerticalAlignment="Top" Width="100" Click="btnInitDataAcq_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxSlipRingLinkTrain" Header="Slip Ring Link Train" HorizontalAlignment="Left" Height="440" Margin="510,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxSlipRingLinkTrain" Header="Slip Ring Link Train" HorizontalAlignment="Left" Height="310" Margin="300,50,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
                                 <Label x:Name="ldtChannel1" Content="Channel 1 Train:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Width="107"/>
                                 <ComboBox x:Name="cdtChannel1" HorizontalAlignment="Left" Margin="30,40,0,0" VerticalAlignment="Top" Width="120" Height="25" SelectedIndex="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -417,20 +401,16 @@
                                     <System:String>train off</System:String>
                                     <System:String>train on</System:String>
                                 </ComboBox>
-                                <Button x:Name="btnLinkTrain" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnLinkTrain_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtLinkTrainResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnLinkTrain" Content="Set" HorizontalAlignment="Left" Margin="33,210,0,0" VerticalAlignment="Top" Width="100" Click="btnLinkTrain_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxAdcPowerSave" Header="ADC Power Save" HorizontalAlignment="Left" Height="280" Margin="510,520,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxAdcPowerSave" Header="ADC Power Save" HorizontalAlignment="Left" Height="210" Margin="720,590,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
-                                <Button x:Name="btnAdcOn" Content="On" HorizontalAlignment="Left" Margin="33,0,0,178" VerticalAlignment="Bottom" Width="100" Click="btnAdcOn_Click"/>
-                                <Button x:Name="btnAdcOff" Content="Off" HorizontalAlignment="Left" Margin="33,0,0,128" VerticalAlignment="Bottom" Width="100" Click="btnAdcOff_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtAdcPowerSaveResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnAdcOn" Content="On" HorizontalAlignment="Left" Margin="33,40,0,0" VerticalAlignment="Top" Width="100" Click="btnAdcOn_Click"/>
+                                <Button x:Name="btnAdcOff" Content="Off" HorizontalAlignment="Left" Margin="33,100,0,0" VerticalAlignment="Top" Width="100" Click="btnAdcOff_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxSetIntegrateTime" Header="Set Integrate Time" HorizontalAlignment="Left" Height="547" Margin="720,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxSetIntegrateTime" Header="Set Integrate Time" HorizontalAlignment="Left" Height="500" Margin="720,50,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
                                 <Label x:Name="ldtInputSource" Content="Input Source:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
                                 <TextBox x:Name="tdtInputSource" HorizontalAlignment="Left" Height="23" Margin="30,40,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -447,12 +427,10 @@
                                     <System:String>Shutdown</System:String>
                                     <System:String>No Shutdown</System:String>
                                 </ComboBox>
-                                <Button x:Name="bdtSetIntegrationTime" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnSetIntegrationTime_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtSetIntegrationTimeResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="NoWrap" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Bottom"/>
+                                <Button x:Name="bdtSetIntegrationTime" Content="Set" HorizontalAlignment="Left" Margin="33,395,0,0" VerticalAlignment="Top" Width="100" Click="btnSetIntegrationTime_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxStartDataAcq" Header="Start Data Acquisition" HorizontalAlignment="Left" Height="547" Margin="930,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxStartDataAcq" Header="Start Data Acquisition" HorizontalAlignment="Left" Height="320" Margin="930,50,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
                                 <Label x:Name="ldtIntegrationAveraging" Content="Integration Averaging:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Width="150"/>
                                 <TextBox x:Name="tdtIntegrationAveraging" HorizontalAlignment="Left" Height="23" Margin="30,40,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -464,19 +442,15 @@
                                 </ComboBox>
                                 <Label x:Name="ldtSamplesToCollect" Content="Samples to Collect:" HorizontalAlignment="Left" Margin="30,140,0,0" VerticalAlignment="Top" Height="20" Width="105"/>
                                 <TextBox x:Name="tdtIntegrationLimit" HorizontalAlignment="Left" Height="23" Margin="30,160,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                                <Button x:Name="btnStartDataAcq" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnStartDataAcq_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtStartDataAcqResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnStartDataAcq" Content="Set" HorizontalAlignment="Left" Margin="33,220,0,0" VerticalAlignment="Top" Width="100" Click="btnStartDataAcq_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxStopDataAcq" Header="Stop Data Acquisition" HorizontalAlignment="Left" Height="184" Margin="930,616,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxStopDataAcq" Header="Stop Data Acquisition" HorizontalAlignment="Left" Height="170" Margin="930,380,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
-                                <Button x:Name="bdtStopAcq" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="bdtStopAcq_Click"/>
-                                <Label x:Name="ldtStopAcq" Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtStopAcqResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="bdtStopAcq" Content="Set" HorizontalAlignment="Left" Margin="33,20,0,0" VerticalAlignment="Top" Width="100" Click="bdtStopAcq_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxClockSignal" Header="Clock Signal" HorizontalAlignment="Left" Height="440" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxClockSignal" Header="Clock Signal" HorizontalAlignment="Left" Height="310" Margin="510,50,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
                                 <Label x:Name="ldtIntegrationTime" Content="Integration Time:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Width="150"/>
                                 <TextBox x:Name="tdtIntegrationTime" HorizontalAlignment="Left" Height="23" Margin="30,40,0,0" TextWrapping="Wrap" Text="488281" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
@@ -485,13 +459,11 @@
                                     <System:String>Internal</System:String>
                                     <System:String>External</System:String>
                                 </ComboBox>
-                                <Button x:Name="btnTurnOnEncoderFlow" Content="On" HorizontalAlignment="Left" Margin="33,0,0,178" VerticalAlignment="Bottom" Width="100" Click="btnTurnOnEncoderFlow_Click"/>
-                                <Button x:Name="btnTurnOffEncoderFlow" Content="Off" HorizontalAlignment="Left" Margin="33,0,0,128" VerticalAlignment="Bottom" Width="100" Click="btnTurnOffEncoderFlow_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtClockSignalResult" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnTurnOnEncoderFlow" Content="On" HorizontalAlignment="Left" Margin="33,160,0,0" VerticalAlignment="Top" Width="100" Click="btnTurnOnEncoderFlow_Click"/>
+                                <Button x:Name="btnTurnOffEncoderFlow" Content="Off" HorizontalAlignment="Left" Margin="33,210,0,0" VerticalAlignment="Top" Width="100" Click="btnTurnOffEncoderFlow_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxGetSliceVersion" Header="Get Slice FW Version" HorizontalAlignment="Left" Height="289" Margin="1140,511,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxGetSliceVersion" Header="Get Slice FW Version" HorizontalAlignment="Left" Height="170" Margin="300,630,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
                                 <Label Content="Slice Number:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Width="150"/>
                                 <ComboBox x:Name="cdtGetSliceVersion" HorizontalAlignment="Left" Margin="30,40,0,0" VerticalAlignment="Top" Width="80" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
@@ -524,24 +496,44 @@
                                     <System:String>26</System:String>
                                     <System:String>27</System:String>
                                 </ComboBox>
-                                <Button x:Name="btnGetSliceVersion" Content="Get" HorizontalAlignment="Left" Margin="38,0,0,87" VerticalAlignment="Bottom" Width="100" Click="btnGetSliceVersion_Click"/>
-                                <Label Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtGetSliceVersionResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnGetSliceVersion" Content="Get" HorizontalAlignment="Left" Margin="33,80,0,0" VerticalAlignment="Top" Width="100" Click="btnGetSliceVersion_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxDetNop" Header="No Op" HorizontalAlignment="Left" Height="184" Margin="720,616,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxDetNop" Header="No Op" HorizontalAlignment="Left" Height="110" Margin="300,500,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
-                                <Button x:Name="btnDetNop" Content="Set" HorizontalAlignment="Left" Margin="33,0,0,90" VerticalAlignment="Bottom" Width="100" Click="btnDetNop_Click"/>
-                                <Label x:Name="ldtDetNop" Content="Return:" HorizontalAlignment="Left" Margin="18,0,0,65" VerticalAlignment="Bottom"/>
-                                <TextBox x:Name="tdtDetNopResponse" HorizontalAlignment="Left" Height="23" Margin="18,0,0,28" TextWrapping="NoWrap" VerticalAlignment="Bottom" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btnDetNop" Content="Set" HorizontalAlignment="Left" Margin="33,20,0,0" VerticalAlignment="Top" Width="100" Click="btnDetNop_Click"/>
                             </Grid>
                         </GroupBox>
+                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Diagnostics" HorizontalAlignment="Left" Height="320" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
+                            <Grid>
+                                <Label x:Name="ldt" Content="Integration Averaging:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Width="150"/>
+                                <TextBox x:Name="tdt" HorizontalAlignment="Left" Height="23" Margin="30,40,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Label x:Name="ldt1" Content="Detector Data Source:" HorizontalAlignment="Left" Margin="30,80,0,0" VerticalAlignment="Top" Height="18" RenderTransformOrigin="0.5,0.5" Width="120"/>
+                                <ComboBox x:Name="cdt1" HorizontalAlignment="Left" Margin="30,100,0,0" VerticalAlignment="Top" Width="120" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                    <System:String>null data</System:String>
+                                    <System:String>ADC data</System:String>
+                                    <System:String>test data</System:String>
+                                </ComboBox>
+                                <Label x:Name="ldt2" Content="Samples to Collect:" HorizontalAlignment="Left" Margin="30,140,0,0" VerticalAlignment="Top" Height="20" Width="105"/>
+                                <TextBox x:Name="tdt2" HorizontalAlignment="Left" Height="23" Margin="30,160,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                <Button x:Name="btn" Content="Set" HorizontalAlignment="Left" Margin="33,220,0,0" VerticalAlignment="Top" Width="100" Click="btnStartDataAcq_Click"/>
+                            </Grid>
+                        </GroupBox>
+                        <Label x:Name="ldtDetNop" Content="Return:" HorizontalAlignment="Left" Margin="50,835,0,0" VerticalAlignment="Top"/>
+                        <TextBox x:Name="tdtDetReply0" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="120,830,0,91" TextWrapping="NoWrap" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+                        <TextBox x:Name="tdtDetReply1" Text="00000000" Height="23" Margin="280,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
+                        <TextBox x:Name="tdtDetReply2" Text="00000000" Height="23" Margin="440,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
+                        <TextBox x:Name="tdtDetReply3" Text="00000000" Height="23" Margin="600,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
+                        <TextBox x:Name="tdtDetReply4" Text="00000000" Height="23" Margin="760,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
+                        <TextBox x:Name="tdtDetReply5" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="920,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+                        <TextBox x:Name="tdtDetReply6" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="1080,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
+                        <TextBox x:Name="tdtDetReply7" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="1240,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Thermal">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Grid Name="grdThermalControl" IsEnabled="False">
+                    <Grid Name="grdThermalControl" IsEnabled="True">
                         <GroupBox x:Name="gbxSliceBoard" Header="Thermal Control" HorizontalAlignment="Left" Height="854" Margin="30,50,0,0" VerticalAlignment="Top" Width="900">
                             <Grid Name="grdSliceBoard">
                                 <Label Content="Return:" HorizontalAlignment="Left" Margin="80,12,0,0" VerticalAlignment="Top"/>
@@ -587,10 +579,8 @@
                                 <Button x:Name="btnSetAutoTuneMode" Content="Start Auto-Tune Mode" Margin="650,390,0,0" HorizontalAlignment="Left" Width="220" Height="30" VerticalAlignment="Top" Click="btnSetAutoTuneMode_Click"/>
                                 <Button x:Name="btnCancelAutoTuneMode" Content="Cancel Auto-Tune Mode" Margin="650,430,0,0" HorizontalAlignment="Left" Width="220" Height="30" VerticalAlignment="Top" Click="btnCancelAutoTuneMode_Click"/>
                                 <Button x:Name="btnThermalNop" Content="Do Nothing" Margin="650,470,0,0" HorizontalAlignment="Left" Width="220" Height="30" VerticalAlignment="Top" Click="btnThermalNop_Click"/>
-
                             </Grid>
                         </GroupBox>
-
                         <GroupBox x:Name="gbxFanControl" Header="Fan Control" HorizontalAlignment="Left" Height="854" Margin="950,50,0,0" VerticalAlignment="Top" Width="480">
                             <Grid>
                                 <Button x:Name="btnReadFanErrorCode" Content="Read Error Code" Margin="40,30,0,0" HorizontalAlignment="Left" Width="180" Height="30" VerticalAlignment="Top" Click="btnReadFanErrorCode_Click"/>
@@ -635,6 +625,57 @@
             </TabItem>
             <TabItem Header="Error Code">
                 <Grid Name="grdErrorCode" />
+            </TabItem>
+            <TabItem Header="RCB Diagnostics">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="grdRCBDiagnostics" IsEnabled="False">
+                        <Button x:Name="btnDigitalIO" HorizontalAlignment="Left" Margin="130,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDigitalIO_Click">
+                            <StackPanel>
+                                <TextBlock Text="Digital I/O's" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="&amp;" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="RS422" HorizontalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,100,0,0" Name="ledTcuError" Style="{StaticResource FMI_TinyRedOff_Button}" VerticalAlignment="Top" Width="30" />
+                        <Label Content="TCU-ERR" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,107,0,0" VerticalAlignment="Top"/>
+                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,147,0,0" Name="ledXrayOn" Style="{StaticResource FMI_Xray_Button}" VerticalAlignment="Top" Width="30" />
+                        <Label Content="XRAY-ON" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,155,0,0" VerticalAlignment="Top"/>
+                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,200,0,0" Name="ledKvMaOk" Style="{StaticResource FMI_TinyGreenOff_Button}" VerticalAlignment="Top" Width="30" />
+                        <Label Content="KVMA-OK" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,206,0,0" VerticalAlignment="Top"/>
+                        <Button x:Name="btnRS232" HorizontalAlignment="Left" Margin="130,280,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnRS232_Click">
+                            <StackPanel>
+                                <TextBlock Text="Collimator" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="RS232" HorizontalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Button>
+                        <Label x:Name="lblRS232Tx" Content="Outgoing:" HorizontalAlignment="Left" Margin="340,280,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxRS232Tx" Text="Move Collimator" HorizontalAlignment="Left" Height="23" Margin="340,305,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                        <Label x:Name="lblRS232Rx" Content="Incoming:" HorizontalAlignment="Left" Margin="340,360,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxRS232Rx" Text="" HorizontalAlignment="Left" Height="23" Margin="340,384,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                        <Button x:Name="btnClock" Content="Integration Clock" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,451,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnClock_Click"/>
+                        <Button x:Name="btnSFP" Content="SFP+" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,617,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnSFP_Click" />
+                        <Label x:Name="lblSFPTx" Content="Outgoing:" HorizontalAlignment="Left" Margin="340,617,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxSFPTx0" Text="00000000" HorizontalAlignment="Left" Width="80" Height="23" Margin="340,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx1" Text="00000001" HorizontalAlignment="Left" Width="80" Height="23" Margin="430,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx2" Text="00000002" HorizontalAlignment="Left" Width="80" Height="23" Margin="520,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx3" Text="00000003" HorizontalAlignment="Left" Width="80" Height="23" Margin="610,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx4" Text="00000004" HorizontalAlignment="Left" Width="80" Height="23" Margin="700,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx5" Text="00000005" HorizontalAlignment="Left" Width="80" Height="23" Margin="790,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx6" Text="00000006" HorizontalAlignment="Left" Width="80" Height="23" Margin="880,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx7" Text="00000007" HorizontalAlignment="Left" Width="80" Height="23" Margin="970,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label x:Name="lblSFPRx" Content="Incoming:" HorizontalAlignment="Left" Margin="340,695,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxSFPRx0" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="340,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx1" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="430,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx2" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="520,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx3" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="610,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx4" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="700,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx5" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="790,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx6" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="880,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx7" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="970,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Button x:Name="btnLaser" Content="Laser" FontWeight="Bold" HorizontalAlignment="Left" Margin="340,451,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnLaser_Click" />
+                        <Button x:Name="btnAbortDiagnosis" Content="Stop" FontWeight="Bold" HorizontalAlignment="Left" Margin="700,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnAbortDiagnosis_Click"/>
+                    </Grid>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
         <Button Visibility="Visible" Margin="671,0,0,46" x:Name="iconXrayOn" Style="{StaticResource FMI_Xray_On}" Width="64" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Left" />

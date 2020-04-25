@@ -70,6 +70,16 @@ namespace RoterControlSupport
         // Denali Register (0x0b)
         public const ushort CMD_READREGISTER = 0x0b01;
         public const ushort CMD_WRITEREGISTER = 0x0b02;
+        public const ushort CMD_DIAG_ABORT = 0x0b11;
+        public const ushort CMD_DIAG_IO_422 = 0x0b12;
+        public const ushort CMD_DIAG_RS232 = 0x0b13;
+        public const ushort CMD_DIAG_CLOCK = 0x0b14;
+        public const ushort CMD_DIAG_SFP = 0x0b15;
+        public const ushort CMD_DIAG_LASER = 0x0b16;
+
+        public const ushort NTF_DIAG_TCUERR = 0x0b70;
+        public const ushort NTF_DIAG_XRAYON = 0x0b71;
+        public const ushort NTF_DIAG_KVMAOK = 0x0b72;
 
         // Denali TCU/G-Box (0x0c)
         public const ushort CMD_GBUPDATE = 0x0c01;
@@ -846,6 +856,121 @@ namespace RoterControlSupport
             SendRequestSync(CMD_WRITEREGISTER, request, out response, 500);
         }
         #endregion Register
+
+        #region Diagnostics
+        public void DiagnoseDigitalIO() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_DIAG_IO_422, request, out response, 65000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void DiagnoseRS232(string p_tx, out string p_rx) {
+
+            p_rx = "";
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            int tx_len = 0;
+            ulong tx64 = 0;
+            foreach(char c in p_tx) {
+
+                tx64 |= (ulong)c << ((tx_len++ % 8) << 3);
+
+                if (tx_len % 8 == 7) {
+
+                    request.Add(tx64);
+                }
+            }
+
+            if(tx_len % 8 != 7) {
+
+                request.Add(tx64);
+            }
+
+            SendRequestSync(CMD_DIAG_RS232, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+
+            response.RemoveAt(0);
+
+            foreach (ulong rx64 in response) {
+
+                for (int i = 0 ; i < 8 ; i++) {
+
+                    char c = (char)(rx64 >> (i << 3));
+
+                    if (c != 0) {
+
+                        p_rx += c;
+                    }
+                    else {
+
+                        return;
+                    }
+                }
+            }
+        }
+
+        public void DiagnoseClock() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_DIAG_CLOCK, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void DiagnoseSFP(List<uint> p_tx, out List<uint> p_rx) {
+
+            p_rx = new List<uint>();
+
+            List<ulong> request = new List<ulong>();
+            List<ulong> response;
+
+            for (int i = 0 ; i < 8 ; i += 2) {
+
+                ulong tx64 = ((ulong)p_tx[i + 1] << 32) + (ulong)p_tx[i];
+
+                request.Add(tx64);
+            }
+
+            SendRequestSync(CMD_DIAG_SFP, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+
+            response.RemoveAt(0);
+
+            foreach (ulong rx64 in response) {
+
+                p_rx.Add((uint)rx64);
+                p_rx.Add((uint)(rx64 >> 32));
+            }
+        }
+
+        public void DiagnoseLaser() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_DIAG_LASER, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void AbortDiagnosis() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestAsync(CMD_DIAG_ABORT, request);
+        }
+        #endregion Diagnostics
 
         #region TCU/G-Box
         public void UpdateRequest() {

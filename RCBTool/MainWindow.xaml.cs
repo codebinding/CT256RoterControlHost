@@ -301,6 +301,7 @@ namespace RCBTool {
 
         private List<ThermalSliceBoard> m_thermal_sliceboards = null;
         private List<CheckBox> m_adc_sliceboards = null;
+        private List<TextBox> m_tbx_agg_reply = null;
         private List<ExposureControl> m_exposure_controls = null;
         private List<TabItem> m_exposure_tabs = null;
 
@@ -390,7 +391,9 @@ namespace RCBTool {
             }
 
             m_adc_sliceboards = new List<CheckBox>();
+            #endregion Thermal
 
+            #region Detector
             int checkBoxLeft = 20;
             for (int column = 0 ; column < 3 ; column++) {
 
@@ -409,7 +412,9 @@ namespace RCBTool {
 
                 checkBoxLeft += 70;
             }
-            #endregion Thermal
+
+
+            #endregion Detector
 
             #region Exposure
             m_exposure_controls = new List<ExposureControl>();
@@ -571,6 +576,8 @@ namespace RCBTool {
             pgbXrayProgress.Visibility = Visibility.Hidden;
             tblXrayProgress.Visibility = Visibility.Hidden;
 
+            ledXrayOn.Visibility = Visibility.Hidden;
+
             m_ape1_position = int.MaxValue;
             m_ape2_position = int.MaxValue;
             m_filt_position = int.MaxValue;
@@ -642,15 +649,20 @@ namespace RCBTool {
                     UpdateFiltPosition(m_filt_position);
                     break;
 
-                    /*case RoterController.NTF_TABLEPOS:
+                case RoterController.NTF_DIAG_TCUERR:
 
-                        UpdateTablePosition(value);
-                        break;
+                    UpdateDiagTcuErr(value);
+                    break;
 
-                    case RoterController.NTF_GANTRYPOS:
+                case RoterController.NTF_DIAG_XRAYON:
 
-                        UpdateGantryPosition((value);
-                        break;*/
+                    UpdateDiagXrayOn(value);
+                    break;
+
+                case RoterController.NTF_DIAG_KVMAOK:
+
+                    UpdateDiagKvMaOk(value);
+                    break;
                 }
             }
         }
@@ -795,6 +807,42 @@ namespace RCBTool {
         private void UpdateGantryPosition(ulong p_value) {
 
             this.Dispatcher.Invoke(new Action(() => tbxGantryPosition.Text = $"{p_value}"));
+        }
+
+        private void UpdateDiagTcuErr(ulong p_value) {
+
+            if (p_value == 0) {
+
+                this.Dispatcher.Invoke(new Action(() => ledTcuError.Style = (Style)FindResource("FMI_TinyRedOff_Button")));
+            }
+            else {
+
+                this.Dispatcher.Invoke(new Action(() => ledTcuError.Style = (Style)FindResource("FMI_TinyRedOn_Button")));
+            }
+        }
+
+        private void UpdateDiagKvMaOk(ulong p_value) {
+
+            if (p_value == 0) {
+
+                this.Dispatcher.Invoke(new Action(() => ledKvMaOk.Style = (Style)FindResource("FMI_TinyGreenOff_Button")));
+            }
+            else {
+
+                this.Dispatcher.Invoke(new Action(() => ledKvMaOk.Style = (Style)FindResource("FMI_TinyGreenOn_Button")));
+            }
+        }
+
+        private void UpdateDiagXrayOn(ulong p_value) {
+
+            if (p_value == 0) {
+
+                this.Dispatcher.Invoke(new Action(() => ledXrayOn.Visibility = Visibility.Hidden));
+            }
+            else {
+
+                this.Dispatcher.Invoke(new Action(() => ledXrayOn.Visibility = Visibility.Visible));
+            }
         }
 
         private void iconDoor_Click(object sender, RoutedEventArgs e) {
@@ -983,9 +1031,8 @@ namespace RCBTool {
                 grdLog.IsEnabled = true;
                 grdRegister.IsEnabled = true;
                 grdHighVoltage.IsEnabled = true;
-                grdCollimator.IsEnabled = true;
+                grdCollimatorLaser.IsEnabled = true;
                 grdDetector.IsEnabled = true;
-                grdLaser.IsEnabled = true;
                 grdThermalControl.IsEnabled = true;
 
                 btnConnect.IsEnabled = false;
@@ -1049,6 +1096,8 @@ namespace RCBTool {
             try {
 
                 m_rcb.StartEngineeringService();
+
+                grdRCBDiagnostics.IsEnabled = true;
             }
             catch (Exception ex) {
 
@@ -1061,6 +1110,8 @@ namespace RCBTool {
             try {
 
                 m_rcb.StopEngineeringService();
+
+                grdRCBDiagnostics.IsEnabled = false;
             }
             catch (Exception ex) {
 
@@ -2475,8 +2526,6 @@ namespace RCBTool {
 
             try {
 
-                tdtConfigEnvResponse.Text = "";
-
                 Int32 sliceBoardBitMap = 0;
                 foreach (CheckBox slice in m_adc_sliceboards) {
 
@@ -2502,7 +2551,7 @@ namespace RCBTool {
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtConfigEnvResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2514,15 +2563,13 @@ namespace RCBTool {
 
             try {
 
-                tdtInitAdcResponse.Text = "";
-
                 List<uint> request = new List<uint>() { RoterController.DataAcquisition | RoterController.InitializeAdc, 0, 0, 0, 0, 0, 0, 0 };
 
                 List<UInt32> response;
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtInitAdcResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2533,8 +2580,6 @@ namespace RCBTool {
         private void btnInitDataAcq_Click(object sender, RoutedEventArgs e) {
 
             try {
-
-                tdtInitDataAcqResponse.Text = "";
 
                 int errorRegisterReset = cdtErrorRegisterReset.SelectedIndex;
                 int startSlice = Convert.ToInt16(tdtStartingSlice.Text);
@@ -2549,7 +2594,7 @@ namespace RCBTool {
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtInitDataAcqResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2560,8 +2605,6 @@ namespace RCBTool {
         private void btnLinkTrain_Click(object sender, RoutedEventArgs e) {
 
             try {
-
-                tdtLinkTrainResponse.Text = "";
 
                 int channel1 = cdtChannel1.SelectedIndex == 0 ? 0 : cdtChannel1.SelectedIndex + 1;
                 int channel2 = cdtChannel2.SelectedIndex == 0 ? 0 : cdtChannel2.SelectedIndex + 1;
@@ -2575,7 +2618,7 @@ namespace RCBTool {
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtLinkTrainResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2587,15 +2630,13 @@ namespace RCBTool {
 
             try {
 
-                tdtAdcPowerSaveResponse.Text = "";
-
                 List<uint> request = new List<uint>() { RoterController.DataAcquisition | RoterController.AdcPowerSave, 1, 0, 0, 0, 0, 0, 0 };
 
                 List<UInt32> response;
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtAdcPowerSaveResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2607,15 +2648,13 @@ namespace RCBTool {
 
             try {
 
-                tdtAdcPowerSaveResponse.Text = "";
-
                 List<uint> request = new List<uint>() { RoterController.DataAcquisition | RoterController.AdcPowerSave, 0, 0, 0, 0, 0, 0, 0 };
 
                 List<UInt32> response;
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtAdcPowerSaveResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2626,8 +2665,6 @@ namespace RCBTool {
         private void btnSetIntegrationTime_Click(object sender, RoutedEventArgs e) {
 
             try {
-
-                tdtSetIntegrationTimeResponse.Text = "";
 
                 int inputSource = Convert.ToInt16(tdtInputSource.Text);
                 int sampleMode = Convert.ToInt16(tdtSampleMode.Text);
@@ -2645,7 +2682,7 @@ namespace RCBTool {
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtSetIntegrationTimeResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2656,8 +2693,6 @@ namespace RCBTool {
         private void btnStartDataAcq_Click(object sender, RoutedEventArgs e) {
 
             try {
-
-                tdtStartDataAcqResponse.Text = "";
 
                 int integrationAveraging = Convert.ToInt16(tdtIntegrationAveraging.Text);
                 int detectorDataSource = cdtDetectorDataSource.SelectedIndex;
@@ -2671,7 +2706,7 @@ namespace RCBTool {
 
                 m_rcb.AggregatorControl(request, out response, 5000);
 
-                DisplaySliceBoardReply(response, tdtStartDataAcqResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2683,15 +2718,13 @@ namespace RCBTool {
 
             try {
 
-                tdtStopAcqResponse.Text = "";
-
                 List<uint> request = new List<uint>() { RoterController.DataAcquisition | RoterController.StopDataAcq, 0, 0, 0, 0, 0, 0, 0 };
 
                 List<UInt32> response;
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtStopAcqResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2703,15 +2736,13 @@ namespace RCBTool {
 
             try {
 
-                tdtDetNopResponse.Text = "";
-
                 List<uint> request = new List<uint>() { RoterController.DataAcquisition | RoterController.DacNop, 0, 0, 0, 0, 0, 0, 0 };
 
                 List<UInt32> response;
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtDetNopResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2723,8 +2754,6 @@ namespace RCBTool {
 
             try {
 
-                tdtGetSliceVersionResponse.Text = "";
-
                 int sliceNumber = cdtGetSliceVersion.SelectedIndex;
 
                 List<uint> request = new List<uint>() { RoterController.GetSliceVersion | (uint)sliceNumber << 20, 0, 0, 0, 0, 0, 0, 0 };
@@ -2733,7 +2762,7 @@ namespace RCBTool {
 
                 m_rcb.AggregatorControl(request, out response, 1500);
 
-                DisplaySliceBoardReply(response, tdtGetSliceVersionResponse);
+                DisplaySliceBoardReply(response);
             }
             catch (Exception ex) {
 
@@ -2749,18 +2778,11 @@ namespace RCBTool {
 
         }
 
-        private void DisplaySliceBoardReply(List<uint> response, TextBox tbxResponse) {
-
-            tbxResponse.Text = "";
+        private void DisplaySliceBoardReply(List<uint> response) {
 
             for (int i = 0 ; i < response.Count ; i++) {
 
-                tbxResponse.Text += $"{response[i]:X8}";
-
-                if (i != response.Count - 1) {
-
-                    tbxResponse.Text += ",";
-                }
+                m_tbx_agg_reply[i].Text += $"{response[i]:X8}";
             }
         }
         #endregion Data Acquisition
@@ -3741,5 +3763,108 @@ namespace RCBTool {
 
         }
         #endregion FMI Messaging
+
+        #region RCB Diagnostics
+        private void btnDigitalIO_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => DiagnoseDigitalIO()).Start();
+        }
+
+        private void DiagnoseDigitalIO() {
+
+            this.Dispatcher.Invoke(new Action(() => btnDigitalIO.IsEnabled = false));
+
+            try {
+
+                m_rcb.DiagnoseDigitalIO();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this.Dispatcher.Invoke(new Action(() => btnDigitalIO.IsEnabled = true));
+        }
+
+        private void btnRS232_Click(object sender, RoutedEventArgs e) {
+
+            try {
+
+                string rx = "";
+
+                tbxRS232Rx.Text = "";
+
+                m_rcb.DiagnoseRS232(tbxRS232Tx.Text, out rx);
+
+                tbxRS232Rx.Text = rx;
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnClock_Click(object sender, RoutedEventArgs e) {
+
+            try {
+
+                m_rcb.DiagnoseClock();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnSFP_Click(object sender, RoutedEventArgs e) {
+
+            List<uint> tx = new List<uint>();
+            List<uint> rx;
+
+            try {
+
+                tx.Add(Convert.ToUInt32(tbxSFPTx0.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx1.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx2.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx3.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx4.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx5.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx6.Text, 16));
+                tx.Add(Convert.ToUInt32(tbxSFPTx7.Text, 16));
+
+                m_rcb.DiagnoseSFP(tx, out rx);
+
+                tbxSFPRx0.Text = $"{rx[0]:X8}";
+                tbxSFPRx1.Text = $"{rx[1]:X8}";
+                tbxSFPRx2.Text = $"{rx[2]:X8}";
+                tbxSFPRx3.Text = $"{rx[3]:X8}";
+                tbxSFPRx4.Text = $"{rx[4]:X8}";
+                tbxSFPRx5.Text = $"{rx[5]:X8}";
+                tbxSFPRx6.Text = $"{rx[6]:X8}";
+                tbxSFPRx7.Text = $"{rx[7]:X8}";
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnLaser_Click(object sender, RoutedEventArgs e) {
+
+            try {
+
+                m_rcb.DiagnoseLaser();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnAbortDiagnosis_Click(object sender, RoutedEventArgs e) {
+
+            m_rcb.AbortDiagnosis();
+        }
+        #endregion RCB Diagnostics
     }
 }
