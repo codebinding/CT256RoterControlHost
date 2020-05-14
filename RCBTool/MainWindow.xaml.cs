@@ -3851,6 +3851,13 @@ namespace RCBTool {
 
         private void btnLaser_Click(object sender, RoutedEventArgs e) {
 
+            new Thread(() => DiagnoseLaser()).Start();
+        }
+
+        private void DiagnoseLaser() {
+
+            this.Dispatcher.Invoke(new Action(() => btnLaser.IsEnabled = false));
+
             try {
 
                 m_rcb.DiagnoseLaser();
@@ -3859,6 +3866,8 @@ namespace RCBTool {
 
                 MessageBox.Show(ex.Message);
             }
+
+            this.Dispatcher.Invoke(new Action(() => btnLaser.IsEnabled = true));
         }
 
         private void btnAbortDiagnosis_Click(object sender, RoutedEventArgs e) {

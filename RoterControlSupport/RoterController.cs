@@ -77,9 +77,9 @@ namespace RoterControlSupport
         public const ushort CMD_DIAG_SFP = 0x0b15;
         public const ushort CMD_DIAG_LASER = 0x0b16;
 
-        public const ushort NTF_DIAG_TCUERR = 0x0b70;
-        public const ushort NTF_DIAG_XRAYON = 0x0b71;
-        public const ushort NTF_DIAG_KVMAOK = 0x0b72;
+        public const ushort NTF_DIAG_TCUERR = 0x0070;
+        public const ushort NTF_DIAG_XRAYON = 0x0071;
+        public const ushort NTF_DIAG_KVMAOK = 0x0072;
 
         // Denali TCU/G-Box (0x0c)
         public const ushort CMD_GBUPDATE = 0x0c01;
@@ -863,7 +863,7 @@ namespace RoterControlSupport
             List<ulong> request = new List<ulong> { 0 };
             List<ulong> response;
 
-            SendRequestSync(CMD_DIAG_IO_422, request, out response, 65000);
+            SendRequestSync(CMD_DIAG_IO_422, request, out response, 80000);
 
             CheckErrorCode(response[0]);
         }
@@ -958,7 +958,7 @@ namespace RoterControlSupport
             List<ulong> request = new List<ulong> { 0 };
             List<ulong> response;
 
-            SendRequestSync(CMD_DIAG_LASER, request, out response, 1000);
+            SendRequestSync(CMD_DIAG_LASER, request, out response, 70000);
 
             CheckErrorCode(response[0]);
         }
