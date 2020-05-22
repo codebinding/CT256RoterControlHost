@@ -22,9 +22,6 @@ namespace RoterControlSupport {
                 PCANBasic.PCAN_USBBUS8
         };
 
-        private const byte STX = 1;
-        private const byte ETX = 2;
-
         private TPCANHandle m_sock = 0;
 
         private bool m_thread_run = false;

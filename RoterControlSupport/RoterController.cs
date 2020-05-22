@@ -76,6 +76,8 @@ namespace RoterControlSupport
         public const ushort CMD_DIAG_CLOCK = 0x0b14;
         public const ushort CMD_DIAG_SFP = 0x0b15;
         public const ushort CMD_DIAG_LASER = 0x0b16;
+        public const ushort CMD_DIAG_RS485 = 0x0b17;
+        public const ushort CMD_DIAG_CAN2 = 0x0b18;
 
         public const ushort NTF_DIAG_TCUERR = 0x0070;
         public const ushort NTF_DIAG_XRAYON = 0x0071;
@@ -872,22 +874,23 @@ namespace RoterControlSupport
 
             p_rx = "";
 
-            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> request = new List<ulong>();
             List<ulong> response;
 
             int tx_len = 0;
             ulong tx64 = 0;
-            foreach(char c in p_tx) {
+            foreach(byte c in p_tx) {
 
                 tx64 |= (ulong)c << ((tx_len++ % 8) << 3);
 
-                if (tx_len % 8 == 7) {
+                if (tx_len % 8 == 0) {
 
                     request.Add(tx64);
+                    tx64 = 0;
                 }
             }
 
-            if(tx_len % 8 != 7) {
+            if(tx_len % 8 != 0) {
 
                 request.Add(tx64);
             }
@@ -902,11 +905,11 @@ namespace RoterControlSupport
 
                 for (int i = 0 ; i < 8 ; i++) {
 
-                    char c = (char)(rx64 >> (i << 3));
+                    byte c = (byte)(rx64 >> (i << 3));
 
                     if (c != 0) {
 
-                        p_rx += c;
+                        p_rx += (char)c;
                     }
                     else {
 
@@ -963,10 +966,29 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void AbortDiagnosis() {
+        public void DiagnoseRS485() {
 
             List<ulong> request = new List<ulong> { 0 };
             List<ulong> response;
+
+            SendRequestSync(CMD_DIAG_RS485, request, out response, 40000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void DiagnoseCAN2() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_DIAG_CAN2, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void AbortDiagnosis() {
+
+            List<ulong> request = new List<ulong> { 0 };
 
             SendRequestAsync(CMD_DIAG_ABORT, request);
         }

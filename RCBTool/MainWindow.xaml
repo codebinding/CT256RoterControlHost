@@ -516,7 +516,7 @@
                                 </ComboBox>
                                 <Label x:Name="ldt2" Content="Samples to Collect:" HorizontalAlignment="Left" Margin="30,140,0,0" VerticalAlignment="Top" Height="20" Width="105"/>
                                 <TextBox x:Name="tdt2" HorizontalAlignment="Left" Height="23" Margin="30,160,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                                <Button x:Name="btn" Content="Set" HorizontalAlignment="Left" Margin="33,220,0,0" VerticalAlignment="Top" Width="100" Click="btnStartDataAcq_Click"/>
+                                <Button x:Name="btnDetDiagnostic" Content="Set" HorizontalAlignment="Left" Margin="33,220,0,0" VerticalAlignment="Top" Width="100" Click="btnDetDiagnostic_Click"/>
                             </Grid>
                         </GroupBox>
                         <Label x:Name="ldtDetNop" Content="Return:" HorizontalAlignment="Left" Margin="50,835,0,0" VerticalAlignment="Top"/>
@@ -627,9 +627,9 @@
                 <Grid Name="grdErrorCode" />
             </TabItem>
             <TabItem Header="RCB Diagnostics">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="0,-3,0,3">
                     <Grid x:Name="grdRCBDiagnostics" IsEnabled="False">
-                        <Button x:Name="btnDigitalIO" HorizontalAlignment="Left" Margin="130,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDigitalIO_Click">
+                        <Button x:Name="btnDiagDIO" HorizontalAlignment="Left" Margin="130,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagDIO_Click">
                             <StackPanel>
                                 <TextBlock Text="Digital I/O's" HorizontalAlignment="Center" FontWeight="Bold"/>
                                 <TextBlock Text="&amp;" HorizontalAlignment="Center" FontWeight="Bold"/>
@@ -642,38 +642,56 @@
                         <Label Content="XRAY-ON" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,155,0,0" VerticalAlignment="Top"/>
                         <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,200,0,0" Name="ledKvMaOk" Style="{StaticResource FMI_TinyGreenOff_Button}" VerticalAlignment="Top" Width="30" />
                         <Label Content="KVMA-OK" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,206,0,0" VerticalAlignment="Top"/>
-                        <Button x:Name="btnRS232" HorizontalAlignment="Left" Margin="130,280,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnRS232_Click">
+                        <Button x:Name="btnDiagRS232" HorizontalAlignment="Left" Margin="650,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagRS232_Click">
                             <StackPanel>
                                 <TextBlock Text="Collimator" HorizontalAlignment="Center" FontWeight="Bold"/>
                                 <TextBlock Text="RS232" HorizontalAlignment="Center" FontWeight="Bold"/>
                             </StackPanel>
                         </Button>
-                        <Label x:Name="lblRS232Tx" Content="Outgoing:" HorizontalAlignment="Left" Margin="340,280,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
-                        <TextBox x:Name="tbxRS232Tx" Text="Move Collimator" HorizontalAlignment="Left" Height="23" Margin="340,305,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
-                        <Label x:Name="lblRS232Rx" Content="Incoming:" HorizontalAlignment="Left" Margin="340,360,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
-                        <TextBox x:Name="tbxRS232Rx" Text="" HorizontalAlignment="Left" Height="23" Margin="340,384,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
-                        <Button x:Name="btnClock" Content="Integration Clock" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,451,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnClock_Click"/>
-                        <Button x:Name="btnSFP" Content="SFP+" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,617,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnSFP_Click" />
-                        <Label x:Name="lblSFPTx" Content="Outgoing:" HorizontalAlignment="Left" Margin="340,617,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
-                        <TextBox x:Name="tbxSFPTx0" Text="00000000" HorizontalAlignment="Left" Width="80" Height="23" Margin="340,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx1" Text="00000001" HorizontalAlignment="Left" Width="80" Height="23" Margin="430,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx2" Text="00000002" HorizontalAlignment="Left" Width="80" Height="23" Margin="520,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx3" Text="00000003" HorizontalAlignment="Left" Width="80" Height="23" Margin="610,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx4" Text="00000004" HorizontalAlignment="Left" Width="80" Height="23" Margin="700,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx5" Text="00000005" HorizontalAlignment="Left" Width="80" Height="23" Margin="790,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx6" Text="00000006" HorizontalAlignment="Left" Width="80" Height="23" Margin="880,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPTx7" Text="00000007" HorizontalAlignment="Left" Width="80" Height="23" Margin="970,642,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <Label x:Name="lblSFPRx" Content="Incoming:" HorizontalAlignment="Left" Margin="340,695,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
-                        <TextBox x:Name="tbxSFPRx0" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="340,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx1" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="430,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx2" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="520,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx3" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="610,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx4" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="700,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx5" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="790,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx6" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="880,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <TextBox x:Name="tbxSFPRx7" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="970,721,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                        <Button x:Name="btnLaser" Content="Laser" FontWeight="Bold" HorizontalAlignment="Left" Margin="340,451,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnLaser_Click" />
-                        <Button x:Name="btnAbortDiagnosis" Content="Stop" FontWeight="Bold" HorizontalAlignment="Left" Margin="700,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnAbortDiagnosis_Click"/>
+                        <Label x:Name="lblRS232Tx" Content="Outgoing:" HorizontalAlignment="Left" Margin="860,100,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxRS232Tx" Text="RS232 TEST" HorizontalAlignment="Left" Height="23" Margin="860,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True"/>
+                        <Label x:Name="lblRS232Rx" Content="Incoming:" HorizontalAlignment="Left" Margin="860,180,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxRS232Rx" Text="" HorizontalAlignment="Left" Height="23" Margin="860,204,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+                        <Button x:Name="btnDiagClock" Content="Integration Clock" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagClock_Click"/>
+                        <Button x:Name="btnDiagLaser" Content="Laser" FontWeight="Bold" HorizontalAlignment="Left" Margin="340,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagLaser_Click" />
+                        <Button x:Name="btnDiagRS485" HorizontalAlignment="Left" Margin="537,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnRS485_Click">
+                            <StackPanel>
+                                <TextBlock Text="TCU" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="RS485" HorizontalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnDiagCAN2" HorizontalAlignment="Left" Margin="740,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagCAN2_Click">
+                            <StackPanel>
+                                <TextBlock Text="G-Box" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="CAN" HorizontalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnEthernet" HorizontalAlignment="Left" Margin="930,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagCAN2_Click">
+                            <StackPanel>
+                                <TextBlock Text="Ethernet" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock Text="IP Address" HorizontalAlignment="Center" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnDiagSFP" Content="SFP+" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,500,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagSFP_Click" />
+                        <Label x:Name="lblSFPTx" Content="Outgoing:" HorizontalAlignment="Left" Margin="340,500,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxSFPTx0" Text="00000000" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="340,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx1" Text="00000001" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="430,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx2" Text="00000002" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="520,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx3" Text="00000003" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="610,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx4" Text="00000004" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="700,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx5" Text="00000005" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="790,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx6" Text="00000006" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="880,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPTx7" Text="00000007" IsReadOnly="True" HorizontalAlignment="Left" Width="80" Height="23" Margin="970,525,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Label x:Name="lblSFPRx" Content="Incoming:" HorizontalAlignment="Left" Margin="340,578,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxSFPRx0" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="340,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx1" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="430,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx2" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="520,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx3" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="610,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx4" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="700,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx5" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="790,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx6" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="880,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <TextBox x:Name="tbxSFPRx7" Text="" HorizontalAlignment="Left" Width="80" Height="23" Margin="970,604,0,0" TextWrapping="Wrap" VerticalAlignment="Top" MinWidth="00" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Button x:Name="btnDiagAbort" Content="" HorizontalAlignment="Left" Margin="960,661,0,0" VerticalAlignment="Top" Width="90" Height="90" Style="{StaticResource FMI_StopSign_Button}" Click="btnDiagAbort_Click"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>

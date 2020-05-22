@@ -1034,6 +1034,7 @@ namespace RCBTool {
                 grdCollimatorLaser.IsEnabled = true;
                 grdDetector.IsEnabled = true;
                 grdThermalControl.IsEnabled = true;
+                grdRCBDiagnostics.IsEnabled = true;
 
                 btnConnect.IsEnabled = false;
 
@@ -3765,14 +3766,14 @@ namespace RCBTool {
         #endregion FMI Messaging
 
         #region RCB Diagnostics
-        private void btnDigitalIO_Click(object sender, RoutedEventArgs e) {
+        private void btnDiagDIO_Click(object sender, RoutedEventArgs e) {
 
             new Thread(() => DiagnoseDigitalIO()).Start();
         }
 
         private void DiagnoseDigitalIO() {
 
-            this.Dispatcher.Invoke(new Action(() => btnDigitalIO.IsEnabled = false));
+            this.Dispatcher.Invoke(new Action(() => btnDiagDIO.IsEnabled = false));
 
             try {
 
@@ -3783,10 +3784,10 @@ namespace RCBTool {
                 MessageBox.Show(ex.Message);
             }
 
-            this.Dispatcher.Invoke(new Action(() => btnDigitalIO.IsEnabled = true));
+            this.Dispatcher.Invoke(new Action(() => btnDiagDIO.IsEnabled = true));
         }
 
-        private void btnRS232_Click(object sender, RoutedEventArgs e) {
+        private void btnDiagRS232_Click(object sender, RoutedEventArgs e) {
 
             try {
 
@@ -3804,7 +3805,7 @@ namespace RCBTool {
             }
         }
 
-        private void btnClock_Click(object sender, RoutedEventArgs e) {
+        private void btnDiagClock_Click(object sender, RoutedEventArgs e) {
 
             try {
 
@@ -3816,7 +3817,7 @@ namespace RCBTool {
             }
         }
 
-        private void btnSFP_Click(object sender, RoutedEventArgs e) {
+        private void btnDiagSFP_Click(object sender, RoutedEventArgs e) {
 
             List<uint> tx = new List<uint>();
             List<uint> rx;
@@ -3849,14 +3850,14 @@ namespace RCBTool {
             }
         }
 
-        private void btnLaser_Click(object sender, RoutedEventArgs e) {
+        private void btnDiagLaser_Click(object sender, RoutedEventArgs e) {
 
             new Thread(() => DiagnoseLaser()).Start();
         }
 
         private void DiagnoseLaser() {
 
-            this.Dispatcher.Invoke(new Action(() => btnLaser.IsEnabled = false));
+            this.Dispatcher.Invoke(new Action(() => btnDiagLaser.IsEnabled = false));
 
             try {
 
@@ -3867,10 +3868,47 @@ namespace RCBTool {
                 MessageBox.Show(ex.Message);
             }
 
-            this.Dispatcher.Invoke(new Action(() => btnLaser.IsEnabled = true));
+            this.Dispatcher.Invoke(new Action(() => btnDiagLaser.IsEnabled = true));
         }
 
-        private void btnAbortDiagnosis_Click(object sender, RoutedEventArgs e) {
+        private void btnRS485_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => DiagnoseRS485()).Start();
+        }
+
+        private void DiagnoseRS485() {
+
+            this.Dispatcher.Invoke(new Action(() => btnDiagRS485.IsEnabled = false));
+
+            try {
+
+                m_rcb.DiagnoseRS485();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this.Dispatcher.Invoke(new Action(() => btnDiagRS485.IsEnabled = true));
+        }
+
+        private void btnDetDiagnostic_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnDiagCAN2_Click(object sender, RoutedEventArgs e) {
+
+            try {
+
+                m_rcb.DiagnoseCAN2();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnDiagAbort_Click(object sender, RoutedEventArgs e) {
 
             m_rcb.AbortDiagnosis();
         }
