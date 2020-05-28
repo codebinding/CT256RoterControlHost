@@ -310,6 +310,7 @@ namespace RCBTool {
         bool m_thread_run = false;
         private Thread m_thread_process_notification = null;
         private Thread m_thread_process_log = null;
+        private Thread m_thread_read_denali_can = null;
 
         private bool m_rcb_connected = false;
 
@@ -349,6 +350,12 @@ namespace RCBTool {
 
                 m_thread_process_log.Abort();
                 m_thread_process_log.Join();
+
+                if (m_thread_read_denali_can != null) {
+
+                    m_thread_read_denali_can.Abort();
+                    m_thread_read_denali_can.Join();
+                }
             }
 
             if (m_messaging_used) {
@@ -1097,6 +1104,10 @@ namespace RCBTool {
             try {
 
                 m_rcb.StartEngineeringService();
+
+                m_thread_read_denali_can = new Thread(new ThreadStart(ReadDenaliCAN));
+                m_thread_read_denali_can.IsBackground = true;
+                m_thread_read_denali_can.Start();
 
                 grdRCBDiagnostics.IsEnabled = true;
             }
@@ -2779,6 +2790,10 @@ namespace RCBTool {
 
         }
 
+        private void btnDetDiagnostic_Click(object sender, RoutedEventArgs e) {
+
+        }
+
         private void DisplaySliceBoardReply(List<uint> response) {
 
             for (int i = 0 ; i < response.Count ; i++) {
@@ -3793,7 +3808,7 @@ namespace RCBTool {
 
                 string rx = "";
 
-                tbxRS232Rx.Text = "";
+                tbxRS232Rx.Clear();
 
                 m_rcb.DiagnoseRS232(tbxRS232Tx.Text, out rx);
 
@@ -3832,6 +3847,15 @@ namespace RCBTool {
                 tx.Add(Convert.ToUInt32(tbxSFPTx5.Text, 16));
                 tx.Add(Convert.ToUInt32(tbxSFPTx6.Text, 16));
                 tx.Add(Convert.ToUInt32(tbxSFPTx7.Text, 16));
+
+                tbxSFPRx0.Clear();
+                tbxSFPRx1.Clear();
+                tbxSFPRx2.Clear();
+                tbxSFPRx3.Clear();
+                tbxSFPRx4.Clear();
+                tbxSFPRx5.Clear();
+                tbxSFPRx6.Clear();
+                tbxSFPRx7.Clear();
 
                 m_rcb.DiagnoseSFP(tx, out rx);
 
@@ -3892,8 +3916,16 @@ namespace RCBTool {
             this.Dispatcher.Invoke(new Action(() => btnDiagRS485.IsEnabled = true));
         }
 
-        private void btnDetDiagnostic_Click(object sender, RoutedEventArgs e) {
+        private void btnDiagEthernet_Click(object sender, RoutedEventArgs e) {
 
+            try {
+
+                m_rcb.DiagnoseEthernet();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void btnDiagCAN2_Click(object sender, RoutedEventArgs e) {
@@ -3912,6 +3944,30 @@ namespace RCBTool {
 
             m_rcb.AbortDiagnosis();
         }
+        
+        private void ReadDenaliCAN() {
+
+            List<byte> received_data;
+            string message = "";
+
+            while (m_thread_run) {
+
+                m_rcb.ReadSpareRawFrame(out received_data);
+
+                foreach (byte c in received_data) {
+
+                    message += (char)c;
+                }
+
+                message += Environment.NewLine;
+
+                this.Dispatcher.Invoke(new Action(() => tbxCAN2Rx.AppendText(message)));
+                this.Dispatcher.Invoke(new Action(() => tbxCAN2Rx.ScrollToEnd()));
+
+                message = "";
+            }
+        }
+        
         #endregion RCB Diagnostics
     }
 }

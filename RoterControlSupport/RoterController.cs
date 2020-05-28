@@ -67,7 +67,7 @@ namespace RoterControlSupport
         public const ushort CMD_TURNONSTDOUTPUT_D = 0x0a44;
         public const ushort CMD_TURNONCANOUTPUT_D = 0x0a45;
 
-        // Denali Register (0x0b)
+        // Denali Diagnostic (0x0b)
         public const ushort CMD_READREGISTER = 0x0b01;
         public const ushort CMD_WRITEREGISTER = 0x0b02;
         public const ushort CMD_DIAG_ABORT = 0x0b11;
@@ -78,6 +78,7 @@ namespace RoterControlSupport
         public const ushort CMD_DIAG_LASER = 0x0b16;
         public const ushort CMD_DIAG_RS485 = 0x0b17;
         public const ushort CMD_DIAG_CAN2 = 0x0b18;
+        public const ushort CMD_DIAG_ETHERNET = 0x0b19;
 
         public const ushort NTF_DIAG_TCUERR = 0x0070;
         public const ushort NTF_DIAG_XRAYON = 0x0071;
@@ -229,7 +230,7 @@ namespace RoterControlSupport
             m_response_pool = new ConcurrentDictionary<ushort, MessageCollection>();
 
             m_thread_run = true;
-            m_thread_read_raw = new Thread(new ThreadStart(ReadRawFrame));
+            m_thread_read_raw = new Thread(new ThreadStart(ReadSlipringRawFrame));
             m_thread_read_raw.IsBackground = true;
             m_thread_read_raw.Start();
         }
@@ -256,7 +257,7 @@ namespace RoterControlSupport
 
             factory.BuildRawMessage(p_command, p_request, out raw_message);
 
-            m_canbus.EnqueueOutgoing(raw_message);
+            m_canbus.EnqueueSlipringOutgoing(raw_message);
         }
 
         public void SendRequestAsync(ushort p_command, List<ulong> p_request) {
@@ -268,7 +269,7 @@ namespace RoterControlSupport
 
             factory.BuildRawMessage(p_command, p_request, out raw_message);
 
-            m_canbus.EnqueueOutgoing(raw_message);
+            m_canbus.EnqueueSlipringOutgoing(raw_message);
         }
 
         public bool WaitResponse(ushort p_command, out List<ulong> p_response, int p_wait_ms) {
@@ -304,7 +305,7 @@ namespace RoterControlSupport
 
             factory.BuildRawMessage(p_command, p_request, out raw_message);
 
-            m_canbus.EnqueueOutgoing(raw_message);
+            m_canbus.EnqueueSlipringOutgoing(raw_message);
 
             p_response = new List<ulong>();
 
@@ -333,7 +334,20 @@ namespace RoterControlSupport
             return m_log_queue.Take();
         }
 
-        private void ReadRawFrame() {
+        public void ReadSpareRawFrame(out List<byte> p_data) {
+
+            p_data = new List<byte>();
+
+            TPCANMsg raw_frame;
+            m_canbus.DequeueSpareIncoming(out raw_frame);
+
+            for (int i = 0 ; i < raw_frame.LEN ; i++) {
+
+                p_data.Add(raw_frame.DATA[i]);
+            }
+        }
+
+        private void ReadSlipringRawFrame() {
 
             TPCANMsg raw_frame;
 
@@ -341,7 +355,7 @@ namespace RoterControlSupport
 
             while (m_thread_run) {
 
-                m_canbus.DequeueIncoming(out raw_frame);
+                m_canbus.DequeueSlipringIncoming(out raw_frame);
 
                 FmiCanFrame fmi_frame = new FmiCanFrame(raw_frame);
 
@@ -982,6 +996,16 @@ namespace RoterControlSupport
             List<ulong> response;
 
             SendRequestSync(CMD_DIAG_CAN2, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
+        }
+
+        public void DiagnoseEthernet() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_DIAG_ETHERNET, request, out response, 1000);
 
             CheckErrorCode(response[0]);
         }

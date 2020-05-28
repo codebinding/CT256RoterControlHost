@@ -504,18 +504,8 @@
                                 <Button x:Name="btnDetNop" Content="Set" HorizontalAlignment="Left" Margin="33,20,0,0" VerticalAlignment="Top" Width="100" Click="btnDetNop_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Diagnostics" HorizontalAlignment="Left" Height="320" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Comprehensive Test" HorizontalAlignment="Left" Height="320" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
-                                <Label x:Name="ldt" Content="Integration Averaging:" HorizontalAlignment="Left" Margin="30,20,0,0" VerticalAlignment="Top" Width="150"/>
-                                <TextBox x:Name="tdt" HorizontalAlignment="Left" Height="23" Margin="30,40,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                                <Label x:Name="ldt1" Content="Detector Data Source:" HorizontalAlignment="Left" Margin="30,80,0,0" VerticalAlignment="Top" Height="18" RenderTransformOrigin="0.5,0.5" Width="120"/>
-                                <ComboBox x:Name="cdt1" HorizontalAlignment="Left" Margin="30,100,0,0" VerticalAlignment="Top" Width="120" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                                    <System:String>null data</System:String>
-                                    <System:String>ADC data</System:String>
-                                    <System:String>test data</System:String>
-                                </ComboBox>
-                                <Label x:Name="ldt2" Content="Samples to Collect:" HorizontalAlignment="Left" Margin="30,140,0,0" VerticalAlignment="Top" Height="20" Width="105"/>
-                                <TextBox x:Name="tdt2" HorizontalAlignment="Left" Height="23" Margin="30,160,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                                 <Button x:Name="btnDetDiagnostic" Content="Set" HorizontalAlignment="Left" Margin="33,220,0,0" VerticalAlignment="Top" Width="100" Click="btnDetDiagnostic_Click"/>
                             </Grid>
                         </GroupBox>
@@ -636,13 +626,13 @@
                                 <TextBlock Text="RS422" HorizontalAlignment="Center" FontWeight="Bold"/>
                             </StackPanel>
                         </Button>
-                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,100,0,0" Name="ledTcuError" Style="{StaticResource FMI_TinyRedOff_Button}" VerticalAlignment="Top" Width="30" />
-                        <Label Content="TCU-ERR" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,107,0,0" VerticalAlignment="Top"/>
-                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,147,0,0" Name="ledXrayOn" Style="{StaticResource FMI_Xray_Button}" VerticalAlignment="Top" Width="30" />
-                        <Label Content="XRAY-ON" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,155,0,0" VerticalAlignment="Top"/>
-                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="340,200,0,0" Name="ledKvMaOk" Style="{StaticResource FMI_TinyGreenOff_Button}" VerticalAlignment="Top" Width="30" />
-                        <Label Content="KVMA-OK" FontWeight="Bold" HorizontalAlignment="Left" Margin="390,206,0,0" VerticalAlignment="Top"/>
-                        <Button x:Name="btnDiagRS232" HorizontalAlignment="Left" Margin="650,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagRS232_Click">
+                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="300,100,0,0" Name="ledTcuError" Style="{StaticResource FMI_TinyRedOff_Button}" VerticalAlignment="Top" Width="30" />
+                        <Label Content="TCU-ERR" FontWeight="Bold" HorizontalAlignment="Left" Margin="350,107,0,0" VerticalAlignment="Top"/>
+                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="300,147,0,0" Name="ledXrayOn" Style="{StaticResource FMI_Xray_Button}" VerticalAlignment="Top" Width="30" />
+                        <Label Content="XRAY-ON" FontWeight="Bold" HorizontalAlignment="Left" Margin="350,155,0,0" VerticalAlignment="Top"/>
+                        <Button Content="" Height="30" HorizontalAlignment="Left" Margin="300,200,0,0" Name="ledKvMaOk" Style="{StaticResource FMI_TinyGreenOff_Button}" VerticalAlignment="Top" Width="30" />
+                        <Label Content="KVMA-OK" FontWeight="Bold" HorizontalAlignment="Left" Margin="350,206,0,0" VerticalAlignment="Top"/>
+                        <Button x:Name="btnDiagRS232" HorizontalAlignment="Left" Margin="640,100,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagRS232_Click">
                             <StackPanel>
                                 <TextBlock Text="Collimator" HorizontalAlignment="Center" FontWeight="Bold"/>
                                 <TextBlock Text="RS232" HorizontalAlignment="Center" FontWeight="Bold"/>
@@ -652,21 +642,23 @@
                         <TextBox x:Name="tbxRS232Tx" Text="RS232 TEST" HorizontalAlignment="Left" Height="23" Margin="860,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" IsReadOnly="True"/>
                         <Label x:Name="lblRS232Rx" Content="Incoming:" HorizontalAlignment="Left" Margin="860,180,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
                         <TextBox x:Name="tbxRS232Rx" Text="" HorizontalAlignment="Left" Height="23" Margin="860,204,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
-                        <Button x:Name="btnDiagClock" Content="Integration Clock" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagClock_Click"/>
-                        <Button x:Name="btnDiagLaser" Content="Laser" FontWeight="Bold" HorizontalAlignment="Left" Margin="340,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagLaser_Click" />
-                        <Button x:Name="btnDiagRS485" HorizontalAlignment="Left" Margin="537,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnRS485_Click">
+                        <Button x:Name="btnDiagClock" Content="Integration Clock" FontWeight="Bold" HorizontalAlignment="Left" Margin="470,101,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagClock_Click"/>
+                        <Button x:Name="btnDiagLaser" Content="Laser" FontWeight="Bold" HorizontalAlignment="Left" Margin="130,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagLaser_Click" />
+                        <Button x:Name="btnDiagRS485" HorizontalAlignment="Left" Margin="300,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnRS485_Click">
                             <StackPanel>
                                 <TextBlock Text="TCU" HorizontalAlignment="Center" FontWeight="Bold"/>
                                 <TextBlock Text="RS485" HorizontalAlignment="Center" FontWeight="Bold"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="btnDiagCAN2" HorizontalAlignment="Left" Margin="740,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagCAN2_Click">
+                        <Button x:Name="btnDiagCAN2" HorizontalAlignment="Left" Margin="640,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagCAN2_Click">
                             <StackPanel>
                                 <TextBlock Text="G-Box" HorizontalAlignment="Center" FontWeight="Bold"/>
                                 <TextBlock Text="CAN" HorizontalAlignment="Center" FontWeight="Bold"/>
                             </StackPanel>
                         </Button>
-                        <Button x:Name="btnEthernet" HorizontalAlignment="Left" Margin="930,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagCAN2_Click">
+                        <Label x:Name="lblCAN2Rx" Content="Incoming:" HorizontalAlignment="Left" Margin="860,274,0,0" VerticalAlignment="Top" Height="20" Width="80"/>
+                        <TextBox x:Name="tbxCAN2Rx" Text="" HorizontalAlignment="Left" Height="130" Margin="860,300,0,0" TextWrapping="NoWrap" VerticalScrollBarVisibility="Visible" FontFamily="Lucida Console" VerticalAlignment="Top" Width="200"/>
+                        <Button x:Name="btnEthernet" HorizontalAlignment="Left" Margin="470,300,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDiagEthernet_Click">
                             <StackPanel>
                                 <TextBlock Text="Ethernet" HorizontalAlignment="Center" FontWeight="Bold"/>
                                 <TextBlock Text="IP Address" HorizontalAlignment="Center" FontWeight="Bold"/>
