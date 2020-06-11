@@ -2799,12 +2799,12 @@ namespace RCBTool {
 
         }
 
-        private void btnDetDiagnostic_Click(object sender, RoutedEventArgs e) {
+        private void btnDetClearDDResult_Click(object sender, RoutedEventArgs e) {
 
-            const long DAQ_SET_INT_TIME_FAILED = 0x000000f0;
-            const long ADC_INIT_FAILED = 0x000000f1;
-            const long DAQ_INIT_FAILED = 0x000000f2;
-            const long ADC_PWR_SAVE_FAILED = 0x000000f3;
+            tbxDetDiagResult.Clear();
+        }
+
+        private void btnDetDiagnostic_Click(object sender, RoutedEventArgs e) {
 
             try {
 
@@ -2816,32 +2816,75 @@ namespace RCBTool {
 
                 if (response[0] != RoterController.DetectorDiagnostics + 1) {  // NACK
 
-                    tbxDetDiagResult.AppendText("NACK received");
+                    tbxDetDiagResult.AppendText("NACK received\n");
                     highlight |= 0x01;
 
-                    if (response[0] ==)
+                    if (response[0] == RoterController.DAQ_SET_INT_TIME_FAILED) {
+
+                        tbxDetDiagResult.AppendText("DAQ_SET_INT_TIME_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.ADC_INIT_FAILED) {
+
+                        tbxDetDiagResult.AppendText("ADC_INIT_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.DAQ_INIT_FAILED) {
+
+                        tbxDetDiagResult.AppendText("DAQ_INIT_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.ADC_PWR_SAVE_FAILED) {
+
+                        tbxDetDiagResult.AppendText("ADC_PWR_SAVE_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.REG_TEST_FAILED) {
+
+                        tbxDetDiagResult.AppendText("REG_TEST_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.DATA_TEST_FAILED) {
+
+                        tbxDetDiagResult.AppendText("DATA_TEST_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.DAQ_START_FAILED) {
+
+                        tbxDetDiagResult.AppendText("DAQ_START_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.DAQ_STOP_FAILED) {
+
+                        tbxDetDiagResult.AppendText("DAQ_STOP_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.SLICE_LINK_FAILED) {
+
+                        tbxDetDiagResult.AppendText("SLICE_LINK_FAILED\n");
+                    }
+                    else if (response[0] == RoterController.DAQ_REXMIT_WAIT_TIMEOUT) {
+
+                        tbxDetDiagResult.AppendText("DAQ_REXMIT_WAIT_TIMEOUT\n");
+                    }
+                    else if (response[0] == RoterController.DAQ_REXMIT_OVERFLOW) {
+
+                        tbxDetDiagResult.AppendText("DAQ_REXMIT_OVERFLOW\n");
+                    }
                 }
 
                 // Check Word#8
                 if ((response[1] & 1) != 0) {   // Start Error
 
-                    tbxDetDiagResult.AppendText("Start Error");
-                    tbxDetDiagResult.AppendText($"ACQ Ctrl Reg: {response[7] & 0xffff:X04}(L), {(response[6] >> 16) & 0xffff:x04}(H)");
+                    tbxDetDiagResult.AppendText("Start Error\n");
+                    tbxDetDiagResult.AppendText($"ACQ Ctrl Reg: {response[7] & 0xffff:X04}(L), {(response[6] >> 16) & 0xffff:x04}(H)\n");
                     highlight |= 0x82;
                 }
                 else {  // Link Drop Status
 
                     if (response[7] != 0) {
 
-                        tbxDetDiagResult.AppendText($"Link Drop Status: {response[6]:X08}");
+                        tbxDetDiagResult.AppendText($"Link Drop Status: {response[6]:X08}\n");
                         if ((response[7] & 0x8000000) != 0) {
 
-                            tbxDetDiagResult.AppendText($"RCB Link Drop");
+                            tbxDetDiagResult.AppendText($"RCB Link Drop\n");
                         }
 
                         if ((response[7] & 0x7ffffff) != 0) {
 
-                            tbxDetDiagResult.AppendText($"Slice Link Drop: {response[7]:X08}");
+                            tbxDetDiagResult.AppendText($"Slice Link Drop: {response[7]:X08}\n");
                         }
 
                         highlight |= 0x82;
@@ -2850,13 +2893,13 @@ namespace RCBTool {
 
                 if ((response[1] & 4) != 0 && (response[1] & 2) == 0) {
 
-                    tbxDetDiagResult.AppendText($"Data Expected: {response[5]:X08}");   // Word#6
-                    tbxDetDiagResult.AppendText($"Data Received: {response[6]:X08}");   // Word#7
+                    tbxDetDiagResult.AppendText($"Data Expected: {response[5]:X08}\n");   // Word#6
+                    tbxDetDiagResult.AppendText($"Data Received: {response[6]:X08}\n");   // Word#7
                 }
                 else {
 
-                    tbxDetDiagResult.AppendText($"Samples: {(response[5] - 2) / 65}");  // Word#6
-                    tbxDetDiagResult.AppendText($"Short Clock: {response[6] * 0.02} us");   // Workd#7
+                    tbxDetDiagResult.AppendText($"Samples: {(response[5] - 2) / 65}\n");  // Word#6
+                    tbxDetDiagResult.AppendText($"Short Clock: {response[6] * 0.02} us\n");   // Workd#7
                 }
 
                 tbxDetDiagResult.ScrollToEnd();

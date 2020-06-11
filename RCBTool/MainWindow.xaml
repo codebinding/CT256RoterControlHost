@@ -504,11 +504,11 @@
                                 <Button x:Name="btnDetNop" Content="Set" HorizontalAlignment="Left" Margin="33,20,0,0" VerticalAlignment="Top" Width="100" Click="btnDetNop_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Comprehensive Test" HorizontalAlignment="Left" Height="500" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Comprehensive Test" HorizontalAlignment="Left" Height="500" Margin="1140,50,0,0" VerticalAlignment="Top" Width="279">
                             <Grid>
-                                <Button x:Name="btnDetDiagnostic" Content="Start" HorizontalAlignment="Left" Margin="33,30,0,0" VerticalAlignment="Top" Width="100" Click="btnDetDiagnostic_Click"/>
-                                <TextBox x:Name="tbxDetDiagResult" Margin="0,75,10,80" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console" HorizontalAlignment="Right" Width="146" />
-                                <Button x:Name="btnDetClearDDResult" Content="Clear" HorizontalAlignment="Left" Margin="33,0,0,33" Width="100" Click="btnDetDiagnostic_Click" Height="31" VerticalAlignment="Bottom"/>
+                                <Button x:Name="btnDetDiagnostic" Content="Start" HorizontalAlignment="Left" Margin="24,395,0,0" VerticalAlignment="Top" Width="100" Click="btnDetDiagnostic_Click"/>
+                                <TextBox x:Name="tbxDetDiagResult" Margin="0,28,10,80" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console" HorizontalAlignment="Right" Width="245" />
+                                <Button x:Name="btnDetClearDDResult" Content="Clear" HorizontalAlignment="Left" Margin="145,0,0,33" Width="100" Height="31" VerticalAlignment="Bottom" Click="btnDetClearDDResult_Click"/>
                             </Grid>
                         </GroupBox>
                         <Label x:Name="ldtDetNop" Content="Return:" HorizontalAlignment="Left" Margin="50,835,0,0" VerticalAlignment="Top"/>

@@ -200,6 +200,18 @@ namespace RoterControlSupport
         public const uint ConfigureEnvironment = 0x10000000;
         public const uint RcbNop = 0x00000000;
         public const uint GetSliceVersion = 0x20000000;
+
+        public const long DAQ_SET_INT_TIME_FAILED = 0x000000F0;
+        public const long ADC_INIT_FAILED = 0x000000F1;
+        public const long DAQ_INIT_FAILED = 0x000000F2;
+        public const long ADC_PWR_SAVE_FAILED = 0x000000F3;
+        public const long REG_TEST_FAILED = 0x000000F5;
+        public const long DATA_TEST_FAILED = 0x000000F6;
+        public const long DAQ_START_FAILED = 0x000000F9;
+        public const long DAQ_STOP_FAILED = 0x000000FA;
+        public const long SLICE_LINK_FAILED = 0x000000FB;
+        public const long DAQ_REXMIT_WAIT_TIMEOUT = 0x000000FC;
+        public const long DAQ_REXMIT_OVERFLOW = 0x000000FD;
         #endregion Aggregator Commands
 
         #region Pre-defined Constants
