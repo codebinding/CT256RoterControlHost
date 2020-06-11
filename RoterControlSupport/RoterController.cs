@@ -195,6 +195,7 @@ namespace RoterControlSupport
         public const byte DacNop = 0x00;
         public const byte InitializeAdc = 0xA1;
         public const byte StopDataAcq = 0xDF;
+        public const byte DetectorDiagnostics = 0xDD;
 
         public const uint ConfigureEnvironment = 0x10000000;
         public const uint RcbNop = 0x00000000;
@@ -861,7 +862,9 @@ namespace RoterControlSupport
 
             SendRequestSync(CMD_READREGISTER, request, out response, 500);
 
-            return response[0];
+            CheckErrorCode(response[0]);
+
+            return response[1];
         }
 
         public void WriteRegister(int p_offset, ulong p_content) {

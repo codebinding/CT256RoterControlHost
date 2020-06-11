@@ -398,6 +398,7 @@ namespace RCBTool {
             }
 
             m_adc_sliceboards = new List<CheckBox>();
+            m_tbx_agg_reply = new List<TextBox>();
             #endregion Thermal
 
             #region Detector
@@ -420,7 +421,15 @@ namespace RCBTool {
                 checkBoxLeft += 70;
             }
 
+            int textBoxLeft = 120;
+            for (int i = 0 ; i < 8 ; i++) {
 
+                TextBox textBox = new TextBox() { Text = "00000000", HorizontalAlignment = HorizontalAlignment.Left, Height = 23, Margin = new Thickness(textBoxLeft, 830, 0, 0), TextWrapping = TextWrapping.NoWrap, Width = 130, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, FontSize = 14, VerticalAlignment = VerticalAlignment.Top };
+                grdDetector.Children.Add(textBox);
+                m_tbx_agg_reply.Add(textBox);
+
+                textBoxLeft += 160;
+            }
             #endregion Detector
 
             #region Exposure
@@ -2792,13 +2801,85 @@ namespace RCBTool {
 
         private void btnDetDiagnostic_Click(object sender, RoutedEventArgs e) {
 
+            const long DAQ_SET_INT_TIME_FAILED = 0x000000f0;
+            const long ADC_INIT_FAILED = 0x000000f1;
+            const long DAQ_INIT_FAILED = 0x000000f2;
+            const long ADC_PWR_SAVE_FAILED = 0x000000f3;
+
+            try {
+
+                List<uint> request = new List<uint>() { RoterController.DataAcquisition | RoterController.DetectorDiagnostics, 1, 0x0f, 0, 0, 0, 0, 0 };
+                List<UInt32> response;
+                int highlight = 0;
+
+                m_rcb.AggregatorControl(request, out response, 15000);
+
+                if (response[0] != RoterController.DetectorDiagnostics + 1) {  // NACK
+
+                    tbxDetDiagResult.AppendText("NACK received");
+                    highlight |= 0x01;
+
+                    if (response[0] ==)
+                }
+
+                // Check Word#8
+                if ((response[1] & 1) != 0) {   // Start Error
+
+                    tbxDetDiagResult.AppendText("Start Error");
+                    tbxDetDiagResult.AppendText($"ACQ Ctrl Reg: {response[7] & 0xffff:X04}(L), {(response[6] >> 16) & 0xffff:x04}(H)");
+                    highlight |= 0x82;
+                }
+                else {  // Link Drop Status
+
+                    if (response[7] != 0) {
+
+                        tbxDetDiagResult.AppendText($"Link Drop Status: {response[6]:X08}");
+                        if ((response[7] & 0x8000000) != 0) {
+
+                            tbxDetDiagResult.AppendText($"RCB Link Drop");
+                        }
+
+                        if ((response[7] & 0x7ffffff) != 0) {
+
+                            tbxDetDiagResult.AppendText($"Slice Link Drop: {response[7]:X08}");
+                        }
+
+                        highlight |= 0x82;
+                    }
+                }
+
+                if ((response[1] & 4) != 0 && (response[1] & 2) == 0) {
+
+                    tbxDetDiagResult.AppendText($"Data Expected: {response[5]:X08}");   // Word#6
+                    tbxDetDiagResult.AppendText($"Data Received: {response[6]:X08}");   // Word#7
+                }
+                else {
+
+                    tbxDetDiagResult.AppendText($"Samples: {(response[5] - 2) / 65}");  // Word#6
+                    tbxDetDiagResult.AppendText($"Short Clock: {response[6] * 0.02} us");   // Workd#7
+                }
+
+                tbxDetDiagResult.ScrollToEnd();
+
+                DisplaySliceBoardReply(response, highlight);
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
         }
 
-        private void DisplaySliceBoardReply(List<uint> response) {
+        private void DisplaySliceBoardReply(List<uint> response, int highlight = 0) {
 
             for (int i = 0 ; i < response.Count ; i++) {
 
-                m_tbx_agg_reply[i].Text += $"{response[i]:X8}";
+                if ((highlight & (1 << i)) != 0) {
+
+                    m_tbx_agg_reply[i].Foreground = Brushes.Red;    
+                }
+
+                m_tbx_agg_reply[i].FontWeight = FontWeights.Bold;
+                m_tbx_agg_reply[i].Text = $"{response[i]:X8}";
             }
         }
         #endregion Data Acquisition

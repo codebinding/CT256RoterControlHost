@@ -504,20 +504,14 @@
                                 <Button x:Name="btnDetNop" Content="Set" HorizontalAlignment="Left" Margin="33,20,0,0" VerticalAlignment="Top" Width="100" Click="btnDetNop_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Comprehensive Test" HorizontalAlignment="Left" Height="320" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
+                        <GroupBox x:Name="gbxDetDiagnostics" Header="Detector Comprehensive Test" HorizontalAlignment="Left" Height="500" Margin="1140,50,0,0" VerticalAlignment="Top" Width="180">
                             <Grid>
-                                <Button x:Name="btnDetDiagnostic" Content="Set" HorizontalAlignment="Left" Margin="33,220,0,0" VerticalAlignment="Top" Width="100" Click="btnDetDiagnostic_Click"/>
+                                <Button x:Name="btnDetDiagnostic" Content="Start" HorizontalAlignment="Left" Margin="33,30,0,0" VerticalAlignment="Top" Width="100" Click="btnDetDiagnostic_Click"/>
+                                <TextBox x:Name="tbxDetDiagResult" Margin="0,75,10,80" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console" HorizontalAlignment="Right" Width="146" />
+                                <Button x:Name="btnDetClearDDResult" Content="Clear" HorizontalAlignment="Left" Margin="33,0,0,33" Width="100" Click="btnDetDiagnostic_Click" Height="31" VerticalAlignment="Bottom"/>
                             </Grid>
                         </GroupBox>
                         <Label x:Name="ldtDetNop" Content="Return:" HorizontalAlignment="Left" Margin="50,835,0,0" VerticalAlignment="Top"/>
-                        <TextBox x:Name="tdtDetReply0" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="120,830,0,91" TextWrapping="NoWrap" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
-                        <TextBox x:Name="tdtDetReply1" Text="00000000" Height="23" Margin="280,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
-                        <TextBox x:Name="tdtDetReply2" Text="00000000" Height="23" Margin="440,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
-                        <TextBox x:Name="tdtDetReply3" Text="00000000" Height="23" Margin="600,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
-                        <TextBox x:Name="tdtDetReply4" Text="00000000" Height="23" Margin="760,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14" HorizontalAlignment="Left" Width="130"/>
-                        <TextBox x:Name="tdtDetReply5" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="920,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
-                        <TextBox x:Name="tdtDetReply6" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="1080,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
-                        <TextBox x:Name="tdtDetReply7" Text="00000000" HorizontalAlignment="Left" Height="23" Margin="1240,830,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
