@@ -1183,8 +1183,21 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void Estimate() {
+        public void Estimate(List<SeriesParameter> p_scan_parameters) {
 
+            List<ulong> request = new List<ulong>();
+            List<ulong> response;
+
+            foreach (SeriesParameter series in p_scan_parameters) {
+
+                ulong data64 = 0;
+
+                data64 = (ulong)series.Kv << 0 | (ulong)(series.Ma & 0x3ff) << 8 | (ulong)(series.Fss & 3) << 18 | (ulong)(series.ShotTimeInMSec & 0x3ffff) << 20 | (ulong)(series.DelayBetweenShots) << 38;
+            }
+
+            SendRequestSync(CMD_ESTIMATE, request, out response, 1000);
+
+            CheckErrorCode(response[0]);
         }
 
         public void Warmup(int p_type) {

@@ -2103,7 +2103,7 @@ namespace RCBTool {
 
             try {
 
-                m_rcb.Estimate();
+                m_rcb.Estimate(m_scan_parameters);
 
             }
             catch (Exception e) {
