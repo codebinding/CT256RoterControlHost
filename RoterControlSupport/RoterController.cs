@@ -1192,7 +1192,12 @@ namespace RoterControlSupport
 
                 ulong data64 = 0;
 
-                data64 = (ulong)series.Kv << 0 | (ulong)(series.Ma & 0x3ff) << 8 | (ulong)(series.Fss & 3) << 18 | (ulong)(series.ShotTimeInMSec & 0x3ffff) << 20 | (ulong)(series.DelayBetweenShots) << 38;
+                data64 = (ulong)series.Kv << 0 | (ulong)(series.Ma & 0xffff) << 8 | (ulong)(series.Fss & 3) << 24;
+                data64 |= (ulong)(series.ShotTimeInMSec & 0x3ffff) << 26 | (ulong)(series.DelayBetweenShots) << 44;
+                request.Add(data64); //0
+
+                data64 = (ulong)(series.NumberOfShots & 0xff) << 0 | (ulong)(series.DelayBeforeNextSeries & 0x0fffff) << 8;
+                request.Add(data64); // 1
             }
 
             SendRequestSync(CMD_ESTIMATE, request, out response, 1000);
