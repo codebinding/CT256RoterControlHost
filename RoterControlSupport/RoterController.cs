@@ -1127,7 +1127,7 @@ namespace RoterControlSupport
                     request.Add(data64);
 
                     data64 = (ulong)(series.ImaTable.PhaseMinus & 0xff) << 0 | (ulong)(series.ImaTable.PhasePlus & 0xff) << 8 | (ulong)(series.ImaTable.TrevQuarter & 0x1ff) << 16 | (ulong)(series.ImaTable.Tup & 0x3ff) << 25;
-                    data64 |= (ulong)(series.ImaTable.NTheta & 0xff) << 35 | (ulong)(series.ImaTable.GantryHomeAngleOffset & 0x7ff) << 43;
+                    data64 |= (ulong)(series.ImaTable.NTheta & 0xff) << 35 | (ulong)(series.ImaTable.GantryHomeAngleOffset & 0x1fff) << 43;
                     request.Add(data64);
 
                     for(int i = 0 ; i < series.ImaTable.MaValues.Count ; i += 4) {
