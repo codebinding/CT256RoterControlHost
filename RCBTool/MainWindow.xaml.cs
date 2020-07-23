@@ -436,7 +436,7 @@ namespace RCBTool {
             m_exposure_controls = new List<ExposureControl>();
             m_exposure_tabs = new List<TabItem>();
 
-            for (int tab = 0 ; tab < 5 ; tab++) {
+            for (int tab = 0 ; tab < 10 ; tab++) {
 
                 TabItem ti = new TabItem();
                 ti.Header = $"Series {tab + 1}";
