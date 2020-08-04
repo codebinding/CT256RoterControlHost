@@ -230,12 +230,7 @@ namespace RoterControlSupport
 
         public RoterController(int p_device_id) {
 
-            if (m_canbus == null) {
-
-                m_canbus = new PeakCan();
-
-                m_canbus.Init(p_device_id);
-            }
+            m_canbus = new PeakCan(p_device_id);
 
             m_notification_queue = new BlockingCollection<Notification>();
             m_log_queue = new BlockingCollection<string>();
@@ -243,7 +238,7 @@ namespace RoterControlSupport
             m_response_pool = new ConcurrentDictionary<ushort, MessageCollection>();
 
             m_thread_run = true;
-            m_thread_read_raw = new Thread(new ThreadStart(ReadSlipringRawFrame));
+            m_thread_read_raw = new Thread(new ThreadStart(ReadRawFrame));
             m_thread_read_raw.IsBackground = true;
             m_thread_read_raw.Start();
         }
@@ -259,30 +254,70 @@ namespace RoterControlSupport
                 m_thread_read_raw.Join();
                 m_thread_read_raw = null;
             }
-
-            m_canbus.Close();
         }
 
-        public void SendNotification(ushort p_command, List<ulong> p_request) {
+        private void SendNotification(ushort p_command, List<ulong> p_request) {
 
-            MessageFactory factory = new MessageFactory();
             List<TPCANMsg> raw_message;
 
-            factory.BuildRawMessage(p_command, p_request, out raw_message);
+            BuildRawMessage(p_command, p_request, out raw_message);
 
-            m_canbus.EnqueueSlipringOutgoing(raw_message);
+            m_canbus.EnqueueTx(raw_message);
+        }
+
+        private void BuildRawMessage(ushort p_command, List<ulong> p_data, out List<TPCANMsg> p_raw_message) {
+
+            p_raw_message = new List<TPCANMsg>();
+
+            byte destination_id = (byte)(p_command >> 8);
+            byte command = (byte)p_command;
+
+            FmiCanFrame fmi_frame = new FmiCanFrame();
+
+            for (int i = 0 ; i < p_data.Count ; i++) {
+
+                if (i == 0) {
+
+                    if (p_data.Count == 1) {
+
+                        fmi_frame.ControlBits = (byte)(ControlBit.Start | ControlBit.End);
+                    }
+                    else {
+
+                        fmi_frame.ControlBits = (byte)ControlBit.Start;
+                    }
+
+                    fmi_frame.ParameterBits = (ushort)p_data.Count;
+                }
+                else if (i == p_data.Count - 1) {
+
+                    fmi_frame.ControlBits = (byte)ControlBit.End;
+                    fmi_frame.ParameterBits = (ushort)i;
+                }
+                else {
+
+                    fmi_frame.ControlBits = (byte)ControlBit.Middle;
+                    fmi_frame.ParameterBits = (ushort)i;
+                }
+
+                fmi_frame.SourceId = (byte)ModuleId.Host;
+                fmi_frame.DestinationId = destination_id;
+                fmi_frame.CommandBits = command;
+                fmi_frame.Data64 = p_data[i];
+
+                p_raw_message.Add(fmi_frame.GetRawFrame());
+            }
         }
 
         public void SendRequestAsync(ushort p_command, List<ulong> p_request) {
 
             MessageCollection response_collection = m_response_pool.AddOrUpdate(p_command, new MessageCollection(), (key, value) => new MessageCollection());
 
-            MessageFactory factory = new MessageFactory();
             List<TPCANMsg> raw_message;
 
-            factory.BuildRawMessage(p_command, p_request, out raw_message);
+            BuildRawMessage(p_command, p_request, out raw_message);
 
-            m_canbus.EnqueueSlipringOutgoing(raw_message);
+            m_canbus.EnqueueTx(raw_message);
         }
 
         public bool WaitResponse(ushort p_command, out List<ulong> p_response, int p_wait_ms) {
@@ -313,12 +348,11 @@ namespace RoterControlSupport
 
             MessageCollection response_collection = m_response_pool.AddOrUpdate(p_command, new MessageCollection(), (key, value) => new MessageCollection());
 
-            MessageFactory factory = new MessageFactory();
             List<TPCANMsg> raw_message;
 
-            factory.BuildRawMessage(p_command, p_request, out raw_message);
+            BuildRawMessage(p_command, p_request, out raw_message);
 
-            m_canbus.EnqueueSlipringOutgoing(raw_message);
+            m_canbus.EnqueueTx(raw_message);
 
             p_response = new List<ulong>();
 
@@ -347,20 +381,7 @@ namespace RoterControlSupport
             return m_log_queue.Take();
         }
 
-        public void ReadSpareRawFrame(out List<byte> p_data) {
-
-            p_data = new List<byte>();
-
-            TPCANMsg raw_frame;
-            m_canbus.DequeueSpareIncoming(out raw_frame);
-
-            for (int i = 0 ; i < raw_frame.LEN ; i++) {
-
-                p_data.Add(raw_frame.DATA[i]);
-            }
-        }
-
-        private void ReadSlipringRawFrame() {
+        private void ReadRawFrame() {
 
             TPCANMsg raw_frame;
 
@@ -368,7 +389,7 @@ namespace RoterControlSupport
 
             while (m_thread_run) {
 
-                m_canbus.DequeueSlipringIncoming(out raw_frame);
+                m_canbus.DequeueRx(out raw_frame);
 
                 FmiCanFrame fmi_frame = new FmiCanFrame(raw_frame);
 
@@ -428,6 +449,7 @@ namespace RoterControlSupport
         }
 
         #region Acadia
+        #region System
         public void SyncTime() {
 
             ulong unixTimeStamp = (ulong)(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
@@ -649,6 +671,7 @@ namespace RoterControlSupport
 
             return WaitResponse(CMD_STARTDENALI, out response, p_wait_ms);
         }
+        #endregion System
 
         #region File
         public void TransmitFileInfo(long p_file_size, uint p_permission, string p_remote_path) {
@@ -1575,9 +1598,9 @@ namespace RoterControlSupport
             SendNotification(NTF_MSTEP, request);
         }
 
-        public void ResetTablePosition() {
+        public void NotifyTablePosition(int p_position = 0) {
 
-            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> request = new List<ulong> { (ulong)p_position };
 
             SendNotification(NTF_RESETTPOS, request);
         }

@@ -277,7 +277,7 @@ namespace RCBTool {
             btnLoadImaTable = new Button() { Content = "Load Ima Table", Margin = new Thickness(left_most + 600, top_most + 440, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, Width = 120, Height = 30, VerticalAlignment = VerticalAlignment.Top };
 
             imaTable = new ImaTable();
-            imaLoaded = false; 
+            imaLoaded = false;
 
         }
     }
@@ -306,11 +306,12 @@ namespace RCBTool {
         private List<TabItem> m_exposure_tabs = null;
 
         private RoterControlSupport.RoterController m_rcb = null;
+        private RoterControlSupport.PeakCan m_gbox_canbus = null;
 
         bool m_thread_run = false;
         private Thread m_thread_process_notification = null;
         private Thread m_thread_process_log = null;
-        private Thread m_thread_read_denali_can = null;
+        private Thread m_thread_read_gbox_can = null;
 
         private bool m_rcb_connected = false;
 
@@ -351,10 +352,10 @@ namespace RCBTool {
                 m_thread_process_log.Abort();
                 m_thread_process_log.Join();
 
-                if (m_thread_read_denali_can != null) {
+                if (m_thread_read_gbox_can != null) {
 
-                    m_thread_read_denali_can.Abort();
-                    m_thread_read_denali_can.Join();
+                    m_thread_read_gbox_can.Abort();
+                    m_thread_read_gbox_can.Join();
                 }
             }
 
@@ -892,7 +893,7 @@ namespace RCBTool {
 
         private void btnResetTablePosition_Click(object sender, RoutedEventArgs e) {
 
-            m_rcb.ResetTablePosition();
+            m_rcb.NotifyTablePosition();
         }
         #endregion
 
@@ -1114,9 +1115,21 @@ namespace RCBTool {
 
                 m_rcb.StartEngineeringService();
 
-                m_thread_read_denali_can = new Thread(new ThreadStart(ReadDenaliCAN));
-                m_thread_read_denali_can.IsBackground = true;
-                m_thread_read_denali_can.Start();
+                try {
+
+                    m_gbox_canbus = new PeakCan(0x2d, Peak.Can.Basic.TPCANBaudrate.PCAN_BAUD_500K);
+
+                    btnDiagCAN2.IsEnabled = true;
+
+                    m_thread_read_gbox_can = new Thread(new ThreadStart(ReadGBoxCanBus));
+                    m_thread_read_gbox_can.IsBackground = true;
+                    m_thread_read_gbox_can.Start();
+                }
+                catch (Exception ex) {
+
+                    btnDiagCAN2.IsEnabled = false;
+                    MessageBox.Show(ex.Message);
+                }
 
                 grdRCBDiagnostics.IsEnabled = true;
             }
@@ -2047,7 +2060,7 @@ namespace RCBTool {
 
                 int total_scan_time = 0;
 
-                foreach(SeriesParameter series in m_scan_parameters) {
+                foreach (SeriesParameter series in m_scan_parameters) {
 
                     total_scan_time += series.SeriesTimeInMSec + series.DelayBeforeNextSeries + 2000;  // boost time ~= 2 sec.
                 }
@@ -2164,7 +2177,7 @@ namespace RCBTool {
 
                 m_rcb.TurnOnLaser();
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
             }
@@ -2918,7 +2931,7 @@ namespace RCBTool {
 
                 if ((highlight & (1 << i)) != 0) {
 
-                    m_tbx_agg_reply[i].Foreground = Brushes.Red;    
+                    m_tbx_agg_reply[i].Foreground = Brushes.Red;
                 }
 
                 m_tbx_agg_reply[i].FontWeight = FontWeights.Bold;
@@ -4068,19 +4081,19 @@ namespace RCBTool {
 
             m_rcb.AbortDiagnosis();
         }
-        
-        private void ReadDenaliCAN() {
 
-            List<byte> received_data;
+        private void ReadGBoxCanBus() {
+
+            Peak.Can.Basic.TPCANMsg raw_frame;
             string message = "";
 
             while (m_thread_run) {
 
-                m_rcb.ReadSpareRawFrame(out received_data);
+                m_gbox_canbus.DequeueRx(out raw_frame);
 
-                foreach (byte c in received_data) {
+                for (int i = 0 ; i < raw_frame.LEN ; i++) {
 
-                    message += (char)c;
+                    message += (char)raw_frame.DATA[i];
                 }
 
                 message += Environment.NewLine;
@@ -4091,7 +4104,7 @@ namespace RCBTool {
                 message = "";
             }
         }
-        
+
         #endregion RCB Diagnostics
     }
 }

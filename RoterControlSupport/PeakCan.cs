@@ -8,7 +8,7 @@ using Peak.Can.Basic;
 using TPCANHandle = System.Byte;
 
 namespace RoterControlSupport {
-    class PeakCan {
+    public class PeakCan {
 
         private List<TPCANHandle> USB_CHANNELS = new List<TPCANHandle> {
 
@@ -22,19 +22,15 @@ namespace RoterControlSupport {
                 PCANBasic.PCAN_USBBUS8
         };
 
-        private TPCANHandle m_slipring_sock = 0;
-        private TPCANHandle m_spare_sock = 0;
+        private TPCANHandle m_sock = 0;
+        private bool m_thread_stop = true;
+        private Thread m_thread_rx = null;
+        private Thread m_thread_tx = null;
 
-        private bool m_thread_run = false;
-        private Thread m_thread_read_slipring_incoming = null;
-        private Thread m_thread_write_slipring_outgoing = null;
-        private Thread m_thread_read_spare_incoming = null;
+        private BlockingCollection<TPCANMsg> m_queue_rx = null;
+        private BlockingCollection<TPCANMsg> m_queue_tx = null;
 
-        private BlockingCollection<TPCANMsg> m_slipring_incoming_queue;
-        private BlockingCollection<TPCANMsg> m_slipring_outgoing_queue;
-        private BlockingCollection<TPCANMsg> m_spare_incoming_queue;
-
-        public void Init(int p_slipring_peak_id, int p_spare_peak_id = 0x2a) {
+        public PeakCan(int p_peak_id, TPCANBaudrate p_baud_rate = TPCANBaudrate.PCAN_BAUD_1M) {
 
             TPCANStatus status;
             uint condition;
@@ -49,13 +45,9 @@ namespace RoterControlSupport {
                     if (status == TPCANStatus.PCAN_ERROR_OK) {
 
                         status = PCANBasic.GetValue(channel, TPCANParameter.PCAN_DEVICE_NUMBER, out device_id, sizeof(UInt32));
-                        if (status == TPCANStatus.PCAN_ERROR_OK && device_id == p_slipring_peak_id) {
+                        if (status == TPCANStatus.PCAN_ERROR_OK && device_id == p_peak_id) {
 
-                            m_slipring_sock = channel;
-                        }
-                        else if (status == TPCANStatus.PCAN_ERROR_OK && device_id == p_spare_peak_id) {
-
-                            m_spare_sock = channel;
+                            m_sock = channel;
                         }
 
                         PCANBasic.Uninitialize(channel);
@@ -63,97 +55,79 @@ namespace RoterControlSupport {
                 }
             }
 
-            if (m_slipring_sock == 0) {
+            if (m_sock == 0) {
 
-                throw new Exception($"PEAK CAN USB adapt with id 0x{p_slipring_peak_id:X} not found");
+                throw new Exception($"PEAK CAN USB adapt with id 0x{p_peak_id:X} not found");
             }
             else {
 
-                status = PCANBasic.Initialize(m_slipring_sock, TPCANBaudrate.PCAN_BAUD_1M);
+                status = PCANBasic.Initialize(m_sock, p_baud_rate);
 
                 if (status != TPCANStatus.PCAN_ERROR_OK) {
 
-                    throw new Exception($"Error initializing CAN with id 0x{p_slipring_peak_id:X}");
+                    throw new Exception($"Error initializing CAN with id 0x{p_peak_id:X}");
                 }
             }
 
-            m_spare_incoming_queue = new BlockingCollection<TPCANMsg>();
+            m_queue_rx = new BlockingCollection<TPCANMsg>();
+            m_queue_tx = new BlockingCollection<TPCANMsg>();
 
-            if (m_spare_sock != 0) {
+            m_thread_stop = false;
+            m_thread_rx = new Thread(new ThreadStart(ReadRawFrame));
+            m_thread_rx.IsBackground = true;
+            m_thread_rx.Start();
 
-                status = PCANBasic.Initialize(m_spare_sock, TPCANBaudrate.PCAN_BAUD_250K);
-
-                if (status != TPCANStatus.PCAN_ERROR_OK) {
-
-                    throw new Exception($"Error initializing CAN with id 0x{p_spare_peak_id:X}");
-                }
-                         
-                m_thread_read_spare_incoming = new Thread(new ThreadStart(ReadSpareIncoming));
-                m_thread_read_spare_incoming.IsBackground = true;
-                m_thread_read_spare_incoming.Start();
-            }
-
-            m_slipring_incoming_queue = new BlockingCollection<TPCANMsg>();
-            m_slipring_outgoing_queue = new BlockingCollection<TPCANMsg>();
-
-            m_thread_run = true;
-            m_thread_read_slipring_incoming = new Thread(new ThreadStart(ReadSlipringIncoming));
-            m_thread_read_slipring_incoming.IsBackground = true;
-            m_thread_read_slipring_incoming.Start();
-
-            m_thread_write_slipring_outgoing = new Thread(new ThreadStart(WriteSlipringOutgoing));
-            m_thread_write_slipring_outgoing.IsBackground = true;
-            m_thread_write_slipring_outgoing.Start();
+            m_thread_tx = new Thread(new ThreadStart(WriteRawFrame));
+            m_thread_tx.IsBackground = true;
+            m_thread_tx.Start();
         }
 
-        public void Close() {
+        ~PeakCan() {
 
-            m_thread_run = false;
+            m_thread_stop = false;
 
             Thread.Sleep(1000);
 
-            if (m_thread_read_slipring_incoming != null) {
+            if (m_thread_rx != null) {
 
-                m_thread_read_slipring_incoming.Join();
-                m_thread_read_slipring_incoming = null;
+                m_thread_rx.Join();
             }
 
-            if(m_thread_write_slipring_outgoing != null) {
+            if(m_thread_tx != null) {
 
-                m_thread_write_slipring_outgoing.Join();
-                m_thread_write_slipring_outgoing = null;
+                m_thread_tx.Join();
             }
 
-            if (m_slipring_sock != 0) {
+            if (m_sock != 0) {
 
-                PCANBasic.Uninitialize(m_slipring_sock);
-            }
-
-            if (m_spare_sock != 0) {
-
-                if (m_thread_read_spare_incoming != null) {
-
-                    m_thread_read_spare_incoming.Join();
-                    m_thread_read_spare_incoming = null;
-                }
-
-                PCANBasic.Uninitialize(m_spare_sock);
+                PCANBasic.Uninitialize(m_sock);
             }
         }
 
-        public void DequeueSpareIncoming(out TPCANMsg p_frame) {
+        public void EnqueueTx(TPCANMsg p_frame) {
 
-            p_frame = m_spare_incoming_queue.Take();
+            m_queue_tx.Add(p_frame);
         }
 
-        private void ReadSpareIncoming() {
+        public void EnqueueTx(List<TPCANMsg> p_frames) {
+
+            foreach (TPCANMsg frame in p_frames) {
+
+                m_queue_tx.Add(frame);
+            }
+        }
+
+        public void DequeueRx(out TPCANMsg p_frame) {
+
+            p_frame = m_queue_rx.Take();
+        }
+
+        private void ReadRawFrame() {
 
             AutoResetEvent can_event = new AutoResetEvent(false);
 
             uint numeric_buffer = Convert.ToUInt32(can_event.SafeWaitHandle.DangerousGetHandle().ToInt32());
-            // Sets the handle of the Receive-Event.
-            //
-            TPCANStatus status = PCANBasic.SetValue(m_spare_sock, TPCANParameter.PCAN_RECEIVE_EVENT, ref numeric_buffer, sizeof(UInt32));
+            TPCANStatus status = PCANBasic.SetValue(m_sock, TPCANParameter.PCAN_RECEIVE_EVENT, ref numeric_buffer, sizeof(UInt32));
 
             if (status != TPCANStatus.PCAN_ERROR_OK) {
 
@@ -162,65 +136,15 @@ namespace RoterControlSupport {
 
             TPCANMsg raw_frame;
 
-            while (m_thread_run) {
-
-                if (can_event.WaitOne(50)) {
-
-                    do {
-
-                        if ((status = PCANBasic.Read(m_spare_sock, out raw_frame)) == TPCANStatus.PCAN_ERROR_OK) {
-
-                            m_spare_incoming_queue.Add(raw_frame);
-                        }
-
-                    } while (!Convert.ToBoolean(status & TPCANStatus.PCAN_ERROR_QRCVEMPTY));
-                }
-            }
-        }
-
-        public void EnqueueSlipringOutgoing(TPCANMsg p_frame) {
-
-            m_slipring_outgoing_queue.Add(p_frame);
-        }
-
-        public void EnqueueSlipringOutgoing(List<TPCANMsg> p_frame_list) {
-
-            foreach (TPCANMsg frame in p_frame_list) {
-
-                m_slipring_outgoing_queue.Add(frame);
-            }
-        }
-
-        public void DequeueSlipringIncoming(out TPCANMsg p_frame) {
-
-            p_frame = m_slipring_incoming_queue.Take();
-        }
-
-        private void ReadSlipringIncoming() {
-
-            AutoResetEvent can_event = new AutoResetEvent(false);
-
-            uint numeric_buffer = Convert.ToUInt32(can_event.SafeWaitHandle.DangerousGetHandle().ToInt32());
-            // Sets the handle of the Receive-Event.
-            //
-            TPCANStatus status = PCANBasic.SetValue(m_slipring_sock, TPCANParameter.PCAN_RECEIVE_EVENT, ref numeric_buffer, sizeof(UInt32));
-
-            if (status != TPCANStatus.PCAN_ERROR_OK) {
-
-                throw new Exception(GetFormatedError(status));
-            }
-
-            TPCANMsg raw_frame;
-
-            while (m_thread_run) {
+            while (!m_thread_stop) {
 
                 if (can_event.WaitOne(50)) {
                 
                     do {
 
-                        if ((status = PCANBasic.Read(m_slipring_sock, out raw_frame)) == TPCANStatus.PCAN_ERROR_OK) {
+                        if ((status = PCANBasic.Read(m_sock, out raw_frame)) == TPCANStatus.PCAN_ERROR_OK) {
 
-                            m_slipring_incoming_queue.Add(raw_frame);
+                            m_queue_rx.Add(raw_frame);
                         }
 
                     } while (!Convert.ToBoolean(status & TPCANStatus.PCAN_ERROR_QRCVEMPTY));
@@ -228,16 +152,16 @@ namespace RoterControlSupport {
             }
         }
 
-        private void WriteSlipringOutgoing() {
+        private void WriteRawFrame() {
 
             TPCANStatus status;
             TPCANMsg raw_frame;
 
-            while (m_thread_run) {
+            while (!m_thread_stop) {
 
-                raw_frame = m_slipring_outgoing_queue.Take();
+                raw_frame = m_queue_tx.Take();
 
-                if ((status = PCANBasic.Write(m_slipring_sock, ref raw_frame)) != TPCANStatus.PCAN_ERROR_OK) {
+                if ((status = PCANBasic.Write(m_sock, ref raw_frame)) != TPCANStatus.PCAN_ERROR_OK) {
 
                     throw new Exception(GetFormatedError(status));
                 }

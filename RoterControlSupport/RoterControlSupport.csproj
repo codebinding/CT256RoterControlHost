@@ -34,7 +34,6 @@
     <Compile Include="FmiCanFrame.cs" />
     <Compile Include="ImaTable.cs" />
     <Compile Include="MessageCollection.cs" />
-    <Compile Include="MessageFactory.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="PCANBasic.cs" />
     <Compile Include="PeakCan.cs" />
