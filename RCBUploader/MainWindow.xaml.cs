@@ -150,21 +150,25 @@ namespace RCBUploader {
 
             if (open_dialog.ShowDialog() == true) {
 
-                try {
-
-                    FileTransmit ft = new FileTransmit();
-
-                    ft.Permission = Convert.ToUInt32("0755", 8);
-                    ft.LocalFile = open_dialog.FileName;
-                    ft.RemoteFile = "/home/root/bryce";
-
-                    new Thread(() => TransmitFiles(sender, new List<FileTransmit>() { ft })).Start();
-                }
-                catch (Exception ex) {
-
-                    MessageBox.Show(ex.Message);
-                }
+                new Thread(() => UploadHPSW(sender, open_dialog.FileName)).Start();
             }
+        }
+
+        private void UploadHPSW(object sender, string p_file_path) {
+
+            Button button = (sender as Button);
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
+
+            try {
+
+                m_rcb.UpdateHPS(p_file_path);
+            }
+            catch(Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
         }
 
         private void TransmitFile(FileTransmit p_file_transmit, long p_transmitted_size, long p_total_size) {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -52,6 +52,7 @@ namespace RoterControlSupport
         public const ushort CMD_DELETEFILES = 0x0607;
         public const ushort CMD_MOUNTFAT = 0x0608;
         public const ushort CMD_UMOUNTFAT = 0x0609;
+        public const ushort CMD_UPD_HPS = 0x060b;
 
         // Bryce System (0x10)
         public const ushort CMD_SETLOGLEVEL_B = 0x1041;
@@ -674,6 +675,48 @@ namespace RoterControlSupport
         #endregion System
 
         #region File
+        public void UpdateHPS(string p_file_path) {
+
+            using (FileStream file_stream = new FileStream(p_file_path, FileMode.Open, FileAccess.Read)) {
+
+                List<ulong> request = new List<ulong>();
+                List<ulong> response;
+
+                long file_size = file_stream.Length;
+                request.Add(1); // tag: TX_FILE_INFO
+                request.Add((ulong)file_size);
+                SendRequestSync(CMD_UPD_HPS, request, out response);
+                CheckErrorCode(response[0]);
+
+                request.Clear();
+                byte[] block = new byte[RoterController.FileTransmitBlockSize];
+
+                long index = 0;
+
+                while (index != file_size) {
+
+                    file_stream.Seek(index, SeekOrigin.Begin);
+                    int bytes_read = file_stream.Read(block, 0, block.Length);
+                    request.Add(2); // tag: TX_FILE_CONTENT
+                    request.Add((ulong)index);
+                    request.Add((ulong)bytes_read);
+                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
+
+                        request.Add(BitConverter.ToUInt64(block, offset));
+                    }
+
+                    SendRequestSync(CMD_UPD_HPS, request, out response);
+                    CheckErrorCode(response[0]);
+
+                    index += bytes_read;
+                }
+
+                response.Clear();
+                response.Add(0);
+                SendRequestSync(CMD_UPD_HPS, request, out response);
+                CheckErrorCode(response[0]);
+            }
+        }
         public void TransmitFileInfo(long p_file_size, uint p_permission, string p_remote_path) {
 
             List<ulong> request = new List<ulong>();
