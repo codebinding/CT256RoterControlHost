@@ -2,13 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="Main" x:Class="RCBUploader.MainWindow"
-        Title="RCB FW/SW Uploader" Height="500" Width="1000" Background="{StaticResource FMISolidDarkSkyBlue}" WindowStartupLocation="CenterScreen" Closing="Main_Closing" WindowState="Normal" ResizeMode="NoResize">
+        Title="RCB FW/SW Uploader" Height="363" Width="889" Background="{StaticResource FMISolidDarkSkyBlue}" WindowStartupLocation="CenterScreen" Closing="Main_Closing" WindowState="Normal" ResizeMode="NoResize">
     <Grid>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="766,346,0,0" VerticalAlignment="Top" Width="200" Click="btnConnect_Click" Height="100" FontSize="30"/>
-        <Button x:Name="btnUpdateBootloader" Content="Upload Bootloader" FontWeight="Bold" HorizontalAlignment="Left" Margin="100,110,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUpdateBootloader_Click" IsEnabled="False" FontSize="20"/>
-        <Button x:Name="btnUpdateFirmwareFPGA" Content="Upload FPGA FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="400,110,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUpdateFirmwareFPGA_Click" IsEnabled="False" FontSize="20"/>
-        <Button x:Name="btnUpdateFirmwareHPS" Content="Upload HPS FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="700,110,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUpdateFirmwareHPS_Click" IsEnabled="False" FontSize="20"/>
-        <ProgressBar x:Name="pgbFileTransProgress" HorizontalAlignment="Left" Height="30" Margin="40,395,0,0" VerticalAlignment="Top" Width="640"/>
-        <TextBlock x:Name="tblFileTransProgress" HorizontalAlignment="Left" Margin="700,395,0,0" TextWrapping="NoWrap" Text="0%" VerticalAlignment="Top" FontSize="20" Width="80"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="624,139,0,0" VerticalAlignment="Top" Width="200" Click="btnConnect_Click" Height="100" FontSize="30"/>
+        <Button x:Name="btnUpdateFPGA" Content="Upload FPGA FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="88,39,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUpdateFPGA_Click" IsEnabled="False" FontSize="20"/>
+        <Button x:Name="btnUpdateHPSFW" Content="Upload HPS FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="355,39,0,0" VerticalAlignment="Top" Width="200" Height="200" Click="btnUpdateHPSFW_Click" IsEnabled="False" FontSize="20"/>
+        <ProgressBar x:Name="pgbFileTransProgress" HorizontalAlignment="Left" Height="30" Margin="88,265,0,0" VerticalAlignment="Top" Width="736"/>
+        <TextBlock x:Name="tblFileTransProgress" HorizontalAlignment="Left" Margin="438,268,0,0" TextWrapping="NoWrap" Text="0%" VerticalAlignment="Top" FontSize="20" Width="80"/>
     </Grid>
 </Window>

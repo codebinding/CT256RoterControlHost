@@ -27,13 +27,6 @@ using RoterControlSupport;
 
 namespace RCBUploader {
 
-    struct FileTransmit {
-
-        public string LocalFile;
-        public string RemoteFile;
-        public uint Permission;
-    }
-
     public partial class MainWindow : Window {
 
         private RoterController m_rcb = null;
@@ -116,9 +109,8 @@ namespace RCBUploader {
                 m_thread_process_notification.Start();
 
                 btnConnect.IsEnabled = false;
-                btnUpdateBootloader.IsEnabled = true;
-                btnUpdateFirmwareFPGA.IsEnabled = true;
-                btnUpdateFirmwareHPS.IsEnabled = true;
+                btnUpdateFPGA.IsEnabled = true;
+                btnUpdateHPSFW.IsEnabled = true;
 
                 m_rcb_connected = true;
             }
@@ -138,41 +130,18 @@ namespace RCBUploader {
 
             if (open_dialog.ShowDialog() == true) {
 
-                try {
-
-                    FileTransmit ft = new FileTransmit();
-
-                    ft.Permission = Convert.ToUInt32("0755", 8);
-                    ft.LocalFile = open_dialog.FileName;
-                    ft.RemoteFile = "/home/root/acadia";
-
-                    //new Thread(() => TransmitFiles(sender, new List<FileTransmit>() { ft })).Start();
-                }
-                catch (Exception ex) {
-
-                    MessageBox.Show(ex.Message);
-                }
+                new Thread(() => UpdateBootLoader(sender, open_dialog.FileName)).Start();
             }
         }
 
-        private void btnUpdateFirmwareFPGA_Click(object sender, RoutedEventArgs e) {
-
-            OpenFileDialog open_dialog = new OpenFileDialog();
-
-            if (open_dialog.ShowDialog() == true) {
-
-                new Thread(() => UpdateFirmwareFPGA(sender, open_dialog.FileName)).Start();
-            }
-        }
-
-        private void UpdateFirmwareFPGA(object sender, string p_file_path) {
+        private void UpdateBootLoader(object sender, string p_file_path) {
 
             Button button = (sender as Button);
             this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
 
             try {
 
-                m_rcb.UpdateFirmwareFPGA(p_file_path);
+                m_rcb.UpdateBootLoader(p_file_path);
             }
             catch (Exception ex) {
 
@@ -182,24 +151,51 @@ namespace RCBUploader {
             this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
         }
 
-        private void btnUpdateFirmwareHPS_Click(object sender, RoutedEventArgs e) {
+        private void btnUpdateFPGA_Click(object sender, RoutedEventArgs e) {
 
             OpenFileDialog open_dialog = new OpenFileDialog();
 
             if (open_dialog.ShowDialog() == true) {
 
-                new Thread(() => UpdateFirmwareHPS(sender, open_dialog.FileName)).Start();
+                new Thread(() => UpdateFPGA(sender, open_dialog.FileName)).Start();
             }
         }
 
-        private void UpdateFirmwareHPS(object sender, string p_file_path) {
+        private void UpdateFPGA(object sender, string p_file_path) {
 
             Button button = (sender as Button);
             this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
 
             try {
 
-                m_rcb.UpdateFirmwareHPS(p_file_path);
+                m_rcb.UpdateFPGA(p_file_path);
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
+        }
+
+        private void btnUpdateHPSFW_Click(object sender, RoutedEventArgs e) {
+
+            OpenFileDialog open_dialog = new OpenFileDialog();
+
+            if (open_dialog.ShowDialog() == true) {
+
+                new Thread(() => UpdateHPSFW(sender, open_dialog.FileName)).Start();
+            }
+        }
+
+        private void UpdateHPSFW(object sender, string p_file_path) {
+
+            Button button = (sender as Button);
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
+
+            try {
+
+                m_rcb.UpdateHPSFW(p_file_path);
             }
             catch(Exception ex) {
 

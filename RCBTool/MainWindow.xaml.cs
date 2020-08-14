@@ -680,6 +680,11 @@ namespace RCBTool {
 
                     UpdateDiagKvMaOk(value);
                     break;
+
+                case RoterController.NTF_FILEPROGRESS:
+
+                    UpdateTransmissionProgress(value);
+                    break;
                 }
             }
         }
@@ -1231,50 +1236,58 @@ namespace RCBTool {
 
         }
 
-        private void btnUploadFPGAFW_Click(object sender, RoutedEventArgs e) {
+        private void btnUpdateFPGA_Click(object sender, RoutedEventArgs e) {
 
             OpenFileDialog open_dialog = new OpenFileDialog();
 
             if (open_dialog.ShowDialog() == true) {
 
-                try {
-
-                    FileTransmit ft = new FileTransmit();
-
-                    ft.Permission = Convert.ToUInt32("0644", 8);
-                    ft.LocalFile = open_dialog.FileName;
-                    ft.RemoteFile = "/home/root/boot/soc_system.rbf";
-
-                    new Thread(() => TransmitFPGA(sender, new List<FileTransmit>() { ft })).Start();
-                }
-                catch (Exception ex) {
-
-                    MessageBox.Show(ex.Message);
-                }
+                new Thread(() => UpdateFPGA(sender, open_dialog.FileName)).Start();
             }
         }
 
-        private void btnUploadHPSSW_Click(object sender, RoutedEventArgs e) {
+        private void UpdateFPGA(object sender, string p_file_path) {
+
+            Button button = (sender as Button);
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
+
+            try {
+
+                m_rcb.UpdateFPGA(p_file_path);
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
+        }
+
+        private void btnUpdateHPSFW_Click(object sender, RoutedEventArgs e) {
 
             OpenFileDialog open_dialog = new OpenFileDialog();
 
             if (open_dialog.ShowDialog() == true) {
 
-                try {
-
-                    FileTransmit ft = new FileTransmit();
-
-                    ft.Permission = Convert.ToUInt32("0755", 8);
-                    ft.LocalFile = open_dialog.FileName;
-                    ft.RemoteFile = "/home/root/bryce";
-
-                    new Thread(() => TransmitFiles(sender, new List<FileTransmit>() { ft })).Start();
-                }
-                catch (Exception ex) {
-
-                    MessageBox.Show(ex.Message);
-                }
+                new Thread(() => UpdateHPSFW(sender, open_dialog.FileName)).Start();
             }
+        }
+
+        private void UpdateHPSFW(object sender, string p_file_path) {
+
+            Button button = (sender as Button);
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
+
+            try {
+
+                m_rcb.UpdateHPSFW(p_file_path);
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+
+            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
         }
 
         private void btnUploadConfig_Click(object sender, RoutedEventArgs e) {
@@ -1362,39 +1375,6 @@ namespace RCBTool {
             }
         }
 
-        private void TransmitFile(FileTransmit p_file_transmit, long p_transmitted_size, long p_total_size) {
-
-            using (FileStream file_stream = new FileStream(p_file_transmit.LocalFile, FileMode.Open, FileAccess.Read)) {
-
-                long file_size = file_stream.Length;
-
-                m_rcb.TransmitFileInfo(file_size, p_file_transmit.Permission, p_file_transmit.RemoteFile);
-
-                byte[] block = new byte[RoterController.FileTransmitBlockSize];
-
-                int bytes_read = 0;
-                long bytes_sent = p_transmitted_size;
-
-                List<ulong> request = new List<ulong>();
-
-                while ((bytes_read = file_stream.Read(block, 0, block.Length)) > 0) {
-
-                    request.Clear();
-
-                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
-
-                        request.Add(BitConverter.ToUInt64(block, offset));
-                    }
-
-                    m_rcb.TransmitFileContent(request, bytes_read);
-
-                    bytes_sent += bytes_read;
-
-                    UpdateTransmissionProgress((double)bytes_sent * 100.0 / (double)p_total_size);
-                }
-            }
-        }
-
         private void TransmitFiles(object sender, List<FileTransmit> p_file_list) {
 
             Button button = (sender as Button);
@@ -1403,72 +1383,15 @@ namespace RCBTool {
 
             try {
 
-                long total_file_size = 0;
-
                 foreach (FileTransmit ft in p_file_list) {
 
-                    FileInfo file_info = new FileInfo(ft.LocalFile);
-                    total_file_size += file_info.Length;
-                }
-
-                long transmitted_size = 0;
-
-                foreach (FileTransmit ft in p_file_list) {
-
-                    TransmitFile(ft, transmitted_size, total_file_size);
-
-                    FileInfo file_info = new FileInfo(ft.LocalFile);
-                    transmitted_size += file_info.Length;
+                    m_rcb.TransmitFile(ft.LocalFile, ft.Permission, ft.RemoteFile);
                 }
             }
             catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
             }
-
-            UpdateTransmissionProgress(100);
-
-            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
-        }
-
-        private void TransmitFPGA(object sender, List<FileTransmit> p_file_list) {
-
-            Button button = (sender as Button);
-
-            this.Dispatcher.Invoke(new Action(() => button.IsEnabled = false));
-
-            try {
-
-                m_rcb.MountFat();
-
-                long total_file_size = 0;
-
-                foreach (FileTransmit ft in p_file_list) {
-
-                    FileInfo file_info = new FileInfo(ft.LocalFile);
-                    total_file_size += file_info.Length;
-                }
-
-                long transmitted_size = 0;
-
-                foreach (FileTransmit ft in p_file_list) {
-
-                    TransmitFile(ft, transmitted_size, total_file_size);
-
-                    FileInfo file_info = new FileInfo(ft.LocalFile);
-                    transmitted_size += file_info.Length;
-                }
-
-                m_rcb.UmountFat();
-            }
-            catch (Exception ex) {
-
-                m_rcb.UmountFatAsync();
-
-                MessageBox.Show(ex.Message);
-            }
-
-            UpdateTransmissionProgress(100);
 
             this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
         }
@@ -1495,60 +1418,6 @@ namespace RCBTool {
             }
         }
 
-        private void RetrieveFile(string p_remote_path, string p_local_path) {
-
-            //this.Dispatcher.Invoke(new Action(() => btnRetrieveFile.IsEnabled = false));
-
-            try {
-
-                long file_size = 0;
-
-                m_rcb.RetrieveFileInfo(p_remote_path, out file_size);
-
-                using (FileStream file_stream = new FileStream(p_local_path, FileMode.Create)) {
-
-                    if (file_size > 0) {
-
-                        byte[] block = new byte[RoterController.FileTransmitBlockSize];
-
-                        List<ulong> content = null;
-                        int bytes_received;
-                        int bytes_written = 0;
-
-                        for (int block_number = 0 ; block_number <= (file_size - 1) / RoterController.FileTransmitBlockSize ; block_number++) {
-
-                            m_rcb.RetrieveFileContent(block_number, out content, out bytes_received);
-
-                            int offset = 0;
-
-                            foreach (ulong value in content) {
-
-                                byte[] buffer = BitConverter.GetBytes(value);
-
-                                buffer.CopyTo(block, offset);
-
-                                offset += 8;
-                            }
-
-                            file_stream.Write(block, 0, bytes_received);
-
-                            bytes_written += bytes_received;
-
-                            UpdateTransmissionProgress((double)bytes_written * 100.0 / (double)file_size);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) {
-
-                MessageBox.Show(ex.Message);
-            }
-
-            UpdateTransmissionProgress(100);
-
-            //this.Dispatcher.Invoke(new Action(() => btnRetrieveFile.IsEnabled = true));
-        }
-
         private void RetrieveFiles(object sender, List<FileTransmit> p_file_list) {
 
             Button button = (sender as Button);
@@ -1559,15 +1428,13 @@ namespace RCBTool {
 
                 foreach (FileTransmit ft in p_file_list) {
 
-                    RetrieveFile(ft.RemoteFile, ft.LocalFile);
+                    m_rcb.RetrieveFile(ft.LocalFile, ft.RemoteFile);
                 }
             }
             catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
             }
-
-            UpdateTransmissionProgress(100);
 
             this.Dispatcher.Invoke(new Action(() => button.IsEnabled = true));
         }
@@ -1576,7 +1443,9 @@ namespace RCBTool {
 
             try {
 
-                m_rcb.AbortTransmission();
+                m_rcb.AbortTransmit();
+                pgbFileTransProgress.Visibility = Visibility.Hidden;
+                tblFileTransProgress.Visibility = Visibility.Hidden;
             }
             catch (Exception ex) {
 
@@ -1584,9 +1453,9 @@ namespace RCBTool {
             }
         }
 
-        private void UpdateTransmissionProgress(double status) {
+        private void UpdateTransmissionProgress(double percent) {
 
-            if (status == 0 || status == 100) {
+            if (percent == 0 || percent == 100) {
 
                 this.Dispatcher.Invoke(new Action(() => pgbFileTransProgress.Visibility = Visibility.Hidden));
                 this.Dispatcher.Invoke(new Action(() => tblFileTransProgress.Visibility = Visibility.Hidden));
@@ -1594,9 +1463,9 @@ namespace RCBTool {
             else {
 
                 this.Dispatcher.Invoke(new Action(() => pgbFileTransProgress.Visibility = Visibility.Visible));
-                this.Dispatcher.Invoke(new Action(() => pgbFileTransProgress.Value = status));
+                this.Dispatcher.Invoke(new Action(() => pgbFileTransProgress.Value = percent));
                 this.Dispatcher.Invoke(new Action(() => tblFileTransProgress.Visibility = Visibility.Visible));
-                this.Dispatcher.Invoke(new Action(() => tblFileTransProgress.Text = $"{(status / 100.0):P0}"));
+                this.Dispatcher.Invoke(new Action(() => tblFileTransProgress.Text = $"{(percent / 100.0):P0}"));
             }
         }
         #endregion House Keeping

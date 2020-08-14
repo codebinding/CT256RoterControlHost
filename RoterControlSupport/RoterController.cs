@@ -43,17 +43,14 @@ namespace RoterControlSupport
         public const ushort CMD_STARTDENALI = 0x0506;
 
         // File Transfer (0x06)
-        public const ushort CMD_TXFILEINFO = 0x0601;
-        public const ushort CMD_TXFILECONTENT = 0x0602;
-        public const ushort CMD_RXFILEINFO = 0x0603;
-        public const ushort CMD_RXFILECONTENT = 0x0604;
-        public const ushort CMD_ABORTTXRX = 0x0605;
-        public const ushort CMD_SCANDIR = 0x0606;
-        public const ushort CMD_DELETEFILES = 0x0607;
-        public const ushort CMD_MOUNTFAT = 0x0608;
-        public const ushort CMD_UMOUNTFAT = 0x0609;
-        public const ushort CMD_UPDFW_FPGA = 0x060a;
-        public const ushort CMD_UPDFW_HPS = 0x060b;
+        public const ushort CMD_ABORT_TXRX = 0x0600;
+        public const ushort CMD_SCAN_DIR = 0x0601;
+        public const ushort CMD_TX_FILE = 0x0602;
+        public const ushort CMD_RX_FILE = 0x0603;
+        public const ushort CMD_DEL_FILES = 0x0604;
+        public const ushort CMD_UPDFW_BTLD = 0x060a;
+        public const ushort CMD_UPDFW_FPGA = 0x060b;
+        public const ushort CMD_UPDFW_HPS = 0x060c;
 
         // Bryce System (0x10)
         public const ushort CMD_SETLOGLEVEL_B = 0x1041;
@@ -217,12 +214,10 @@ namespace RoterControlSupport
         #endregion Aggregator Commands
 
         #region Pre-defined Constants
-        public const int FileTransmitBlockSize = 1000 * 8;
         public enum Tag : int {
-            TX_FILE_INFO = 1,
-            RX_FILE_INFO = 2,
-            FILE_CONTENT = 3,
-            END_OF_TX = 4
+            FILE_INFO = 1,
+            FILE_CONTENT = 2,
+            END_OF_FILE = 3
         }
         #endregion
 
@@ -235,6 +230,8 @@ namespace RoterControlSupport
         private BlockingCollection<string> m_log_queue;
 
         private ConcurrentDictionary<ushort, MessageCollection> m_response_pool;
+
+        private uint m_file_transmit_size = 0;
 
         public RoterController(int p_device_id) {
 
@@ -352,7 +349,7 @@ namespace RoterControlSupport
             return false;
         }
 
-        public void SendRequestSync(ushort p_command, List<ulong> p_request, out List<ulong> p_response, int p_delay = 500) {
+        public void SendRequestSync(ushort p_command, List<ulong> p_request, out List<ulong> p_response, int p_delay = 1000) {
 
             MessageCollection response_collection = m_response_pool.AddOrUpdate(p_command, new MessageCollection(), (key, value) => new MessageCollection());
 
@@ -682,218 +679,18 @@ namespace RoterControlSupport
         #endregion System
 
         #region File
-        public void UpdateFirmwareHPS(string p_file_path) {
-
-            using (FileStream file_stream = new FileStream(p_file_path, FileMode.Open, FileAccess.Read)) {
-
-                List<ulong> request = new List<ulong>();
-                List<ulong> response;
-
-                long file_size = file_stream.Length;
-                request.Add((ulong)Tag.TX_FILE_INFO);
-                request.Add((ulong)file_size);
-
-                try {
-                    SendRequestSync(CMD_UPDFW_HPS, request, out response);
-                    CheckErrorCode(response[0]);
-                }
-                catch {
-
-                    SendRequestSync(CMD_UPDFW_HPS, request, out response);
-                    CheckErrorCode(response[0]);
-                }
-
-
-                byte[] block = new byte[RoterController.FileTransmitBlockSize];
-
-                int bytes_read = 0;
-                for (long index = 0 ; index < file_size ; index += bytes_read) {
-
-                    request.Clear();
-
-                    file_stream.Seek(index, SeekOrigin.Begin);
-                    bytes_read = file_stream.Read(block, 0, block.Length);
-                    request.Add((ulong)Tag.FILE_CONTENT);
-                    request.Add((ulong)index);
-                    request.Add((ulong)bytes_read);
-                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
-
-                        request.Add(BitConverter.ToUInt64(block, offset));
-                    }
-
-                    try {
-
-                        SendRequestSync(CMD_UPDFW_HPS, request, out response, 2000);
-                        CheckErrorCode(response[0]);
-                    }
-                    catch {
-
-                        SendRequestSync(CMD_UPDFW_HPS, request, out response, 2000);
-                        CheckErrorCode(response[0]);
-                    }
-                }
-
-                request.Clear();
-                request.Add((ulong)Tag.END_OF_TX);
-                SendRequestSync(CMD_UPDFW_HPS, request, out response);
-                CheckErrorCode(response[0]);
-            }
-        }
-
-        public void UpdateFirmwareFPGA(string p_file_path) {
-
-            using (FileStream file_stream = new FileStream(p_file_path, FileMode.Open, FileAccess.Read)) {
-
-                List<ulong> request = new List<ulong>();
-                List<ulong> response;
-
-                long file_size = file_stream.Length;
-                request.Add((ulong)Tag.TX_FILE_INFO);
-                request.Add((ulong)file_size);
-
-                try {
-                    SendRequestSync(CMD_UPDFW_FPGA, request, out response);
-                    CheckErrorCode(response[0]);
-                }
-                catch {
-
-                    SendRequestSync(CMD_UPDFW_FPGA, request, out response);
-                    CheckErrorCode(response[0]);
-                }
-
-
-                byte[] block = new byte[RoterController.FileTransmitBlockSize];
-
-                int bytes_read = 0;
-                for (long index = 0 ; index < file_size ; index += bytes_read) {
-
-                    request.Clear();
-
-                    file_stream.Seek(index, SeekOrigin.Begin);
-                    bytes_read = file_stream.Read(block, 0, block.Length);
-                    request.Add((ulong)Tag.FILE_CONTENT);
-                    request.Add((ulong)index);
-                    request.Add((ulong)bytes_read);
-                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
-
-                        request.Add(BitConverter.ToUInt64(block, offset));
-                    }
-
-                    try {
-
-                        SendRequestSync(CMD_UPDFW_FPGA, request, out response, 2000);
-                        CheckErrorCode(response[0]);
-                    }
-                    catch {
-
-                        SendRequestSync(CMD_UPDFW_FPGA, request, out response, 2000);
-                        CheckErrorCode(response[0]);
-                    }
-                }
-
-                request.Clear();
-                request.Add((ulong)Tag.END_OF_TX);
-                SendRequestSync(CMD_UPDFW_FPGA, request, out response);
-                CheckErrorCode(response[0]);
-            }
-        }
-
-        public void TransmitFileInfo(long p_file_size, uint p_permission, string p_remote_path) {
-
-            List<ulong> request = new List<ulong>();
-            List<ulong> response;
-
-            request.Add((ulong)p_permission);
-            request.Add((ulong)p_file_size);
-
-            byte[] remote_path = Encoding.ASCII.GetBytes(p_remote_path);
-
-            ulong data64 = 0;
-            for (int i = 0 ; i < remote_path.Length ; i++) {
-
-                data64 |= (ulong)remote_path[i] << (i % 8 << 3);
-
-                if (i % 8 == 7 || i == remote_path.Length - 1) {
-
-                    request.Add(data64);
-
-                    data64 = 0;
-                }
-            }
-
-            SendRequestSync(CMD_TXFILEINFO, request, out response, 500);
-
-            CheckErrorCode(response[0]);
-        }
-
-        public void TransmitFileContent(List<ulong> p_content, int p_block_size) {
-
-            List<ulong> request = new List<ulong> { (ulong)p_block_size };
-            List<ulong> response;
-
-            request.AddRange(p_content);
-
-            SendRequestSync(CMD_TXFILECONTENT, request, out response, 5000);
-
-            CheckErrorCode(response[0]);
-        }
-
-        public void RetrieveFileInfo(string p_remote_path, out long p_file_size) {
-
-            List<ulong> request = new List<ulong>();
-            List<ulong> response;
-
-            byte[] remote_path = Encoding.ASCII.GetBytes(p_remote_path);
-
-            ulong data64 = 0;
-            for (int i = 0 ; i < remote_path.Length ; i++) {
-
-                data64 |= (ulong)remote_path[i] << (i % 8 << 3);
-
-                if (i % 8 == 7 || i == remote_path.Length - 1) {
-
-                    request.Add(data64);
-
-                    data64 = 0;
-                }
-            }
-
-            SendRequestSync(CMD_RXFILEINFO, request, out response, 500);
-
-            CheckErrorCode(response[0]);
-
-            p_file_size = (long)(response[1]);
-        }
-
-        public void RetrieveFileContent(int p_block_number, out List<ulong> p_content, out int p_block_size) {
-
-            List<ulong> request = new List<ulong> { (ulong)p_block_number };
-            List<ulong> response;
-
-            SendRequestSync(CMD_RXFILECONTENT, request, out response, 5000);
-
-            CheckErrorCode(response[0]);
-
-            p_block_size = (int)(response[1]);
-
-            response.RemoveRange(0, 2);
-
-            p_content = response;
-        }
-
-        public void AbortTransmission() {
+        public void AbortTransmit() {
 
             List<ulong> request = new List<ulong> { 0 };
             List<ulong> response;
 
-            SendRequestSync(CMD_ABORTTXRX, request, out response);
-
+            SendRequestSync(CMD_ABORT_TXRX, request, out response);
             CheckErrorCode(response[0]);
         }
 
         public void ScanDir(string p_dir, out List<string> p_file_list) {
 
-            List<ulong> request = new List<ulong>();
+            List<ulong> request = new List<ulong>() { (ulong)Tag.FILE_INFO };
             List<ulong> response;
 
             byte[] dir_name = Encoding.ASCII.GetBytes(p_dir);
@@ -916,8 +713,7 @@ namespace RoterControlSupport
                 }
             }
 
-            SendRequestSync(CMD_SCANDIR, request, out response, 10000);
-
+            SendRequestSync(CMD_SCAN_DIR, request, out response, 10000);
             CheckErrorCode(response[0]);
 
             response.RemoveAt(0);
@@ -947,9 +743,163 @@ namespace RoterControlSupport
             }
         }
 
-        public void DeleteFiles(List<string> p_filename_list) {
+        public void TransmitFile(string p_local_path, uint p_permission, string p_remote_path) {
+
+            using (FileStream file_stream = new FileStream(p_local_path, FileMode.Open, FileAccess.Read)) {
+
+                List<ulong> request = new List<ulong>();
+                List<ulong> response;
+
+                long file_size = file_stream.Length;
+                request.Add((ulong)Tag.FILE_INFO);
+                request.Add((ulong)p_permission);
+                request.Add((ulong)file_size);
+
+                byte[] remote_path = Encoding.ASCII.GetBytes(p_remote_path);
+
+                ulong data64 = 0;
+                for (int i = 0 ; i < remote_path.Length ; i++) {
+
+                    data64 |= (ulong)remote_path[i] << (i % 8 << 3);
+
+                    if (i % 8 == 7 || i == remote_path.Length - 1) {
+
+                        request.Add(data64);
+
+                        data64 = 0;
+                    }
+                }
+
+                try {
+
+                    SendRequestSync(CMD_TX_FILE, request, out response);
+                }
+                catch {
+
+                    SendRequestSync(CMD_TX_FILE, request, out response);
+                }
+
+                CheckErrorCode(response[0]);
+                m_file_transmit_size = (uint)response[1];
+
+                byte[] block = new byte[m_file_transmit_size];
+
+                int bytes_read = 0;
+                for (long index = 0 ; index < file_size ; index += bytes_read) {
+
+                    request.Clear();
+
+                    file_stream.Seek(index, SeekOrigin.Begin);
+                    bytes_read = file_stream.Read(block, 0, block.Length);
+                    request.Add((ulong)Tag.FILE_CONTENT);
+                    request.Add((ulong)index);
+                    request.Add((ulong)bytes_read);
+                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
+
+                        request.Add(BitConverter.ToUInt64(block, offset));
+                    }
+
+                    try {
+
+                        SendRequestSync(CMD_TX_FILE, request, out response, 2000);
+                    }
+                    catch {
+
+                        SendRequestSync(CMD_TX_FILE, request, out response, 2000);
+                    }
+
+                    CheckErrorCode(response[0]);
+                }
+
+                request.Clear();
+                request.Add((ulong)Tag.END_OF_FILE);
+                SendRequestSync(CMD_TX_FILE, request, out response);
+                CheckErrorCode(response[0]);
+            }
+        }
+
+        public void RetrieveFile(string p_local_path, string p_remote_path) {
 
             List<ulong> request = new List<ulong>();
+            List<ulong> response;
+
+            request.Add((ulong)Tag.FILE_INFO);
+
+            byte[] remote_path = Encoding.ASCII.GetBytes(p_remote_path);
+
+            ulong data64 = 0;
+            for (int i = 0 ; i < remote_path.Length ; i++) {
+
+                data64 |= (ulong)remote_path[i] << (i % 8 << 3);
+
+                if (i % 8 == 7 || i == remote_path.Length - 1) {
+
+                    request.Add(data64);
+
+                    data64 = 0;
+                }
+            }
+
+            ulong file_size = 0;
+
+            try {
+
+                SendRequestSync(CMD_RX_FILE, request, out response);
+            }
+            catch {
+
+                SendRequestSync(CMD_RX_FILE, request, out response);
+            }
+
+            CheckErrorCode(response[0]);
+            file_size = response[1];
+            m_file_transmit_size = (uint)response[2];
+
+            using (FileStream write_stream = new FileStream(p_local_path, FileMode.Create)) {
+
+                uint bytes_received = 0;
+                for (ulong file_position = 0 ; file_position < file_size ; file_position += bytes_received) {
+
+                    request.Clear();
+                    request.Add((ulong)Tag.FILE_CONTENT);
+                    request.Add(file_position);
+
+                    try {
+
+                        SendRequestSync(CMD_RX_FILE, request, out response, 2000);
+                    }
+                    catch {
+
+                        SendRequestSync(CMD_RX_FILE, request, out response, 2000);
+                    }
+
+                    CheckErrorCode(response[0]);
+                    bytes_received = (uint)response[2];
+
+                    response.RemoveRange(0, 3);
+
+                    int offset = 0;
+                    byte[] block = new byte[m_file_transmit_size];
+                    foreach (ulong value in response) {
+
+                        byte[] buffer = BitConverter.GetBytes(value);
+                        buffer.CopyTo(block, offset);
+                        offset += 8;
+                    }
+
+                    write_stream.Write(block, 0, (int)bytes_received);
+                }
+            }
+
+            request.Clear();
+            request.Add((ulong)Tag.END_OF_FILE);
+            SendRequestSync(CMD_RX_FILE, request, out response);
+            CheckErrorCode(response[0]);
+        }
+
+        public void DeleteFiles(List<string> p_filename_list) {
+
+            List<ulong> request = new List<ulong>() { (ulong)Tag.FILE_INFO };
             List<ulong> response;
 
             foreach (string filename in p_filename_list) {
@@ -977,37 +927,187 @@ namespace RoterControlSupport
 
             if (p_filename_list.Count > 0) {
 
-                SendRequestSync(CMD_DELETEFILES, request, out response, 10000);
+                SendRequestSync(CMD_DEL_FILES, request, out response, 10000);
 
                 CheckErrorCode(response[0]);
             }
         }
 
-        public void MountFat() {
+        public void UpdateBootLoader(string p_file_path) {
 
-            List<ulong> request = new List<ulong> { 0 };
-            List<ulong> response;
+            using (FileStream file_stream = new FileStream(p_file_path, FileMode.Open, FileAccess.Read)) {
 
-            SendRequestSync(CMD_MOUNTFAT, request, out response, 1000);
+                List<ulong> request = new List<ulong>();
+                List<ulong> response;
 
-            CheckErrorCode(response[0]);
+                long file_size = file_stream.Length;
+                request.Add((ulong)Tag.FILE_INFO);
+                request.Add((ulong)file_size);
+
+                try {
+
+                    SendRequestSync(CMD_UPDFW_BTLD, request, out response);
+                }
+                catch {
+
+                    SendRequestSync(CMD_UPDFW_BTLD, request, out response);
+                }
+
+                CheckErrorCode(response[0]);
+                m_file_transmit_size = (uint)response[1];
+
+                byte[] block = new byte[m_file_transmit_size];
+
+                int bytes_read = 0;
+                for (long index = 0 ; index < file_size ; index += bytes_read) {
+
+                    request.Clear();
+
+                    file_stream.Seek(index, SeekOrigin.Begin);
+                    bytes_read = file_stream.Read(block, 0, block.Length);
+                    request.Add((ulong)Tag.FILE_CONTENT);
+                    request.Add((ulong)index);
+                    request.Add((ulong)bytes_read);
+                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
+
+                        request.Add(BitConverter.ToUInt64(block, offset));
+                    }
+
+                    try {
+
+                        SendRequestSync(CMD_UPDFW_BTLD, request, out response, 2000);
+                    }
+                    catch {
+
+                        SendRequestSync(CMD_UPDFW_BTLD, request, out response, 2000);
+                    }
+
+                    CheckErrorCode(response[0]);
+                }
+
+                request.Clear();
+                request.Add((ulong)Tag.END_OF_FILE);
+                SendRequestSync(CMD_UPDFW_BTLD, request, out response);
+                CheckErrorCode(response[0]);
+            }
         }
 
-        public void UmountFat() {
+        public void UpdateFPGA(string p_file_path) {
 
-            List<ulong> request = new List<ulong> { 0 };
-            List<ulong> response;
+            using (FileStream file_stream = new FileStream(p_file_path, FileMode.Open, FileAccess.Read)) {
 
-            SendRequestSync(CMD_UMOUNTFAT, request, out response, 1000);
+                List<ulong> request = new List<ulong>();
+                List<ulong> response;
 
-            CheckErrorCode(response[0]);
+                long file_size = file_stream.Length;
+                request.Add((ulong)Tag.FILE_INFO);
+                request.Add((ulong)file_size);
+
+                try {
+
+                    SendRequestSync(CMD_UPDFW_FPGA, request, out response);
+                }
+                catch {
+
+                    SendRequestSync(CMD_UPDFW_FPGA, request, out response);
+                }
+
+                CheckErrorCode(response[0]);
+                m_file_transmit_size = (uint)response[1];
+
+                byte[] block = new byte[m_file_transmit_size];
+
+                int bytes_read = 0;
+                for (long index = 0 ; index < file_size ; index += bytes_read) {
+
+                    request.Clear();
+
+                    file_stream.Seek(index, SeekOrigin.Begin);
+                    bytes_read = file_stream.Read(block, 0, block.Length);
+                    request.Add((ulong)Tag.FILE_CONTENT);
+                    request.Add((ulong)index);
+                    request.Add((ulong)bytes_read);
+                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
+
+                        request.Add(BitConverter.ToUInt64(block, offset));
+                    }
+
+                    try {
+
+                        SendRequestSync(CMD_UPDFW_FPGA, request, out response, 2000);
+                        CheckErrorCode(response[0]);
+                    }
+                    catch {
+
+                        SendRequestSync(CMD_UPDFW_FPGA, request, out response, 2000);
+                        CheckErrorCode(response[0]);
+                    }
+                }
+
+                request.Clear();
+                request.Add((ulong)Tag.END_OF_FILE);
+                SendRequestSync(CMD_UPDFW_FPGA, request, out response, 3000);
+                CheckErrorCode(response[0]);
+            }
         }
 
-        public void UmountFatAsync() {
+        public void UpdateHPSFW(string p_file_path) {
 
-            List<ulong> request = new List<ulong> { 0 };
+            using (FileStream file_stream = new FileStream(p_file_path, FileMode.Open, FileAccess.Read)) {
 
-            SendRequestAsync(CMD_UMOUNTFAT, request);
+                List<ulong> request = new List<ulong>();
+                List<ulong> response;
+
+                long file_size = file_stream.Length;
+                request.Add((ulong)Tag.FILE_INFO);
+                request.Add((ulong)file_size);
+
+                try {
+
+                    SendRequestSync(CMD_UPDFW_HPS, request, out response);
+                }
+                catch {
+
+                    SendRequestSync(CMD_UPDFW_HPS, request, out response);
+                }
+
+                CheckErrorCode(response[0]);
+                m_file_transmit_size = (uint)response[1];
+
+                byte[] block = new byte[m_file_transmit_size];
+
+                int bytes_read = 0;
+                for (long index = 0 ; index < file_size ; index += bytes_read) {
+
+                    request.Clear();
+
+                    file_stream.Seek(index, SeekOrigin.Begin);
+                    bytes_read = file_stream.Read(block, 0, block.Length);
+                    request.Add((ulong)Tag.FILE_CONTENT);
+                    request.Add((ulong)index);
+                    request.Add((ulong)bytes_read);
+                    for (int offset = 0 ; offset < bytes_read ; offset += 8) {
+
+                        request.Add(BitConverter.ToUInt64(block, offset));
+                    }
+
+                    try {
+
+                        SendRequestSync(CMD_UPDFW_HPS, request, out response, 2000);
+                    }
+                    catch {
+
+                        SendRequestSync(CMD_UPDFW_HPS, request, out response, 2000);
+                    }
+
+                    CheckErrorCode(response[0]);
+                }
+
+                request.Clear();
+                request.Add((ulong)Tag.END_OF_FILE);
+                SendRequestSync(CMD_UPDFW_HPS, request, out response);
+                CheckErrorCode(response[0]);
+            }
         }
         #endregion File
         #endregion Acadia

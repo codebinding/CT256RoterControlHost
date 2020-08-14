@@ -49,8 +49,8 @@
                         </GroupBox>
                         <GroupBox Header="File Management" HorizontalAlignment="Left" Margin="650,40,0,0" VerticalAlignment="Top" Width="510" Height="694">
                             <Grid>
-                                <Button x:Name="btnUploadFPGAFW" Content="Upload FPGA FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnUploadFPGAFW_Click"/>
-                                <Button x:Name="btnUpoadHPSSW" Content="Upload HPS FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="180,30,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnUploadHPSSW_Click"/>
+                                <Button x:Name="btnUpdateFPGA" Content="Upload FPGA FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="30,30,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnUpdateFPGA_Click"/>
+                                <Button x:Name="btnUpdateHPSFW" Content="Upload HPS FW" FontWeight="Bold" HorizontalAlignment="Left" Margin="180,30,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnUpdateHPSFW_Click"/>
                                 <Button x:Name="btnUpoadConfig" Content="Upload Configuration" FontWeight="Bold" HorizontalAlignment="Left" Margin="330,30,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnUploadConfig_Click"/>
                                 <Button x:Name="btnListLog" Content="List Log Folder" FontWeight="Bold" HorizontalAlignment="Left" Margin="30,215,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnListLog_Click" />
                                 <Button x:Name="btnDeleteLog" Content="Delete Log(s)" FontWeight="Bold" HorizontalAlignment="Left" Margin="180,215,0,0" VerticalAlignment="Top" Width="130" Height="130" Click="btnDeleteLog_Click" />
