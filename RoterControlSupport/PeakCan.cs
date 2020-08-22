@@ -41,7 +41,7 @@ namespace RoterControlSupport {
                 status = PCANBasic.GetValue(channel, TPCANParameter.PCAN_CHANNEL_CONDITION, out condition, sizeof(UInt32));
                 if (status == TPCANStatus.PCAN_ERROR_OK && (condition & PCANBasic.PCAN_CHANNEL_AVAILABLE) == PCANBasic.PCAN_CHANNEL_AVAILABLE) {
 
-                    status = PCANBasic.Initialize(channel, TPCANBaudrate.PCAN_BAUD_500K);
+                    status = PCANBasic.Initialize(channel, p_baud_rate);
                     if (status == TPCANStatus.PCAN_ERROR_OK) {
 
                         status = PCANBasic.GetValue(channel, TPCANParameter.PCAN_DEVICE_NUMBER, out device_id, sizeof(UInt32));
@@ -66,6 +66,26 @@ namespace RoterControlSupport {
                 if (status != TPCANStatus.PCAN_ERROR_OK) {
 
                     throw new Exception($"Error initializing CAN with id 0x{p_peak_id:X}");
+                }
+
+                status = PCANBasic.Reset(m_sock);
+                if (status != TPCANStatus.PCAN_ERROR_OK) {
+
+                    throw new Exception(GetFormatedError(status));
+                }
+
+                uint numeric_buffer = PCANBasic.PCAN_PARAMETER_ON;
+                status = PCANBasic.SetValue(m_sock, TPCANParameter.PCAN_RECEIVE_EVENT, ref numeric_buffer, sizeof(UInt32));
+
+                if (status != TPCANStatus.PCAN_ERROR_OK) {
+
+                    throw new Exception(GetFormatedError(status));
+                }
+
+                status = PCANBasic.GetStatus(m_sock);
+                if (status != TPCANStatus.PCAN_ERROR_OK) {
+
+                    throw new Exception(GetFormatedError(status));
                 }
             }
 

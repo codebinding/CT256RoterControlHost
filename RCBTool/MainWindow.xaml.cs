@@ -340,24 +340,32 @@ namespace RCBTool {
 
             if (m_rcb_connected) {
 
-                m_thread_run = false;
-                Thread.Sleep(500);
-
                 m_rcb.StopRcbServiceAsync();
                 m_rcb.StopEngineeringServiceAsync();
+                Thread.Sleep(3000);
+            }
+
+            m_thread_run = false;
+            Thread.Sleep(500);
+
+            if (m_thread_process_notification != null) {
 
                 m_thread_process_notification.Abort();
                 m_thread_process_notification.Join();
+            }
+
+            if (m_thread_process_log != null) {
 
                 m_thread_process_log.Abort();
                 m_thread_process_log.Join();
-
-                if (m_thread_read_gbox_can != null) {
-
-                    m_thread_read_gbox_can.Abort();
-                    m_thread_read_gbox_can.Join();
-                }
             }
+
+            if (m_thread_read_gbox_can != null) {
+
+                m_thread_read_gbox_can.Abort();
+                m_thread_read_gbox_can.Join();
+            }
+
 
             if (m_messaging_used) {
 
@@ -1039,13 +1047,19 @@ namespace RCBTool {
 
                 m_thread_run = true;
 
-                m_thread_process_notification = new Thread(() => ProcessNotification());
-                m_thread_process_notification.IsBackground = true;
-                m_thread_process_notification.Start();
+                if (m_thread_process_notification == null) {
 
-                m_thread_process_log = new Thread(() => PrintRotorControllerLog());
-                m_thread_process_log.IsBackground = true;
-                m_thread_process_log.Start();
+                    m_thread_process_notification = new Thread(() => ProcessNotification());
+                    m_thread_process_notification.IsBackground = true;
+                    m_thread_process_notification.Start();
+                }
+
+                if (m_thread_process_log == null) {
+
+                    m_thread_process_log = new Thread(() => PrintRotorControllerLog());
+                    m_thread_process_log.IsBackground = true;
+                    m_thread_process_log.Start();
+                }
 
                 m_rcb.SyncTime();
 
@@ -1068,6 +1082,7 @@ namespace RCBTool {
             }
             catch (Exception ex) {
 
+                
                 MessageBox.Show(ex.Message);
             }
         }
