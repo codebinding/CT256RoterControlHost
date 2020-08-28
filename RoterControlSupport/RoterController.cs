@@ -66,7 +66,7 @@ namespace RoterControlSupport
         public const ushort CMD_TURNONSTDOUTPUT_D = 0x0a44;
         public const ushort CMD_TURNONCANOUTPUT_D = 0x0a45;
 
-        // Denali Diagnostic (0x0b)
+        // Denali Engineering (0x0b)
         public const ushort CMD_READREGISTER = 0x0b01;
         public const ushort CMD_WRITEREGISTER = 0x0b02;
         public const ushort CMD_DIAG_ABORT = 0x0b11;
@@ -79,12 +79,21 @@ namespace RoterControlSupport
         public const ushort CMD_DIAG_CAN2 = 0x0b18;
         public const ushort CMD_DIAG_ETHERNET = 0x0b19;
 
+        public const ushort CMD_CALFS_READTABLE = 0x0b21;
+        public const ushort CMD_CALFS_WRITETABLE = 0x0b22;
+        public const ushort CMD_CALFS_WRITEFLASH = 0x0b23;
+        public const ushort CMD_CALFS_RESETTABLE = 0x0b24;
+
         public const ushort NTF_DIAG_TCUERR = 0x0070;
         public const ushort NTF_DIAG_XRAYON = 0x0071;
         public const ushort NTF_DIAG_KVMAOK = 0x0072;
 
-        // Denali TCU/G-Box (0x0c)
-        public const ushort CMD_GBUPDATE = 0x0c01;
+        public const int TAG_ENG_ALL = 0x00;
+        public const int TAG_GLOBAL_OFFSET = 0x01;
+        public const int TAG_TABLE_ROW = 0x02;
+        public const int TAG_TABLE_ENTRY = 0x03;
+        public const int TAG_GLOBAL_TABLE = 0x04;
+        public const int TAG_CALIBRATION_TABLE = 0x05;
 
         // X-Ray (0x11)
         public const ushort CMD_HVINIT = 0x1100;
@@ -1280,17 +1289,128 @@ namespace RoterControlSupport
         }
         #endregion Diagnostics
 
-        #region TCU/G-Box
-        public void UpdateRequest() {
+        #region Calibrate Focal Spot
+        public void ReadFSCalibrationTable(BeamCalibrationTable p_table) {
 
-            List<ulong> request = new List<ulong> { 0 };
+            int tag = 0;    // ALL
+            List<ulong> request = new List<ulong> { (ulong)tag };
             List<ulong> response;
 
-            SendRequestSync(CMD_GBUPDATE, request, out response, 1000);
+            SendRequestSync(CMD_CALFS_READTABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
 
+            int index = 1;
+            while (index < response.Count) {
+
+                tag = (int)response[index++];
+
+                if (tag == TAG_GLOBAL_OFFSET) {
+
+                    int x_offset = (byte)(response[index] >> 0);
+                    int z_offset = (byte)(response[index] >> 8);
+
+                    p_table.AddGlobalEntry(x_offset, z_offset);
+                }
+                else if (tag == TAG_TABLE_ROW) {
+
+                    int kv = (byte)(response[index] >> 0);
+                    int ma = (Int16)(response[index] >> 8);
+                    string fss = "";
+                    switch ((byte)(response[index] >> 24)) {
+                    case 0:
+                        fss = "S";
+                        break;
+                    case 1:
+                        fss = "M";
+                        break;
+                    case 2:
+                        fss = "L";
+                        break;
+                    default:
+                        fss = "U";  // unknown
+                        break;
+                    }
+
+                    for (int fs_pos = 0 ; fs_pos < 10 ; ++fs_pos) {
+
+                        if (fs_pos % 4 == 2)
+                            index++;
+
+                        int x_bit = (fs_pos * 2 + 4) % 8 << 8;
+                        int z_bit = x_bit + 8;
+                        int x_offset = (byte)(response[index] >> x_bit);
+                        int z_offset = (byte)(response[index] >> z_bit);
+
+                        p_table.AddCustomerEntry(kv, ma, fss, fs_pos, "X", x_offset);
+                        p_table.AddCustomerEntry(kv, ma, fss, fs_pos, "Z", z_offset);
+                    }
+                }
+                else {
+
+                    throw new Exception("unknown tag received");
+                }
+
+                index++;
+            }
+        }
+
+        public void WriteFSCalibrationTable(BeamCalibrationTable p_table) {
+
+            List<ulong> request = new List<ulong>();
+            List<ulong> response;
+
+            request.Add(TAG_GLOBAL_OFFSET);
+            request.Add((ulong)(p_table.GlobalZOffset << 8 | p_table.GlobalXOffset));
+
+            foreach (BeamCalibrationEntry entry in p_table.CustomerTable) {
+
+                int fss = 0;
+                switch (entry.Fss) {
+                case "S":
+                    fss = 0;
+                    break;
+                case "M":
+                    fss = 1;
+                    break;
+                case "L":
+                    fss = 2;
+                    break;
+                }
+
+                int direction = 0;
+                if (entry.Direction == "X") {
+                    direction = 0;
+                }
+                else {
+                    direction = 1;
+                }
+
+                request.Add(TAG_TABLE_ENTRY);
+                request.Add((ulong)(entry.Offset << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
+            }
+
+            SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 5000);
             CheckErrorCode(response[0]);
         }
-        #endregion TCU/G-Box
+
+        public void FlashFSCalibrationTable() {
+
+            List<ulong> request = new List<ulong>() { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_CALFS_WRITEFLASH, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void ResetFSCalibrationTable(int p_table_select) {
+
+            List<ulong> request = new List<ulong>() { (ulong)p_table_select };
+            List<ulong> response;
+
+            SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+        #endregion Calibrate Folca Spot
         #endregion Denali
 
         #region Bryce

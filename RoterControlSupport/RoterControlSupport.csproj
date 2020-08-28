@@ -31,6 +31,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeamCalibrationEntry.cs" />
+    <Compile Include="BeamCalibrationTable.cs" />
     <Compile Include="FmiCanFrame.cs" />
     <Compile Include="ImaTable.cs" />
     <Compile Include="MessageCollection.cs" />

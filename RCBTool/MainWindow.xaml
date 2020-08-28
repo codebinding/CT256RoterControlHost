@@ -258,7 +258,105 @@
             <TabItem Header="G-Box/TCU">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <Grid x:Name="grdTcuGBox" IsEnabled="False">
-                        <Button x:Name="btnUpdateRequest" Content="Update FW" HorizontalAlignment="Left" Margin="331,0,0,195" VerticalAlignment="Bottom" Width="120" Click="btnUpdateFW_Click" Height="30"/>
+                        <GroupBox x:Name="gbxGlobalOffset" Header="Global Offset" HorizontalAlignment="Left" Height="150" Margin="75,26,0,0" VerticalAlignment="Top" Width="301">
+                            <Grid>
+                                <Label x:Name="lblGlobalX" Content="Global X-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
+                                <TextBox x:Name="tbxGlobalX" HorizontalAlignment="Left" Height="23" Margin="10,29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncGlobalX" Content="+" HorizontalAlignment="Left" Margin="80,64,0,0" VerticalAlignment="Top" Width="50 "/>
+                                <Button x:Name="btnDecGlobalX" Content="-" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="50"/>
+                                <Label x:Name="lblGlobalZ" Content="Global Z-offset:" HorizontalAlignment="Left" Margin="155,8,0,0" Height="16" VerticalAlignment="Top"/>
+                                <TextBox x:Name="tbxGlobalZ" HorizontalAlignment="Left" Height="23" Margin="155,28,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncGlobalZ" Content="+" HorizontalAlignment="Left" Margin="225,64,0,0" VerticalAlignment="Top" Width="50 "/>
+                                <Button x:Name="btnDecGlobalZ" Content="-" HorizontalAlignment="Left" Margin="155,64,0,0" VerticalAlignment="Top" Width="50"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="410,26,639,770">
+                            <Grid>
+                                <Label Content="Kv:" HorizontalAlignment="Left" Margin="10,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <Label Content="Ma:" HorizontalAlignment="Left" Margin="100,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <Label Content="FS Size:" HorizontalAlignment="Left" Margin="190,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <Label Content="Position:" HorizontalAlignment="Left" Margin="280,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <Label Content="Direction:" HorizontalAlignment="Left" Margin="370,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <ComboBox x:Name="cbxKv" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Width="62" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="cbxNumberOfScans_SelectionChanged">
+                                    <System:String>All</System:String>
+                                    <System:Int32>70</System:Int32>
+                                    <System:Int32>80</System:Int32>
+                                    <System:Int32>100</System:Int32>
+                                    <System:Int32>120</System:Int32>
+                                    <System:Int32>140</System:Int32>
+                                </ComboBox>
+                                <ComboBox x:Name="cbxMa" HorizontalAlignment="Left" Margin="100,30,0,0" VerticalAlignment="Top" Width="62" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="cbxNumberOfScans_SelectionChanged">
+                                    <System:String>All</System:String>
+                                    <System:Int32>100</System:Int32>
+                                    <System:Int32>200</System:Int32>
+                                    <System:Int32>300</System:Int32>
+                                    <System:Int32>400</System:Int32>
+                                    <System:Int32>500</System:Int32>
+                                    <System:Int32>600</System:Int32>
+                                    <System:Int32>700</System:Int32>
+                                    <System:Int32>800</System:Int32>
+                                    <System:Int32>900</System:Int32>
+                                    <System:Int32>1000</System:Int32>
+                                </ComboBox>
+                                <ComboBox x:Name="cbxFss" HorizontalAlignment="Left" Margin="190,30,0,0" VerticalAlignment="Top" Width="62" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="cbxNumberOfScans_SelectionChanged">
+                                    <System:String>All</System:String>
+                                    <System:String>S</System:String>
+                                    <System:String>M</System:String>
+                                    <System:String>L</System:String>
+                                </ComboBox>
+                                <ComboBox x:Name="cbxPosition" HorizontalAlignment="Left" Margin="280,30,0,0" VerticalAlignment="Top" Width="62" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="cbxNumberOfScans_SelectionChanged">
+                                    <System:String>All</System:String>
+                                    <System:Int32>0</System:Int32>
+                                    <System:Int32>1</System:Int32>
+                                    <System:Int32>2</System:Int32>
+                                    <System:Int32>3</System:Int32>
+                                    <System:Int32>4</System:Int32>
+                                    <System:Int32>5</System:Int32>
+                                    <System:Int32>6</System:Int32>
+                                    <System:Int32>7</System:Int32>
+                                    <System:Int32>8</System:Int32>
+                                    <System:Int32>9</System:Int32>
+                                </ComboBox>
+                                <ComboBox x:Name="cbxDirection" HorizontalAlignment="Left" Margin="370,30,0,0" VerticalAlignment="Top" Width="62" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="cbxNumberOfScans_SelectionChanged">
+                                    <System:String>All</System:String>
+                                    <System:String>X</System:String>
+                                    <System:String>Z</System:String>
+                                </ComboBox>
+                            </Grid>
+                        </GroupBox>
+                        <Label Content="Customer Calibration Table:" HorizontalAlignment="Left" Margin="75,210,0,0" Height="16" VerticalAlignment="Top"/>
+                        <DataGrid x:Name="dgrCalibrationTable" HorizontalAlignment="Left" Margin="75,230,0,0" VerticalAlignment="Top" Height="560" Width="795" Style="{StaticResource FMI_Data_Grid}">
+                            <DataGrid.Resources>
+                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                </Style>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type DataGridCell}">
+                                                <Grid Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.Resources>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding is_active}" IsReadOnly="True" Header="Kv" Width="0.20*"/>
+                                <DataGridTextColumn Binding="{Binding tube_serial_number}" Header="Ma" Width="0.20*"/>
+                                <DataGridTextColumn Binding="{Binding tube_model}" Header="FS Size" Width="0.10*"/>
+                                <DataGridTextColumn Binding="{Binding creation_date}" IsReadOnly="True" Header="Position" Width="0.15*"/>
+                                <DataGridTextColumn Binding="{Binding notes}" Header="Direction" Width="0.15*"/>
+                                <DataGridTextColumn Binding="{Binding last_known_tube_heat}" Header="Offset" IsReadOnly="True" Width="0.20*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button x:Name="btnReadTable" Content="Read Tables" Margin="75,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnWriteGlobal" Content="Write Global Offsets" Margin="236,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnWriteCustomer" Content="Write Customer Table" Margin="240,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnWriteFlash" Content="Write to Flash" Margin="410,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnResetGlobal" Content="Zero Global Offsets" Margin="580,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnResetCustomer" Content="Zero Customer Table" Margin="750,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -706,6 +804,5 @@
         <Button x:Name="btnRegisterYellowPage" Content="Register YP" HorizontalAlignment="Right" Margin="0,0,450,50" Width="100" Click="btnRegisterYellowPage_Click" Height="30" VerticalAlignment="Bottom"/>
         <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Right" Margin="0,0,320,50" VerticalAlignment="Bottom" Width="100" Click="btnConnect_Click" Height="30"/>
         <TextBox x:Name="tbxInfo" Margin="0,60,10,120" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console" HorizontalAlignment="Right" Width="430" />
-
     </Grid>
 </Window>
