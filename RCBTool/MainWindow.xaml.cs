@@ -20,6 +20,7 @@ using System.IO;
 using Microsoft.Win32;
 using System.Windows.Media;
 using System.Threading;
+using System.Linq;
 
 using CoreWinSubFramework;
 using RoterControlSupport;
@@ -316,6 +317,7 @@ namespace RCBTool {
         private bool m_rcb_connected = false;
 
         private List<SeriesParameter> m_scan_parameters = null;
+        private BeamCalibrationTable m_fs_calibration_table = null;
 
         private int m_ape1_position, m_ape2_position, m_filt_position;
         private int m_x_step;
@@ -1038,7 +1040,7 @@ namespace RCBTool {
 
             try {
 
-                int device_id = int.Parse(tbxDeviceId.Text, System.Globalization.NumberStyles.AllowHexSpecifier);
+                /*int device_id = int.Parse(tbxDeviceId.Text, System.Globalization.NumberStyles.AllowHexSpecifier);
 
                 if (m_rcb == null) {
 
@@ -1061,11 +1063,12 @@ namespace RCBTool {
                     m_thread_process_log.Start();
                 }
 
-                m_rcb.SyncTime();
+                m_rcb.SyncTime();*/
 
                 grdHouseKeeper.IsEnabled = true;
                 grdLog.IsEnabled = true;
                 grdRegister.IsEnabled = true;
+                grdTcuGBox.IsEnabled = true;
                 grdHighVoltage.IsEnabled = true;
                 grdCollimatorLaser.IsEnabled = true;
                 grdDetector.IsEnabled = true;
@@ -1074,7 +1077,7 @@ namespace RCBTool {
 
                 btnConnect.IsEnabled = false;
 
-                m_rcb_connected = true;
+                //m_rcb_connected = true;
             }
             catch (FormatException) {
 
@@ -1563,8 +1566,321 @@ namespace RCBTool {
         #endregion
 
         #region TCU G-Box
-        private void btnUpdateFW_Click(object sender, RoutedEventArgs e) {
+        class ButtonToggle : IDisposable {
+            private Button m_button;
+            public ButtonToggle(Button p_button) {
+                m_button = p_button;
+                m_button.Parent.Dispatcher.Invoke(new Action(() => m_button.IsEnabled = false));
+            }
+            public void Dispose() {
+                m_button.Parent.Dispatcher.Invoke(new Action(() => m_button.IsEnabled = true));
+            }
+        }
 
+        private void btnDecGlobalX_Click(object sender, RoutedEventArgs e) {
+
+            if (m_fs_calibration_table == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+            /*int value = int.Parse(tbxGlobalX.Text);
+            value = value - 5 < -50 ? -50 : value - 5;
+            tbxGlobalX.Text = value.ToString();*/
+            m_fs_calibration_table.GlobalXOffset = m_fs_calibration_table.GlobalXOffset - 5 < -50 ? -50 : m_fs_calibration_table.GlobalXOffset - 5;
+        }
+
+        private void btnIncGlobalX_Click(object sender, RoutedEventArgs e) {
+
+            if (m_fs_calibration_table == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+            /*int value = int.Parse(tbxGlobalX.Text);
+            value = value + 5 > 50 ? 50 : value + 5;
+            tbxGlobalX.Text = value.ToString();*/
+            m_fs_calibration_table.GlobalXOffset = m_fs_calibration_table.GlobalXOffset + 5 > 50 ? 50 : m_fs_calibration_table.GlobalXOffset + 5;
+        }
+
+        private void btnDecGlobalZ_Click(object sender, RoutedEventArgs e) {
+
+            if (m_fs_calibration_table == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+            /*int value = int.Parse(tbxGlobalZ.Text);
+            value = value - 5 < -50 ? -50 : value - 5;
+            tbxGlobalZ.Text = value.ToString();*/
+            m_fs_calibration_table.GlobalZOffset = m_fs_calibration_table.GlobalZOffset - 5 < -50 ? -50 : m_fs_calibration_table.GlobalZOffset - 5;
+        }
+
+        private void btnIncGlobalZ_Click(object sender, RoutedEventArgs e) {
+
+            if (m_fs_calibration_table == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+            /*int value = int.Parse(tbxGlobalZ.Text);
+            value = value + 5 > 50 ? 50 : value + 5;
+            tbxGlobalZ.Text = value.ToString();*/
+            m_fs_calibration_table.GlobalZOffset = m_fs_calibration_table.GlobalZOffset + 5 > 50 ? 50 : m_fs_calibration_table.GlobalZOffset + 5;
+        }
+
+        private void btnSelect_Click(object sender, RoutedEventArgs e) {
+
+            if (m_fs_calibration_table == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+
+            List<BeamCalibrationEntry> selected_entries = m_fs_calibration_table.CustomerTable;
+
+            if (cbxKv.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Kv == (int)cbxKv.SelectedValue).ToList();
+            }
+
+            if (cbxMa.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Ma == (int)cbxMa.SelectedValue).ToList();
+            }
+
+            if (cbxFss.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Fss == (string)cbxFss.SelectedValue).ToList();
+            }
+
+            if (cbxPosition.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Position == (int)cbxPosition.SelectedValue).ToList();
+            }
+
+            if (cbxDirection.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Direction == (string)cbxDirection.SelectedValue).ToList();
+            }
+
+            dgrCalibrationTable.ItemsSource = selected_entries;
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e) {
+
+            if (m_fs_calibration_table == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+
+            List<BeamCalibrationEntry> selected_entries = m_fs_calibration_table.CustomerTable;
+
+            if (cbxKv.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Kv == (int)cbxKv.SelectedValue).ToList();
+            }
+
+            if (cbxMa.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Ma == (int)cbxMa.SelectedValue).ToList();
+            }
+
+            if (cbxFss.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Fss == (string)cbxFss.SelectedValue).ToList();
+            }
+
+            if (cbxPosition.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Position == (int)cbxPosition.SelectedValue).ToList();
+            }
+
+            if (cbxDirection.SelectedIndex != 0) {
+                selected_entries = selected_entries.Where(row => row.Direction == (string)cbxDirection.SelectedValue).ToList();
+            }
+
+            selected_entries.ForEach(row => row.Offset = int.Parse(tbxOffset.Text));
+            dgrCalibrationTable.Items.Refresh();
+        }
+
+        private void btnResetFilter_Click(object sender, RoutedEventArgs e) {
+
+            cbxKv.SelectedIndex = 0;
+            cbxMa.SelectedIndex = 0;
+            cbxFss.SelectedIndex = 0;
+            cbxPosition.SelectedIndex = 0;
+            cbxDirection.SelectedIndex = 0;
+
+            tbxOffset.Text = "0";
+        }
+
+        private void btnDecOffset_Click(object sender, RoutedEventArgs e) {
+
+            int value = int.Parse(tbxOffset.Text);
+            value = value - 5 < -50 ? -50 : value - 5;
+            tbxOffset.Text = value.ToString();
+        }
+
+        private void btnIncOffset_Click(object sender, RoutedEventArgs e) {
+
+            int value = int.Parse(tbxOffset.Text);
+            value = value + 5 > 50 ? 50 : value + 5;
+            tbxOffset.Text = value.ToString();
+        }
+
+        private void btnReadTable_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => ReadTable()).Start();
+        }
+
+        private void ReadTable() {
+
+            using (new ButtonToggle(btnReadTable)) {
+
+                try {
+
+                    //m_rcb.ReadGlobalAndCustomerTable(out m_fs_calibration_table);
+
+                    // Populate test data
+                    m_fs_calibration_table = new BeamCalibrationTable();
+                    m_fs_calibration_table.AddGlobalEntry(1, 2);
+                    for (int kv = 70 ; kv <= 140 ; kv += 10) {
+                        for (int ma = 100 ; ma <= 1000 ; ma += 100) {
+                            foreach (char fss in "SML") {
+                                for (int position = 0 ; position < 10 ; ++position) {
+                                    foreach (char direction in "XZ") {
+
+                                        m_fs_calibration_table.AddCustomerEntry(kv, ma, fss.ToString(), position, direction.ToString(), position);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    m_fs_calibration_table.GlobalXOffset = 0;
+                    m_fs_calibration_table.GlobalZOffset = 0;
+                    this.Dispatcher.Invoke(new Action(() => dgrCalibrationTable.ItemsSource = m_fs_calibration_table.CustomerTable));
+                    this.Dispatcher.Invoke(new Action(() => tbxGlobalX.DataContext = m_fs_calibration_table));
+                    this.Dispatcher.Invoke(new Action(() => tbxGlobalZ.DataContext = m_fs_calibration_table));
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnWriteGlobal_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => WriteGlobalTable()).Start();
+        }
+
+        private void WriteGlobalTable() {
+
+            using (new ButtonToggle(btnWriteGlobal)) {
+
+                try {
+
+                    m_rcb.WriteGlobalOffsetTable(m_fs_calibration_table.GlobalXOffset, m_fs_calibration_table.GlobalZOffset);
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnWriteCustomer_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => WriteCustomerTable()).Start();
+        }
+
+        private void WriteCustomerTable() {
+
+            using (new ButtonToggle(btnWriteCustomer)) {
+
+                try {
+
+                    m_rcb.WriteCustomerCalibrationTable(m_fs_calibration_table);
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnWriteBoth_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => WriteGlobalAndCustomerTable()).Start();
+        }
+
+        private void WriteGlobalAndCustomerTable() {
+
+            using (new ButtonToggle(btnWriteBoth)) {
+
+                try {
+
+                    m_rcb.WriteGlobalAndCustomerTable(m_fs_calibration_table);
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnWriteFlash_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => FlashGlobalAndCustomerTable()).Start();
+        }
+
+        private void FlashGlobalAndCustomerTable() {
+
+            using (new ButtonToggle(btnWriteFlash)) {
+
+                try {
+
+                    m_rcb.FlashGlobalAndCustomerTable();
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnZeroGlobal_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => ZeroGlobalTable()).Start();
+        }
+
+        private void ZeroGlobalTable() {
+
+            using (new ButtonToggle(btnZeroGlobal)) {
+
+                try {
+
+                    m_rcb.ZeroGlobalTable();
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnZeroCustomer_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => ZeroCustomerTable()).Start();
+        }
+
+        private void ZeroCustomerTable() {
+
+            using (new ButtonToggle(btnZeroCustomer)) {
+
+                try {
+
+                    m_rcb.ZeroCustomerTable();
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
         #endregion
 
@@ -3961,11 +4277,6 @@ namespace RCBTool {
             }
         }
 
-        private void btnDiagAbort_Click(object sender, RoutedEventArgs e) {
-
-            m_rcb.AbortDiagnosis();
-        }
-
         private void ReadGBoxCanBus() {
 
             Peak.Can.Basic.TPCANMsg raw_frame;
@@ -3989,6 +4300,10 @@ namespace RCBTool {
             }
         }
 
+        private void btnDiagAbort_Click(object sender, RoutedEventArgs e) {
+
+            m_rcb.AbortDiagnosis();
+        }
         #endregion RCB Diagnostics
     }
 }

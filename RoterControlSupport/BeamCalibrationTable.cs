@@ -1,14 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace RoterControlSupport {
-    public class BeamCalibrationTable {
+    public class BeamCalibrationTable :INotifyPropertyChanged {
 
-        public int GlobalXOffset;
-        public int GlobalZOffset;
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private int globalXOffset;
+        private int globalZOffset;
+
+        public int GlobalXOffset {
+            get { return globalXOffset; }
+            set { globalXOffset = value; OnPropertyChanged("GlobalXOffset"); }
+        }
+        public int GlobalZOffset {
+            get { return globalZOffset; }
+            set { globalZOffset = value; OnPropertyChanged("GlobalZOffset"); }
+        }
         public List<BeamCalibrationEntry> CustomerTable;
 
         public BeamCalibrationTable() {

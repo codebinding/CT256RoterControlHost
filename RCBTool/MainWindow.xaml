@@ -261,22 +261,23 @@
                         <GroupBox x:Name="gbxGlobalOffset" Header="Global Offset" HorizontalAlignment="Left" Height="150" Margin="75,26,0,0" VerticalAlignment="Top" Width="301">
                             <Grid>
                                 <Label x:Name="lblGlobalX" Content="Global X-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
-                                <TextBox x:Name="tbxGlobalX" HorizontalAlignment="Left" Height="23" Margin="10,29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <Button x:Name="btnIncGlobalX" Content="+" HorizontalAlignment="Left" Margin="80,64,0,0" VerticalAlignment="Top" Width="50 "/>
-                                <Button x:Name="btnDecGlobalX" Content="-" HorizontalAlignment="Left" Margin="10,64,0,0" VerticalAlignment="Top" Width="50"/>
+                                <TextBox x:Name="tbxGlobalX" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,29,0,0" TextWrapping="Wrap" Text="{Binding GlobalXOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncGlobalX" Content="+" HorizontalAlignment="Left" Margin="80,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncGlobalX_Click"/>
+                                <Button x:Name="btnDecGlobalX" Content="-" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecGlobalX_Click"/>
                                 <Label x:Name="lblGlobalZ" Content="Global Z-offset:" HorizontalAlignment="Left" Margin="155,8,0,0" Height="16" VerticalAlignment="Top"/>
-                                <TextBox x:Name="tbxGlobalZ" HorizontalAlignment="Left" Height="23" Margin="155,28,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <Button x:Name="btnIncGlobalZ" Content="+" HorizontalAlignment="Left" Margin="225,64,0,0" VerticalAlignment="Top" Width="50 "/>
-                                <Button x:Name="btnDecGlobalZ" Content="-" HorizontalAlignment="Left" Margin="155,64,0,0" VerticalAlignment="Top" Width="50"/>
+                                <TextBox x:Name="tbxGlobalZ" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="155,28,0,0" TextWrapping="Wrap" Text="{Binding GlobalZOffset,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncGlobalZ" Content="+" HorizontalAlignment="Left" Margin="225,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncGlobalZ_Click"/>
+                                <Button x:Name="btnDecGlobalZ" Content="-" HorizontalAlignment="Left" Margin="155,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecGlobalZ_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="410,26,639,770">
+                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="410,26,489,770">
                             <Grid>
                                 <Label Content="Kv:" HorizontalAlignment="Left" Margin="10,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <Label Content="Ma:" HorizontalAlignment="Left" Margin="100,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <Label Content="FS Size:" HorizontalAlignment="Left" Margin="190,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <Label Content="Position:" HorizontalAlignment="Left" Margin="280,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <Label Content="Direction:" HorizontalAlignment="Left" Margin="370,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <Label Content="Offset (μm):" HorizontalAlignment="Left" Margin="455,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <ComboBox x:Name="cbxKv" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Width="62" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="cbxNumberOfScans_SelectionChanged">
                                     <System:String>All</System:String>
                                     <System:Int32>70</System:Int32>
@@ -322,10 +323,16 @@
                                     <System:String>X</System:String>
                                     <System:String>Z</System:String>
                                 </ComboBox>
+                                <TextBox x:Name="tbxOffset" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="455,29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnSelect" Content="Select" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="100 " Click="btnSelect_Click"/>
+                                <Button x:Name="btnUpdate" Content="Update" HorizontalAlignment="Left" Margin="130,65,0,0" VerticalAlignment="Top" Width="100 " Click="btnUpdate_Click"/>
+                                <Button x:Name="btnResetFilter" Content="Reset Filter" HorizontalAlignment="Left" Margin="250,65,0,0" VerticalAlignment="Top" Width="100 " Click="btnResetFilter_Click"/>
+                                <Button x:Name="btnIncOffset" Content="+" HorizontalAlignment="Left" Margin="525,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncOffset_Click"/>
+                                <Button x:Name="btnDecOffset" Content="-" HorizontalAlignment="Left" Margin="455,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecOffset_Click"/>
                             </Grid>
                         </GroupBox>
                         <Label Content="Customer Calibration Table:" HorizontalAlignment="Left" Margin="75,210,0,0" Height="16" VerticalAlignment="Top"/>
-                        <DataGrid x:Name="dgrCalibrationTable" HorizontalAlignment="Left" Margin="75,230,0,0" VerticalAlignment="Top" Height="560" Width="795" Style="{StaticResource FMI_Data_Grid}">
+                        <DataGrid x:Name="dgrCalibrationTable" AutoGenerateColumns="False"  HorizontalAlignment="Left" Margin="75,230,0,0" VerticalAlignment="Top" Height="500" Width="750" Style="{StaticResource FMI_Data_Grid}">
                             <DataGrid.Resources>
                                 <Style TargetType="{x:Type DataGridColumnHeader}">
                                     <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -343,20 +350,21 @@
                                 </Style>
                             </DataGrid.Resources>
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding is_active}" IsReadOnly="True" Header="Kv" Width="0.20*"/>
-                                <DataGridTextColumn Binding="{Binding tube_serial_number}" Header="Ma" Width="0.20*"/>
-                                <DataGridTextColumn Binding="{Binding tube_model}" Header="FS Size" Width="0.10*"/>
-                                <DataGridTextColumn Binding="{Binding creation_date}" IsReadOnly="True" Header="Position" Width="0.15*"/>
-                                <DataGridTextColumn Binding="{Binding notes}" Header="Direction" Width="0.15*"/>
-                                <DataGridTextColumn Binding="{Binding last_known_tube_heat}" Header="Offset" IsReadOnly="True" Width="0.20*"/>
+                                <DataGridTextColumn Binding="{Binding Kv}" IsReadOnly="True" Header="Kv" Width="0.20*"/>
+                                <DataGridTextColumn Binding="{Binding Ma}" IsReadOnly="True" Header="Ma" Width="0.20*"/>
+                                <DataGridTextColumn Binding="{Binding Fss}" Header="FS Size" Width="0.10*"/>
+                                <DataGridTextColumn Binding="{Binding Position}" IsReadOnly="True" Header="Position" Width="0.15*"/>
+                                <DataGridTextColumn Binding="{Binding Direction}" IsReadOnly="True" Header="Direction" Width="0.15*"/>
+                                <DataGridTextColumn Binding="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Offset(μm)" Width="0.20*"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button x:Name="btnReadTable" Content="Read Tables" Margin="75,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
-                        <Button x:Name="btnWriteGlobal" Content="Write Global Offsets" Margin="236,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
-                        <Button x:Name="btnWriteCustomer" Content="Write Customer Table" Margin="240,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
-                        <Button x:Name="btnWriteFlash" Content="Write to Flash" Margin="410,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
-                        <Button x:Name="btnResetGlobal" Content="Zero Global Offsets" Margin="580,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
-                        <Button x:Name="btnResetCustomer" Content="Zero Customer Table" Margin="750,831,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnReadTable" Content="Read Tables" Margin="870,250,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnReadTable_Click"/>
+                        <Button x:Name="btnWriteGlobal" Content="Write Global Offsets" Margin="870,310,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteGlobal_Click"/>
+                        <Button x:Name="btnWriteCustomer" Content="Write Customer Table" Margin="870,370,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteCustomer_Click"/>
+                        <Button x:Name="btnWriteBoth" Content="Write Both Tables" Margin="870,430,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteBoth_Click"/>
+                        <Button x:Name="btnWriteFlash" Content="Write to Flash" Margin="870,490,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteFlash_Click"/>
+                        <Button x:Name="btnZeroGlobal" Content="Zero Global Offsets" Margin="870,550,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnZeroGlobal_Click"/>
+                        <Button x:Name="btnZeroCustomer" Content="Zero Customer Table" Margin="870,610,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnZeroCustomer_Click"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>

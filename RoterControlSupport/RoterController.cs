@@ -93,7 +93,7 @@ namespace RoterControlSupport
         public const int TAG_TABLE_ROW = 0x02;
         public const int TAG_TABLE_ENTRY = 0x03;
         public const int TAG_GLOBAL_TABLE = 0x04;
-        public const int TAG_CALIBRATION_TABLE = 0x05;
+        public const int TAG_CUSTOMER_TABLE = 0x05;
 
         // X-Ray (0x11)
         public const ushort CMD_HVINIT = 0x1100;
@@ -1290,7 +1290,9 @@ namespace RoterControlSupport
         #endregion Diagnostics
 
         #region Calibrate Focal Spot
-        public void ReadFSCalibrationTable(BeamCalibrationTable p_table) {
+        public void ReadGlobalAndCustomerTable(out BeamCalibrationTable p_table) {
+
+            p_table = new BeamCalibrationTable();
 
             int tag = 0;    // ALL
             List<ulong> request = new List<ulong> { (ulong)tag };
@@ -1354,7 +1356,65 @@ namespace RoterControlSupport
             }
         }
 
-        public void WriteFSCalibrationTable(BeamCalibrationTable p_table) {
+        public void WriteGlobalOffsetTable(int p_x, int p_z) {
+
+            List<ulong> request = new List<ulong>();
+            List<ulong> response;
+
+            request.Add(TAG_GLOBAL_OFFSET);
+            request.Add((ulong)(p_z << 8 | p_x));
+
+            SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void WriteCustomerCalibrationTable(BeamCalibrationTable p_table) {
+
+            if (p_table == null) {
+
+                throw new Exception("BeamCalibrationTable not initialized");
+            }
+
+            if (p_table.CustomerTable.Count == 0) {
+
+                throw new Exception("Customer Table is empty");
+            }
+
+            List<ulong> request = new List<ulong>();
+            List<ulong> response;
+
+            foreach (BeamCalibrationEntry entry in p_table.CustomerTable) {
+
+                int fss = 0;
+                switch (entry.Fss) {
+                case "S":
+                    fss = 0;
+                    break;
+                case "M":
+                    fss = 1;
+                    break;
+                case "L":
+                    fss = 2;
+                    break;
+                }
+
+                int direction = 0;
+                if (entry.Direction == "X") {
+                    direction = 0;
+                }
+                else {
+                    direction = 1;
+                }
+
+                request.Add(TAG_TABLE_ENTRY);
+                request.Add((ulong)(entry.Offset << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
+            }
+
+            SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void WriteGlobalAndCustomerTable(BeamCalibrationTable p_table) {
 
             List<ulong> request = new List<ulong>();
             List<ulong> response;
@@ -1393,7 +1453,7 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void FlashFSCalibrationTable() {
+        public void FlashGlobalAndCustomerTable() {
 
             List<ulong> request = new List<ulong>() { 0 };
             List<ulong> response;
@@ -1402,9 +1462,18 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void ResetFSCalibrationTable(int p_table_select) {
+        public void ZeroGlobalTable() {
 
-            List<ulong> request = new List<ulong>() { (ulong)p_table_select };
+            List<ulong> request = new List<ulong>() { (ulong)TAG_GLOBAL_TABLE };
+            List<ulong> response;
+
+            SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void ZeroCustomerTable() {
+
+            List<ulong> request = new List<ulong>() { (ulong)TAG_CUSTOMER_TABLE };
             List<ulong> response;
 
             SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);

@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 namespace RoterControlSupport {
     public class BeamCalibrationEntry {
 
-        public int Kv;
-        public int Ma;
-        public string Fss;
-        public int Position;
-        public string Direction;
-        public int Offset;
+        public int Kv { get; set; }
+        public int Ma { get; set; }
+        public string Fss { get; set; }
+        public int Position { get; set; }
+        public string Direction { get; set; }
+        public int Offset { get; set; }
 
         public BeamCalibrationEntry() {
 
