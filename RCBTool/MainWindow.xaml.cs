@@ -1040,7 +1040,7 @@ namespace RCBTool {
 
             try {
 
-                /*int device_id = int.Parse(tbxDeviceId.Text, System.Globalization.NumberStyles.AllowHexSpecifier);
+                int device_id = int.Parse(tbxDeviceId.Text, System.Globalization.NumberStyles.AllowHexSpecifier);
 
                 if (m_rcb == null) {
 
@@ -1063,7 +1063,7 @@ namespace RCBTool {
                     m_thread_process_log.Start();
                 }
 
-                m_rcb.SyncTime();*/
+                m_rcb.SyncTime();
 
                 grdHouseKeeper.IsEnabled = true;
                 grdLog.IsEnabled = true;
@@ -1077,15 +1077,14 @@ namespace RCBTool {
 
                 btnConnect.IsEnabled = false;
 
-                //m_rcb_connected = true;
+                m_rcb_connected = true;
             }
             catch (FormatException) {
 
                 MessageBox.Show("Device Id has bad format");
             }
             catch (Exception ex) {
-
-                
+             
                 MessageBox.Show(ex.Message);
             }
         }
@@ -1732,10 +1731,10 @@ namespace RCBTool {
 
                 try {
 
-                    //m_rcb.ReadGlobalAndCustomerTable(out m_fs_calibration_table);
+                    m_rcb.ReadGlobalAndCustomerTable(out m_fs_calibration_table);
 
                     // Populate test data
-                    m_fs_calibration_table = new BeamCalibrationTable();
+                    /*m_fs_calibration_table = new BeamCalibrationTable();
                     m_fs_calibration_table.AddGlobalEntry(1, 2);
                     for (int kv = 70 ; kv <= 140 ; kv += 10) {
                         for (int ma = 100 ; ma <= 1000 ; ma += 100) {
@@ -1751,7 +1750,7 @@ namespace RCBTool {
                     }
 
                     m_fs_calibration_table.GlobalXOffset = 0;
-                    m_fs_calibration_table.GlobalZOffset = 0;
+                    m_fs_calibration_table.GlobalZOffset = 0;*/
                     this.Dispatcher.Invoke(new Action(() => dgrCalibrationTable.ItemsSource = m_fs_calibration_table.CustomerTable));
                     this.Dispatcher.Invoke(new Action(() => tbxGlobalX.DataContext = m_fs_calibration_table));
                     this.Dispatcher.Invoke(new Action(() => tbxGlobalZ.DataContext = m_fs_calibration_table));
