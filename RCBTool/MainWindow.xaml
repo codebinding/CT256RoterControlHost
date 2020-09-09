@@ -270,7 +270,23 @@
                                 <Button x:Name="btnDecGlobalZ" Content="-" HorizontalAlignment="Left" Margin="155,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecGlobalZ_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="410,26,489,770">
+                        <GroupBox x:Name="gbxAdjustFocalSpot" Header="Adjust Focal Spot" Height="150" Margin="420,26,478,770">
+                            <Grid>
+                                <Label Content="Direction:" HorizontalAlignment="Left" Margin="30,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <Label Content="Offset (μm):" HorizontalAlignment="Left" Margin="113,10,0,0" Height="16" VerticalAlignment="Top"/>
+                                <RadioButton x:Name="rdbXDirection" GroupName="grpDirection" IsChecked="True" HorizontalAlignment="Left" Margin="30,34,0,0" VerticalAlignment="Top">
+                                    <Label Content="X"/>
+                                </RadioButton>
+                                <RadioButton x:Name="rdbZDirection" GroupName="grpDirection" HorizontalAlignment="Left" Margin="30,55,0,0" VerticalAlignment="Top">
+                                    <Label Content="Y"/>
+                                </RadioButton>
+                                <TextBox x:Name="tbxAdjustment" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="113,29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncAdjustment" Content="+" HorizontalAlignment="Left" Margin="183,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncAdjustment_Click"/>
+                                <Button x:Name="btnDecAdjustment" Content="-" HorizontalAlignment="Left" Margin="113,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecAdjustment_Click"/>
+                                <Button x:Name="btnMoveFocalSpot" Content="Adjust" HorizontalAlignment="Left" Margin="320,65,0,0" VerticalAlignment="Top" Width="100 " Click="btnMoveFocalSpot_Click"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="75,750,824,46">
                             <Grid>
                                 <Label Content="Kv:" HorizontalAlignment="Left" Margin="10,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <Label Content="Ma:" HorizontalAlignment="Left" Margin="100,10,0,0" Height="16" VerticalAlignment="Top"/>

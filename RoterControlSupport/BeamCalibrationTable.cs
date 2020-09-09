@@ -60,7 +60,7 @@ namespace RoterControlSupport {
 
         public void AddCustomerEntry(int p_kv, int p_ma, string p_fss, int p_position, string p_direction, int p_offset) {
 
-            if (p_fss != "S" && p_fss != "M" && p_fss != "L" && p_fss != "G") {
+            if (p_fss != "S" && p_fss != "M" && p_fss != "L") {
 
                 throw new Exception("focal spot size has incorrect value");
             }

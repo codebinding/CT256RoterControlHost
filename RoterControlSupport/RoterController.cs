@@ -83,6 +83,7 @@ namespace RoterControlSupport
         public const ushort CMD_CALFS_WRITETABLE = 0x0b22;
         public const ushort CMD_CALFS_WRITEFLASH = 0x0b23;
         public const ushort CMD_CALFS_RESETTABLE = 0x0b24;
+        public const ushort CMD_CALFS_MOVEFS = 0x0b25;
 
         public const ushort NTF_DIAG_TCUERR = 0x0070;
         public const ushort NTF_DIAG_XRAYON = 0x0071;
@@ -1298,7 +1299,7 @@ namespace RoterControlSupport
             List<ulong> request = new List<ulong> { (ulong)tag };
             List<ulong> response;
 
-            SendRequestSync(CMD_CALFS_READTABLE, request, out response, 5000);
+            SendRequestSync(CMD_CALFS_READTABLE, request, out response, 10000);
             CheckErrorCode(response[0]);
 
             int index = 1;
@@ -1308,15 +1309,15 @@ namespace RoterControlSupport
 
                 if (tag == TAG_GLOBAL_OFFSET) {
 
-                    int x_offset = (byte)(response[index] >> 0);
-                    int z_offset = (byte)(response[index] >> 8);
+                    int x_offset = (sbyte)(response[index] >> 0);
+                    int z_offset = (sbyte)(response[index] >> 8);
 
                     p_table.AddGlobalEntry(x_offset, z_offset);
                 }
                 else if (tag == TAG_TABLE_ROW) {
 
                     int kv = (byte)(response[index] >> 0);
-                    int ma = (Int16)(response[index] >> 8);
+                    int ma = (UInt16)(response[index] >> 8);
                     string fss = "";
                     switch ((byte)(response[index] >> 24)) {
                     case 0:
@@ -1338,10 +1339,10 @@ namespace RoterControlSupport
                         if (fs_pos % 4 == 2)
                             index++;
 
-                        int x_bit = (fs_pos * 2 + 4) % 8 << 8;
+                        int x_bit = (fs_pos * 2 + 4) % 8 << 3;
                         int z_bit = x_bit + 8;
-                        int x_offset = (byte)(response[index] >> x_bit);
-                        int z_offset = (byte)(response[index] >> z_bit);
+                        int x_offset = (sbyte)(response[index] >> x_bit);
+                        int z_offset = (sbyte)(response[index] >> z_bit);
 
                         p_table.AddCustomerEntry(kv, ma, fss, fs_pos, "X", x_offset);
                         p_table.AddCustomerEntry(kv, ma, fss, fs_pos, "Z", z_offset);
@@ -1362,7 +1363,7 @@ namespace RoterControlSupport
             List<ulong> response;
 
             request.Add(TAG_GLOBAL_OFFSET);
-            request.Add((ulong)(p_z << 8 | p_x));
+            request.Add((ulong)((p_z & 0xff) << 8 | (p_x & 0xff)));
 
             SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 5000);
             CheckErrorCode(response[0]);
@@ -1407,10 +1408,10 @@ namespace RoterControlSupport
                 }
 
                 request.Add(TAG_TABLE_ENTRY);
-                request.Add((ulong)(entry.Offset << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
+                request.Add((ulong)((entry.Offset & 0xff) << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
             }
 
-            SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 5000);
+            SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 10000);
             CheckErrorCode(response[0]);
         }
 
@@ -1420,7 +1421,7 @@ namespace RoterControlSupport
             List<ulong> response;
 
             request.Add(TAG_GLOBAL_OFFSET);
-            request.Add((ulong)(p_table.GlobalZOffset << 8 | p_table.GlobalXOffset));
+            request.Add((ulong)((p_table.GlobalZOffset & 0xff) << 8 | (p_table.GlobalXOffset & 0xff)));
 
             foreach (BeamCalibrationEntry entry in p_table.CustomerTable) {
 
@@ -1446,7 +1447,7 @@ namespace RoterControlSupport
                 }
 
                 request.Add(TAG_TABLE_ENTRY);
-                request.Add((ulong)(entry.Offset << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
+                request.Add((ulong)((entry.Offset & 0xff) << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
             }
 
             SendRequestSync(CMD_CALFS_WRITETABLE, request, out response, 5000);
@@ -1477,6 +1478,15 @@ namespace RoterControlSupport
             List<ulong> response;
 
             SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void MoveFocalSpot(int p_direction, int p_offset) {
+
+            List<ulong> request = new List<ulong>() { (ulong)p_direction, (ulong)p_offset };
+            List<ulong> response;
+
+            SendRequestSync(CMD_CALFS_MOVEFS, request, out response, 10000);
             CheckErrorCode(response[0]);
         }
         #endregion Calibrate Folca Spot

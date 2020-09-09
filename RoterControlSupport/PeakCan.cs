@@ -75,7 +75,7 @@ namespace RoterControlSupport {
                 }
 
                 uint numeric_buffer = PCANBasic.PCAN_PARAMETER_ON;
-                status = PCANBasic.SetValue(m_sock, TPCANParameter.PCAN_RECEIVE_EVENT, ref numeric_buffer, sizeof(UInt32));
+                status = PCANBasic.SetValue(m_sock, TPCANParameter.PCAN_BUSOFF_AUTORESET, ref numeric_buffer, sizeof(UInt32));
 
                 if (status != TPCANStatus.PCAN_ERROR_OK) {
 

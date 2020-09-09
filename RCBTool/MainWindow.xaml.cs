@@ -1720,6 +1720,43 @@ namespace RCBTool {
             tbxOffset.Text = value.ToString();
         }
 
+        private void btnDecAdjustment_Click(object sender, RoutedEventArgs e) {
+
+            int value = int.Parse(tbxAdjustment.Text);
+            value = value - 5 < -50 ? -50 : value - 5;
+            tbxAdjustment.Text = value.ToString();
+        }
+
+        private void btnIncAdjustment_Click(object sender, RoutedEventArgs e) {
+
+            int value = int.Parse(tbxAdjustment.Text);
+            value = value + 5 > 50 ? 50 : value + 5;
+            tbxAdjustment.Text = value.ToString();
+        }
+
+        private void btnMoveFocalSpot_Click(object sender, RoutedEventArgs e) {
+
+            int direction = rdbXDirection.IsChecked == true ? 0 : 1;
+            int offset = int.Parse(tbxAdjustment.Text);
+
+            new Thread(() => MoveFocalSpot(direction, offset)).Start();
+        }
+
+        private void MoveFocalSpot(int p_direction, int p_offset) {
+
+            using(new ButtonToggle(btnMoveFocalSpot)) {
+
+                try {
+
+                    m_rcb.MoveFocalSpot(p_direction, p_offset);
+                }
+                catch(Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
         private void btnReadTable_Click(object sender, RoutedEventArgs e) {
 
             new Thread(() => ReadTable()).Start();
