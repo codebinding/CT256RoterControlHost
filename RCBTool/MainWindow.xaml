@@ -255,6 +255,33 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
+            <TabItem Header="Focal Spot Adjustment">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="grdFocalSpotAdjustment" IsEnabled="False">
+                        <GroupBox x:Name="gbxCombindedXOffset" Header="Combinded X Offset" HorizontalAlignment="Left" Height="150" Margin="80,89,0,0" VerticalAlignment="Top" Width="300">
+                            <Grid>
+                                <Label x:Name="lblCombindedX" Content="X-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
+                                <TextBox x:Name="tbxCombindedX" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombindedXOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncCombindedX" Content="+" HorizontalAlignment="Left" Margin="80,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncCombindedX_Click"/>
+                                <Button x:Name="btnDecCombindedX" Content="-" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecCombindedX_Click"/>
+                                <Button x:Name="btnMoveX" Content="Move" Margin="164,36,0,0" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" Width="100" Click="btnMoveX_Click"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox x:Name="gbxCombindedZOffset" Header="Combinded Z Offset" HorizontalAlignment="Left" Height="150" Margin="516,90,0,0" VerticalAlignment="Top" Width="302">
+                            <Grid>
+                                <Label x:Name="lblCombindedZ" Content="Z-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
+                                <TextBox x:Name="tbxCombindedZ" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombindedZOffset,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="btnIncCombindedZ" Content="+" HorizontalAlignment="Left" Margin="80,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncCombindedZ_Click"/>
+                                <Button x:Name="btnDecCombindedZ" Content="-" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecCombindedZ_Click"/>
+                                <Button x:Name="btnMoveZ" Content="Move" Margin="164,36,0,0" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" Width="100" Click="btnMoveZ_Click"/>
+                            </Grid>
+                        </GroupBox>
+                        <Button x:Name="btnReadCombinedOffset" Content="Read Tables" Margin="80,304,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnReadCombinedOffset_Click"/>
+                        <Button x:Name="btnZeroTable" Content="Zero Tables" Margin="290,304,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnZeroTable_Click"/>
+                        <Button x:Name="btnFlashTable" Content="Write to Flash" Margin="668,304,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnFlashTable_Click"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
             <TabItem Header="G-Box/TCU">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                     <Grid x:Name="grdTcuGBox" IsEnabled="False">

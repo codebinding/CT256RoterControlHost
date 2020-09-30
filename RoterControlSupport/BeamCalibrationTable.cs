@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace RoterControlSupport {
-    public class BeamCalibrationTable :INotifyPropertyChanged {
+    public class BeamCalibrationTable : INotifyPropertyChanged {
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) {
@@ -65,7 +65,7 @@ namespace RoterControlSupport {
                 throw new Exception("focal spot size has incorrect value");
             }
 
-            if (p_direction!= "X" && p_direction != "Z") {
+            if (p_direction != "X" && p_direction != "Z") {
 
                 throw new Exception("direction has incorrect value");
             }
@@ -79,6 +79,32 @@ namespace RoterControlSupport {
             entry.Offset = p_offset;
 
             CustomerTable.Add(entry);
+        }
+    }
+
+    public class BeamCombinedOffset : INotifyPropertyChanged {
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private int combinedXOffset;
+        private int combinedZOffset;
+
+        public int CombinedXOffset {
+            get { return combinedXOffset; }
+            set { combinedXOffset = value; OnPropertyChanged("CombinedXOffset"); }
+        }
+        public int CombinedZOffset {
+            get { return combinedZOffset; }
+            set { combinedZOffset = value; OnPropertyChanged("CombinedZOffset"); }
+        }
+
+        public BeamCombinedOffset() {
+
+            combinedXOffset = 0;
+            combinedZOffset = 0;
         }
     }
 }

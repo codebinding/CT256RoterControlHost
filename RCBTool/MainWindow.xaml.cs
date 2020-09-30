@@ -298,6 +298,17 @@ namespace RCBTool {
         public uint Permission;
     }
 
+    class ButtonToggle : IDisposable {
+        private Button m_button;
+        public ButtonToggle(Button p_button) {
+            m_button = p_button;
+            m_button.Parent.Dispatcher.Invoke(new Action(() => m_button.IsEnabled = false));
+        }
+        public void Dispose() {
+            m_button.Parent.Dispatcher.Invoke(new Action(() => m_button.IsEnabled = true));
+        }
+    }
+
     public partial class MainWindow : Window {
 
         private List<ThermalSliceBoard> m_thermal_sliceboards = null;
@@ -318,6 +329,7 @@ namespace RCBTool {
 
         private List<SeriesParameter> m_scan_parameters = null;
         private BeamCalibrationTable m_fs_calibration_table = null;
+        private BeamCombinedOffset m_fs_combined_offsets = null;
 
         private int m_ape1_position, m_ape2_position, m_filt_position;
         private int m_x_step;
@@ -1564,18 +1576,87 @@ namespace RCBTool {
         }
         #endregion
 
-        #region TCU G-Box
-        class ButtonToggle : IDisposable {
-            private Button m_button;
-            public ButtonToggle(Button p_button) {
-                m_button = p_button;
-                m_button.Parent.Dispatcher.Invoke(new Action(() => m_button.IsEnabled = false));
-            }
-            public void Dispose() {
-                m_button.Parent.Dispatcher.Invoke(new Action(() => m_button.IsEnabled = true));
+        #region Focal Spot Adjustment
+        private void btnDecCombindedX_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnIncCombindedX_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnDecCombindedZ_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnIncCombindedZ_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnReadCombinedOffset_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => ReadCombinedOffset()).Start();
+        }
+
+        private void ReadCombinedOffset() {
+
+            using (new ButtonToggle(btnReadCombinedOffset)) {
+
+                try {
+
+                    int x_offset = 0;
+                    int z_offset = 0;
+                    m_rcb.ReadCombinedOffset(out x_offset, out z_offset);
+
+                    m_fs_combined_offsets = new BeamCombinedOffset();
+                    m_fs_combined_offsets.CombinedXOffset = x_offset;
+                    m_fs_combined_offsets.CombinedZOffset = z_offset;
+
+                    this.Dispatcher.Invoke(new Action(() => tbxCombindedX.DataContext = m_fs_combined_offsets));
+                    this.Dispatcher.Invoke(new Action(() => tbxCombindedZ.DataContext = m_fs_combined_offsets));
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
+        private void btnZeroTable_Click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => ZeroTable()).Start();
+        }
+
+        private void ZeroTable() {
+
+            using (new ButtonToggle(btnZeroTable)) {
+
+                try {
+
+                    m_rcb.ZeroGlobalTable();
+                    m_rcb.ZeroCustomerTable();
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnMoveX_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnMoveZ_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void btnFlashTable_Click(object sender, RoutedEventArgs e) {
+
+        }
+        #endregion Focal Spot Adjustment
+
+        #region TCU G-Box
         private void btnDecGlobalX_Click(object sender, RoutedEventArgs e) {
 
             if (m_fs_calibration_table == null) {

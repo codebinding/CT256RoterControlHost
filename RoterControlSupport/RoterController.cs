@@ -84,6 +84,7 @@ namespace RoterControlSupport
         public const ushort CMD_CALFS_WRITEFLASH = 0x0b23;
         public const ushort CMD_CALFS_RESETTABLE = 0x0b24;
         public const ushort CMD_CALFS_MOVEFS = 0x0b25;
+        public const ushort CMD_CALFS_READCOMBINEDOFFSET = 0x0b26;
 
         public const ushort NTF_DIAG_TCUERR = 0x0070;
         public const ushort NTF_DIAG_XRAYON = 0x0071;
@@ -1488,6 +1489,21 @@ namespace RoterControlSupport
 
             SendRequestSync(CMD_CALFS_MOVEFS, request, out response, 10000);
             CheckErrorCode(response[0]);
+        }
+
+        public void ReadCombinedOffset(out int p_x_offset, out int p_z_offset) {
+
+            p_x_offset = 0;
+            p_z_offset = 0;
+
+            List<ulong> request = new List<ulong>() { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_CALFS_READCOMBINEDOFFSET, request, out response, 10000);
+            CheckErrorCode(response[0]);
+
+            p_x_offset = (int)response[1];
+            p_z_offset = (int)response[2];
         }
         #endregion Calibrate Folca Spot
         #endregion Denali
