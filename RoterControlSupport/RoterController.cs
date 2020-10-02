@@ -92,10 +92,9 @@ namespace RoterControlSupport
 
         public const int TAG_ENG_ALL = 0x00;
         public const int TAG_GLOBAL_OFFSET = 0x01;
-        public const int TAG_TABLE_ROW = 0x02;
-        public const int TAG_TABLE_ENTRY = 0x03;
-        public const int TAG_GLOBAL_TABLE = 0x04;
-        public const int TAG_CUSTOMER_TABLE = 0x05;
+        public const int TAG_LOCAL_ROW = 0x02;
+        public const int TAG_LOCAL_ENTRY = 0x03;
+        public const int TAG_LOCAL_TABLE = 0x04;
 
         // X-Ray (0x11)
         public const ushort CMD_HVINIT = 0x1100;
@@ -1292,7 +1291,7 @@ namespace RoterControlSupport
         #endregion Diagnostics
 
         #region Calibrate Focal Spot
-        public void ReadGlobalAndCustomerTable(out BeamCalibrationTable p_table) {
+        public void ReadGlobalLocalOffset(out BeamCalibrationTable p_table) {
 
             p_table = new BeamCalibrationTable();
 
@@ -1315,7 +1314,7 @@ namespace RoterControlSupport
 
                     p_table.AddGlobalEntry(x_offset, z_offset);
                 }
-                else if (tag == TAG_TABLE_ROW) {
+                else if (tag == TAG_LOCAL_ROW) {
 
                     int kv = (byte)(response[index] >> 0);
                     int ma = (UInt16)(response[index] >> 8);
@@ -1358,7 +1357,7 @@ namespace RoterControlSupport
             }
         }
 
-        public void WriteGlobalOffsetTable(int p_x, int p_z) {
+        public void WriteGlobalOffset(int p_x, int p_z) {
 
             List<ulong> request = new List<ulong>();
             List<ulong> response;
@@ -1370,7 +1369,7 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void WriteCustomerCalibrationTable(BeamCalibrationTable p_table) {
+        public void WriteLocalOffset(BeamCalibrationTable p_table) {
 
             if (p_table == null) {
 
@@ -1408,7 +1407,7 @@ namespace RoterControlSupport
                     direction = 1;
                 }
 
-                request.Add(TAG_TABLE_ENTRY);
+                request.Add(TAG_LOCAL_ENTRY);
                 request.Add((ulong)((entry.Offset & 0xff) << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
             }
 
@@ -1416,7 +1415,7 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void WriteGlobalAndCustomerTable(BeamCalibrationTable p_table) {
+        public void WriteGlobalLocalOffset(BeamCalibrationTable p_table) {
 
             List<ulong> request = new List<ulong>();
             List<ulong> response;
@@ -1447,7 +1446,7 @@ namespace RoterControlSupport
                     direction = 1;
                 }
 
-                request.Add(TAG_TABLE_ENTRY);
+                request.Add(TAG_LOCAL_ENTRY);
                 request.Add((ulong)((entry.Offset & 0xff) << 48 | direction << 40 | entry.Position << 32 | fss << 24 | entry.Ma << 8 | entry.Kv));
             }
 
@@ -1455,7 +1454,7 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void FlashGlobalAndCustomerTable() {
+        public void FlashGlobalLocalOffset() {
 
             List<ulong> request = new List<ulong>() { 0 };
             List<ulong> response;
@@ -1464,18 +1463,27 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void ZeroGlobalTable() {
+        public void ZeroGlobalLocalOffset() {
 
-            List<ulong> request = new List<ulong>() { (ulong)TAG_GLOBAL_TABLE };
+            List<ulong> request = new List<ulong>() { (ulong)TAG_ENG_ALL };
             List<ulong> response;
 
             SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);
             CheckErrorCode(response[0]);
         }
 
-        public void ZeroCustomerTable() {
+        public void ZeroGlobalOffset() {
 
-            List<ulong> request = new List<ulong>() { (ulong)TAG_CUSTOMER_TABLE };
+            List<ulong> request = new List<ulong>() { (ulong)TAG_GLOBAL_OFFSET };
+            List<ulong> response;
+
+            SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void ZeroLocalOffset() {
+
+            List<ulong> request = new List<ulong>() { (ulong)TAG_LOCAL_TABLE };
             List<ulong> response;
 
             SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);

@@ -1579,28 +1579,56 @@ namespace RCBTool {
         #region Focal Spot Adjustment
         private void btnDecCombindedX_Click(object sender, RoutedEventArgs e) {
 
+            if (m_fs_combined_offsets == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+
+            m_fs_combined_offsets.CombinedXOffset = m_fs_combined_offsets.CombinedXOffset - 5 < -100 ? -100 : m_fs_combined_offsets.CombinedXOffset - 5;
         }
 
         private void btnIncCombindedX_Click(object sender, RoutedEventArgs e) {
 
+            if (m_fs_combined_offsets == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+
+            m_fs_combined_offsets.CombinedXOffset = m_fs_combined_offsets.CombinedXOffset + 5 > 100 ? 100 : m_fs_combined_offsets.CombinedXOffset + 5;
         }
 
         private void btnDecCombindedZ_Click(object sender, RoutedEventArgs e) {
 
+            if (m_fs_combined_offsets == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+
+            m_fs_combined_offsets.CombinedZOffset = m_fs_combined_offsets.CombinedZOffset - 5 < -100 ? -100 : m_fs_combined_offsets.CombinedZOffset - 5;
         }
 
         private void btnIncCombindedZ_Click(object sender, RoutedEventArgs e) {
 
+            if (m_fs_combined_offsets == null) {
+
+                MessageBox.Show("Read the Beam Calibration Table first");
+                return;
+            }
+
+            m_fs_combined_offsets.CombinedZOffset = m_fs_combined_offsets.CombinedZOffset + 5 > 100 ? 100 : m_fs_combined_offsets.CombinedZOffset + 5;
         }
 
         private void btnReadCombinedOffset_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => ReadCombinedOffset()).Start();
+            new Thread(() => ReadCombinedOffset(sender as Button)).Start();
         }
 
-        private void ReadCombinedOffset() {
+        private void ReadCombinedOffset(Button p_button) {
 
-            using (new ButtonToggle(btnReadCombinedOffset)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
@@ -1624,17 +1652,16 @@ namespace RCBTool {
 
         private void btnZeroTable_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => ZeroTable()).Start();
+            new Thread(() => ZeroTable(sender as Button)).Start();
         }
 
-        private void ZeroTable() {
+        private void ZeroTable(Button p_button) {
 
-            using (new ButtonToggle(btnZeroTable)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.ZeroGlobalTable();
-                    m_rcb.ZeroCustomerTable();
+                    m_rcb.ZeroGlobalLocalOffset();
                 }
                 catch (Exception ex) {
 
@@ -1645,14 +1672,38 @@ namespace RCBTool {
 
         private void btnMoveX_Click(object sender, RoutedEventArgs e) {
 
+            int direction = 0;
+            int offset = int.Parse(tbxCombindedX.Text);
+
+            new Thread(() => MoveFocalSpot(sender as Button, direction, offset)).Start();
         }
 
         private void btnMoveZ_Click(object sender, RoutedEventArgs e) {
 
+            int direction = 1;
+            int offset = int.Parse(tbxCombindedZ.Text);
+
+            new Thread(() => MoveFocalSpot(sender as Button, direction, offset)).Start();
         }
 
-        private void btnFlashTable_Click(object sender, RoutedEventArgs e) {
+        private void MoveFocalSpot(Button p_button, int p_direction, int p_offset) {
 
+            using (new ButtonToggle(p_button)) {
+
+                try {
+
+                    m_rcb.MoveFocalSpot(p_direction, p_offset);
+                }
+                catch (Exception ex) {
+
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void btnFlashAllOffset1_click(object sender, RoutedEventArgs e) {
+
+            new Thread(() => FlashAllOffset(sender as Button)).Start();
         }
         #endregion Focal Spot Adjustment
 
@@ -1801,55 +1852,18 @@ namespace RCBTool {
             tbxOffset.Text = value.ToString();
         }
 
-        private void btnDecAdjustment_Click(object sender, RoutedEventArgs e) {
+        private void btnReadAllOffset_Click(object sender, RoutedEventArgs e) {
 
-            int value = int.Parse(tbxAdjustment.Text);
-            value = value - 5 < -50 ? -50 : value - 5;
-            tbxAdjustment.Text = value.ToString();
+            new Thread(() => ReadAllOffset(sender as Button)).Start();
         }
 
-        private void btnIncAdjustment_Click(object sender, RoutedEventArgs e) {
+        private void ReadAllOffset(Button p_button) {
 
-            int value = int.Parse(tbxAdjustment.Text);
-            value = value + 5 > 50 ? 50 : value + 5;
-            tbxAdjustment.Text = value.ToString();
-        }
-
-        private void btnMoveFocalSpot_Click(object sender, RoutedEventArgs e) {
-
-            int direction = rdbXDirection.IsChecked == true ? 0 : 1;
-            int offset = int.Parse(tbxAdjustment.Text);
-
-            new Thread(() => MoveFocalSpot(direction, offset)).Start();
-        }
-
-        private void MoveFocalSpot(int p_direction, int p_offset) {
-
-            using(new ButtonToggle(btnMoveFocalSpot)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.MoveFocalSpot(p_direction, p_offset);
-                }
-                catch(Exception ex) {
-
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
-
-        private void btnReadTable_Click(object sender, RoutedEventArgs e) {
-
-            new Thread(() => ReadTable()).Start();
-        }
-
-        private void ReadTable() {
-
-            using (new ButtonToggle(btnReadTable)) {
-
-                try {
-
-                    m_rcb.ReadGlobalAndCustomerTable(out m_fs_calibration_table);
+                    m_rcb.ReadGlobalLocalOffset(out m_fs_calibration_table);
 
                     // Populate test data
                     /*m_fs_calibration_table = new BeamCalibrationTable();
@@ -1880,18 +1894,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnWriteGlobal_Click(object sender, RoutedEventArgs e) {
+        private void btnWriteGlobalOffset_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => WriteGlobalTable()).Start();
+            new Thread(() => WriteGlobalOffset(sender as Button)).Start();
         }
 
-        private void WriteGlobalTable() {
+        private void WriteGlobalOffset(Button p_button) {
 
-            using (new ButtonToggle(btnWriteGlobal)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.WriteGlobalOffsetTable(m_fs_calibration_table.GlobalXOffset, m_fs_calibration_table.GlobalZOffset);
+                    m_rcb.WriteGlobalOffset(m_fs_calibration_table.GlobalXOffset, m_fs_calibration_table.GlobalZOffset);
                 }
                 catch (Exception ex) {
 
@@ -1900,18 +1914,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnWriteCustomer_Click(object sender, RoutedEventArgs e) {
+        private void btnWriteLocalOffset_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => WriteCustomerTable()).Start();
+            new Thread(() => WriteLocalOffset(sender as Button)).Start();
         }
 
-        private void WriteCustomerTable() {
+        private void WriteLocalOffset(Button p_button) {
 
-            using (new ButtonToggle(btnWriteCustomer)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.WriteCustomerCalibrationTable(m_fs_calibration_table);
+                    m_rcb.WriteLocalOffset(m_fs_calibration_table);
                 }
                 catch (Exception ex) {
 
@@ -1920,18 +1934,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnWriteBoth_Click(object sender, RoutedEventArgs e) {
+        private void btnWriteAllOffset_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => WriteGlobalAndCustomerTable()).Start();
+            new Thread(() => WriteAllOffset(sender as Button)).Start();
         }
 
-        private void WriteGlobalAndCustomerTable() {
+        private void WriteAllOffset(Button p_button) {
 
-            using (new ButtonToggle(btnWriteBoth)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.WriteGlobalAndCustomerTable(m_fs_calibration_table);
+                    m_rcb.WriteGlobalLocalOffset(m_fs_calibration_table);
                 }
                 catch (Exception ex) {
 
@@ -1940,18 +1954,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnWriteFlash_Click(object sender, RoutedEventArgs e) {
+        private void btnFlashAllOffset2_click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => FlashGlobalAndCustomerTable()).Start();
+            new Thread(() => FlashAllOffset(sender as Button)).Start();
         }
 
-        private void FlashGlobalAndCustomerTable() {
+        private void FlashAllOffset(Button p_button) {
 
-            using (new ButtonToggle(btnWriteFlash)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.FlashGlobalAndCustomerTable();
+                    m_rcb.FlashGlobalLocalOffset();
                 }
                 catch (Exception ex) {
 
@@ -1960,18 +1974,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnZeroGlobal_Click(object sender, RoutedEventArgs e) {
+        private void btnZeroGlobalOffset_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => ZeroGlobalTable()).Start();
+            new Thread(() => ZeroGlobalOffset(sender as Button)).Start();
         }
 
-        private void ZeroGlobalTable() {
+        private void ZeroGlobalOffset(Button p_button) {
 
-            using (new ButtonToggle(btnZeroGlobal)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.ZeroGlobalTable();
+                    m_rcb.ZeroGlobalOffset();
                 }
                 catch (Exception ex) {
 
@@ -1980,18 +1994,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnZeroCustomer_Click(object sender, RoutedEventArgs e) {
+        private void btnZeroLocalOffset_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => ZeroCustomerTable()).Start();
+            new Thread(() => ZeroLocalOffset(sender as Button)).Start();
         }
 
-        private void ZeroCustomerTable() {
+        private void ZeroLocalOffset(Button p_button) {
 
-            using (new ButtonToggle(btnZeroCustomer)) {
+            using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.ZeroCustomerTable();
+                    m_rcb.ZeroLocalOffset();
                 }
                 catch (Exception ex) {
 

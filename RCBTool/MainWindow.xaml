@@ -256,9 +256,9 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Focal Spot Adjustment">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible">
                     <Grid x:Name="grdFocalSpotAdjustment" IsEnabled="False">
-                        <GroupBox x:Name="gbxCombindedXOffset" Header="Combinded X Offset" HorizontalAlignment="Left" Height="150" Margin="80,89,0,0" VerticalAlignment="Top" Width="300">
+                        <GroupBox x:Name="gbxCombindedXOffset" Header="Combinded X Offset" HorizontalAlignment="Left" Height="150" Margin="80,30,0,0" VerticalAlignment="Top" Width="300">
                             <Grid>
                                 <Label x:Name="lblCombindedX" Content="X-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
                                 <TextBox x:Name="tbxCombindedX" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombindedXOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
@@ -267,7 +267,7 @@
                                 <Button x:Name="btnMoveX" Content="Move" Margin="164,36,0,0" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" Width="100" Click="btnMoveX_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxCombindedZOffset" Header="Combinded Z Offset" HorizontalAlignment="Left" Height="150" Margin="516,90,0,0" VerticalAlignment="Top" Width="302">
+                        <GroupBox x:Name="gbxCombindedZOffset" Header="Combinded Z Offset" HorizontalAlignment="Left" Height="150" Margin="427,30,0,0" VerticalAlignment="Top" Width="302">
                             <Grid>
                                 <Label x:Name="lblCombindedZ" Content="Z-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
                                 <TextBox x:Name="tbxCombindedZ" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombindedZOffset,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
@@ -276,16 +276,11 @@
                                 <Button x:Name="btnMoveZ" Content="Move" Margin="164,36,0,0" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" Width="100" Click="btnMoveZ_Click"/>
                             </Grid>
                         </GroupBox>
-                        <Button x:Name="btnReadCombinedOffset" Content="Read Tables" Margin="80,304,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnReadCombinedOffset_Click"/>
-                        <Button x:Name="btnZeroTable" Content="Zero Tables" Margin="290,304,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnZeroTable_Click"/>
-                        <Button x:Name="btnFlashTable" Content="Write to Flash" Margin="668,304,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnFlashTable_Click"/>
-                    </Grid>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="G-Box/TCU">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Grid x:Name="grdTcuGBox" IsEnabled="False">
-                        <GroupBox x:Name="gbxGlobalOffset" Header="Global Offset" HorizontalAlignment="Left" Height="150" Margin="75,26,0,0" VerticalAlignment="Top" Width="301">
+                        <Button x:Name="btnReadCombinedOffset" Content="Read Combinded Offsets" Margin="860,30,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnReadCombinedOffset_Click"/>
+                        <Button x:Name="btnZeroTable" Content="Zero All Offsets" Margin="860,80,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnZeroTable_Click"/>
+                        <Button x:Name="btnWriteFlash1" Content="Write All to Flash" Margin="860,150,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnFlashAllOffset1_click"/>
+
+                        <GroupBox x:Name="gbxGlobalOffset" Header="Global Offset" HorizontalAlignment="Left" Height="150" Margin="80,290,0,0" VerticalAlignment="Top" Width="301">
                             <Grid>
                                 <Label x:Name="lblGlobalX" Content="Global X-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
                                 <TextBox x:Name="tbxGlobalX" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,29,0,0" TextWrapping="Wrap" Text="{Binding GlobalXOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
@@ -297,23 +292,7 @@
                                 <Button x:Name="btnDecGlobalZ" Content="-" HorizontalAlignment="Left" Margin="155,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecGlobalZ_Click"/>
                             </Grid>
                         </GroupBox>
-                        <GroupBox x:Name="gbxAdjustFocalSpot" Header="Adjust Focal Spot" Height="150" Margin="420,26,478,770">
-                            <Grid>
-                                <Label Content="Direction:" HorizontalAlignment="Left" Margin="30,10,0,0" Height="16" VerticalAlignment="Top"/>
-                                <Label Content="Offset (μm):" HorizontalAlignment="Left" Margin="113,10,0,0" Height="16" VerticalAlignment="Top"/>
-                                <RadioButton x:Name="rdbXDirection" GroupName="grpDirection" IsChecked="True" HorizontalAlignment="Left" Margin="30,34,0,0" VerticalAlignment="Top">
-                                    <Label Content="X"/>
-                                </RadioButton>
-                                <RadioButton x:Name="rdbZDirection" GroupName="grpDirection" HorizontalAlignment="Left" Margin="30,55,0,0" VerticalAlignment="Top">
-                                    <Label Content="Y"/>
-                                </RadioButton>
-                                <TextBox x:Name="tbxAdjustment" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="113,29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <Button x:Name="btnIncAdjustment" Content="+" HorizontalAlignment="Left" Margin="183,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncAdjustment_Click"/>
-                                <Button x:Name="btnDecAdjustment" Content="-" HorizontalAlignment="Left" Margin="113,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecAdjustment_Click"/>
-                                <Button x:Name="btnMoveFocalSpot" Content="Adjust" HorizontalAlignment="Left" Margin="320,65,0,0" VerticalAlignment="Top" Width="100 " Click="btnMoveFocalSpot_Click"/>
-                            </Grid>
-                        </GroupBox>
-                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="75,750,824,46">
+                        <GroupBox x:Name="gbxEntrySelection" Header="Entry Selection" Height="150" Margin="427,290,472,506">
                             <Grid>
                                 <Label Content="Kv:" HorizontalAlignment="Left" Margin="10,10,0,0" Height="16" VerticalAlignment="Top"/>
                                 <Label Content="Ma:" HorizontalAlignment="Left" Margin="100,10,0,0" Height="16" VerticalAlignment="Top"/>
@@ -374,8 +353,8 @@
                                 <Button x:Name="btnDecOffset" Content="-" HorizontalAlignment="Left" Margin="455,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecOffset_Click"/>
                             </Grid>
                         </GroupBox>
-                        <Label Content="Customer Calibration Table:" HorizontalAlignment="Left" Margin="75,210,0,0" Height="16" VerticalAlignment="Top"/>
-                        <DataGrid x:Name="dgrCalibrationTable" AutoGenerateColumns="False"  HorizontalAlignment="Left" Margin="75,230,0,0" VerticalAlignment="Top" Height="500" Width="750" Style="{StaticResource FMI_Data_Grid}">
+                        <Label Content="Local Table:" HorizontalAlignment="Left" Margin="80,470,0,0" Height="16" VerticalAlignment="Top"/>
+                        <DataGrid x:Name="dgrCalibrationTable" AutoGenerateColumns="False"  HorizontalAlignment="Left" Margin="80,490,0,-44" VerticalAlignment="Top" Height="500" Width="750" Style="{StaticResource FMI_Data_Grid}">
                             <DataGrid.Resources>
                                 <Style TargetType="{x:Type DataGridColumnHeader}">
                                     <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -401,13 +380,20 @@
                                 <DataGridTextColumn Binding="{Binding Offset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Offset(μm)" Width="0.20*"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <Button x:Name="btnReadTable" Content="Read Tables" Margin="870,250,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnReadTable_Click"/>
-                        <Button x:Name="btnWriteGlobal" Content="Write Global Offsets" Margin="870,310,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteGlobal_Click"/>
-                        <Button x:Name="btnWriteCustomer" Content="Write Customer Table" Margin="870,370,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteCustomer_Click"/>
-                        <Button x:Name="btnWriteBoth" Content="Write Both Tables" Margin="870,430,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteBoth_Click"/>
-                        <Button x:Name="btnWriteFlash" Content="Write to Flash" Margin="870,490,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnWriteFlash_Click"/>
-                        <Button x:Name="btnZeroGlobal" Content="Zero Global Offsets" Margin="870,550,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnZeroGlobal_Click"/>
-                        <Button x:Name="btnZeroCustomer" Content="Zero Customer Table" Margin="870,610,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="150" Click="btnZeroCustomer_Click"/>
+                        <Button x:Name="btnReadAllOffset" Content="Read Global+Local Offsets" Margin="860,494,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnReadAllOffset_Click"/>
+                        <Button x:Name="btnWriteGlobalOffset" Content="Write Global Offsets" Margin="860,554,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnWriteGlobalOffset_Click"/>
+                        <Button x:Name="btnWriteLocalOffset" Content="Write Local Offsets" Margin="860,614,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnWriteLocalOffset_Click"/>
+                        <Button x:Name="btnWriteAllOffset" Content="Write All Offsets" Margin="860,674,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnWriteAllOffset_Click"/>
+                        <Button x:Name="btnWriteFlash2" Content="Write All to Flash" Margin="860,734,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnFlashAllOffset2_click"/>
+                        <Button x:Name="btnZeroGlobalOffset" Content="Zero Global Offsets" Margin="860,794,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnZeroGlobalOffset_Click"/>
+                        <Button x:Name="btnZeroLocalOffset" Content="Zero Local Offset" Margin="860,854,0,0" VerticalAlignment="Top" Height="30" HorizontalAlignment="Left" Width="160" Click="btnZeroLocalOffset_Click"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="G-Box/TCU">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="grdTcuGBox" IsEnabled="False">
+
                     </Grid>
                 </ScrollViewer>
             </TabItem>
