@@ -302,17 +302,17 @@ namespace RoterControlSupport
                         fmi_frame.ControlBits = (byte)ControlBit.Start;
                     }
 
-                    fmi_frame.ParameterBits = (ushort)p_data.Count;
+                    //fmi_frame.ParameterBits = (ushort)p_data.Count;
                 }
                 else if (i == p_data.Count - 1) {
 
                     fmi_frame.ControlBits = (byte)ControlBit.End;
-                    fmi_frame.ParameterBits = (ushort)i;
+                    //fmi_frame.ParameterBits = (ushort)i;
                 }
                 else {
 
                     fmi_frame.ControlBits = (byte)ControlBit.Middle;
-                    fmi_frame.ParameterBits = (ushort)i;
+                    //fmi_frame.ParameterBits = (ushort)i;
                 }
 
                 fmi_frame.SourceId = (byte)ModuleId.Host;

@@ -30,11 +30,11 @@ namespace RoterControlSupport {
             set { m_data64 = value; }
         }
 
-        public ushort ParameterBits {
+        /*public ushort ParameterBits {
 
             get { return (ushort)(m_can_id & 0x000003ffu); }
             set { m_can_id = (m_can_id & 0xfffffc00u) | (value & 0x000003ffu); }
-        }
+        }*/
 
         public byte CommandBits {
 
