@@ -1080,6 +1080,7 @@ namespace RCBTool {
                 grdHouseKeeper.IsEnabled = true;
                 grdLog.IsEnabled = true;
                 grdRegister.IsEnabled = true;
+                grdFocalSpotAdjustment.IsEnabled = true;
                 grdTcuGBox.IsEnabled = true;
                 grdHighVoltage.IsEnabled = true;
                 grdCollimatorLaser.IsEnabled = true;

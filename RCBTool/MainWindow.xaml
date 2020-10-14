@@ -261,7 +261,7 @@
                         <GroupBox x:Name="gbxCombindedXOffset" Header="Combinded X Offset" HorizontalAlignment="Left" Height="150" Margin="80,30,0,0" VerticalAlignment="Top" Width="300">
                             <Grid>
                                 <Label x:Name="lblCombindedX" Content="X-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
-                                <TextBox x:Name="tbxCombindedX" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombindedXOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox x:Name="tbxCombindedX" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombinedXOffset, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 <Button x:Name="btnIncCombindedX" Content="+" HorizontalAlignment="Left" Margin="80,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncCombindedX_Click"/>
                                 <Button x:Name="btnDecCombindedX" Content="-" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecCombindedX_Click"/>
                                 <Button x:Name="btnMoveX" Content="Move" Margin="164,36,0,0" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" Width="100" Click="btnMoveX_Click"/>
@@ -270,7 +270,7 @@
                         <GroupBox x:Name="gbxCombindedZOffset" Header="Combinded Z Offset" HorizontalAlignment="Left" Height="150" Margin="427,30,0,0" VerticalAlignment="Top" Width="302">
                             <Grid>
                                 <Label x:Name="lblCombindedZ" Content="Z-offset:" HorizontalAlignment="Left" Margin="10,8,0,0" Height="16" VerticalAlignment="Top"/>
-                                <TextBox x:Name="tbxCombindedZ" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombindedZOffset,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox x:Name="tbxCombindedZ" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="10,28,0,0" TextWrapping="Wrap" Text="{Binding CombinedZOffset,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="120" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 <Button x:Name="btnIncCombindedZ" Content="+" HorizontalAlignment="Left" Margin="80,65,0,0" VerticalAlignment="Top" Width="50 " Click="btnIncCombindedZ_Click"/>
                                 <Button x:Name="btnDecCombindedZ" Content="-" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Width="50" Click="btnDecCombindedZ_Click"/>
                                 <Button x:Name="btnMoveZ" Content="Move" Margin="164,36,0,0" VerticalAlignment="Top" Height="60" HorizontalAlignment="Left" Width="100" Click="btnMoveZ_Click"/>
@@ -354,7 +354,7 @@
                             </Grid>
                         </GroupBox>
                         <Label Content="Local Table:" HorizontalAlignment="Left" Margin="80,470,0,0" Height="16" VerticalAlignment="Top"/>
-                        <DataGrid x:Name="dgrCalibrationTable" AutoGenerateColumns="False"  HorizontalAlignment="Left" Margin="80,490,0,-44" VerticalAlignment="Top" Height="500" Width="750" Style="{StaticResource FMI_Data_Grid}">
+                        <DataGrid x:Name="dgrCalibrationTable" AutoGenerateColumns="False"  HorizontalAlignment="Left" Margin="80,490,0,0" VerticalAlignment="Top" Height="394" Width="750" Style="{StaticResource FMI_Data_Grid}">
                             <DataGrid.Resources>
                                 <Style TargetType="{x:Type DataGridColumnHeader}">
                                     <Setter Property="HorizontalContentAlignment" Value="Center" />
