@@ -1622,12 +1622,12 @@ namespace RCBTool {
             m_fs_combined_offsets.CombinedZOffset = m_fs_combined_offsets.CombinedZOffset + 5 > 100 ? 100 : m_fs_combined_offsets.CombinedZOffset + 5;
         }
 
-        private void btnReadCombinedOffset_Click(object sender, RoutedEventArgs e) {
+        private void btnReadFocalSpotPosition_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => ReadCombinedOffset(sender as Button)).Start();
+            new Thread(() => ReadFocalSpotPosition(sender as Button)).Start();
         }
 
-        private void ReadCombinedOffset(Button p_button) {
+        private void ReadFocalSpotPosition(Button p_button) {
 
             using (new ButtonToggle(p_button)) {
 
@@ -1635,7 +1635,7 @@ namespace RCBTool {
 
                     int x_offset = 0;
                     int z_offset = 0;
-                    m_rcb.ReadCombinedOffset(out x_offset, out z_offset);
+                    m_rcb.ReadFSPosition(out x_offset, out z_offset);
 
                     m_fs_combined_offsets = new BeamCombinedOffset();
                     m_fs_combined_offsets.CombinedXOffset = x_offset;
@@ -1651,18 +1651,18 @@ namespace RCBTool {
             }
         }
 
-        private void btnZeroTable_Click(object sender, RoutedEventArgs e) {
+        private void btn_ResetFocalSpotPosition(object sender, RoutedEventArgs e) {
 
-            new Thread(() => ZeroTable(sender as Button)).Start();
+            new Thread(() => ResetFSPosition(sender as Button)).Start();
         }
 
-        private void ZeroTable(Button p_button) {
+        private void ResetFSPosition(Button p_button) {
 
             using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.ZeroGlobalLocalOffset();
+                    m_rcb.ResetFSPosition();
                 }
                 catch (Exception ex) {
 
@@ -1702,9 +1702,9 @@ namespace RCBTool {
             }
         }
 
-        private void btnFlashAllOffset1_click(object sender, RoutedEventArgs e) {
+        private void btnFlashFSPosition(object sender, RoutedEventArgs e) {
 
-            new Thread(() => FlashAllOffset(sender as Button)).Start();
+            new Thread(() => FlashFSPosition(sender as Button)).Start();
         }
         #endregion Focal Spot Adjustment
 
@@ -1957,16 +1957,16 @@ namespace RCBTool {
 
         private void btnFlashAllOffset2_click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => FlashAllOffset(sender as Button)).Start();
+            new Thread(() => FlashFSPosition(sender as Button)).Start();
         }
 
-        private void FlashAllOffset(Button p_button) {
+        private void FlashFSPosition(Button p_button) {
 
             using (new ButtonToggle(p_button)) {
 
                 try {
 
-                    m_rcb.FlashGlobalLocalOffset();
+                    m_rcb.FlashFSPosition();
                 }
                 catch (Exception ex) {
 
@@ -3271,13 +3271,57 @@ namespace RCBTool {
             }
         }
 
+        private void btnPrintConfiguration_Click(object sender, RoutedEventArgs e) {
+
+            try {
+
+                m_rcb.PrintConfiguration();
+            }
+            catch (Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         private void btnUpdateConfiguration_Click(object sender, RoutedEventArgs e) {
 
-            List<ulong> request = new List<ulong>();
+            try {
 
-            ulong word64 = 0;
+                List<ulong> configuration = new List<ulong>();
 
-            word64 = 
+                configuration.Add(1ul << 32 | 0x8001);
+                configuration.Add(cbxUseOffsetData.IsChecked == true ? 1ul : 0);
+
+                configuration.Add(1ul << 32 | 0x8002);
+                configuration.Add(cbxUseXrayData.IsChecked == true ? 1ul : 0);
+
+                configuration.Add(1ul << 32 | 0x8003);
+                configuration.Add(cbxAverageDataEnabled.IsChecked == true ? 1ul : 0);
+
+                configuration.Add(1ul << 32 | 0x8004);
+                configuration.Add((ulong)cdtSliceSelection.SelectedIndex);
+
+                configuration.Add(1ul << 32 | 0x8005);
+                configuration.Add((ulong)cdtColumnSelection1.SelectedIndex);
+
+                configuration.Add(1ul << 32 | 0x8006);
+                configuration.Add((ulong)cdtColumnSelection2.SelectedIndex);
+
+                configuration.Add(1ul << 32 | 0x8007);
+                configuration.Add((ulong)cdtColumnSelection3.SelectedIndex);
+
+                int slice_data = cbxRequestSliceData.IsChecked == true ? 1 : 0;
+                int column_data = cbxRequestColumnData.IsChecked == true ? 1 : 0;
+                int block_data = cbxRequestBlockData.IsChecked == true ? 1 : 0;
+                configuration.Add(1ul << 32 | 0x8008);
+                configuration.Add((ulong)(slice_data << 2 | column_data << 1 | block_data));
+
+                m_rcb.UpdateConfiguration(configuration);
+            }
+            catch(Exception ex) {
+
+                MessageBox.Show(ex.Message);
+            }
         }
         #endregion Data Acquisition
 

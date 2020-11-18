@@ -59,6 +59,7 @@ namespace RoterControlSupport
         public const ushort CMD_TURNONFILEOUTPUT_B = 0x1043;
         public const ushort CMD_TURNONSTDOUTPUT_B = 0x1044;
         public const ushort CMD_TURNONCANOUTPUT_B = 0x1045;
+        public const ushort CMD_PRINTCONFIGURATION_B = 0x1046;
 
         // Denali System (0x0a)
         public const ushort CMD_SETLOGLEVEL_D = 0x0a41;
@@ -110,6 +111,10 @@ namespace RoterControlSupport
         public const ushort CMD_SEASON = 0x110b;
         public const ushort CMD_FILCAL = 0x110c;
         public const ushort CMD_ESTIMATE = 0x110d;
+        public const ushort CMD_RESETFSP = 0x1110;
+        public const ushort CMD_READFSP = 0x1111;
+        public const ushort CMD_MOVEFS = 0x1112;
+        public const ushort CMD_FLASHFSP = 0x1113;
 
         // Collimator (0x12)
         public const ushort CMD_CLMTVER = 0x1200;
@@ -1455,24 +1460,6 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void FlashGlobalLocalOffset() {
-
-            List<ulong> request = new List<ulong>() { 0 };
-            List<ulong> response;
-
-            SendRequestSync(CMD_CALFS_WRITEFLASH, request, out response, 5000);
-            CheckErrorCode(response[0]);
-        }
-
-        public void ZeroGlobalLocalOffset() {
-
-            List<ulong> request = new List<ulong>() { (ulong)TAG_ENG_ALL };
-            List<ulong> response;
-
-            SendRequestSync(CMD_CALFS_RESETTABLE, request, out response, 5000);
-            CheckErrorCode(response[0]);
-        }
-
         public void ZeroGlobalOffset() {
 
             List<ulong> request = new List<ulong>() { (ulong)TAG_GLOBAL_OFFSET };
@@ -1491,29 +1478,6 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void MoveFocalSpot(int p_direction, int p_offset) {
-
-            List<ulong> request = new List<ulong>() { (ulong)p_direction, (ulong)p_offset };
-            List<ulong> response;
-
-            SendRequestSync(CMD_CALFS_MOVEFS, request, out response, 10000);
-            CheckErrorCode(response[0]);
-        }
-
-        public void ReadCombinedOffset(out int p_x_offset, out int p_z_offset) {
-
-            p_x_offset = 0;
-            p_z_offset = 0;
-
-            List<ulong> request = new List<ulong>() { 0 };
-            List<ulong> response;
-
-            SendRequestSync(CMD_CALFS_READCOMBINEDOFFSET, request, out response, 10000);
-            CheckErrorCode(response[0]);
-
-            p_x_offset = (int)response[1];
-            p_z_offset = (int)response[2];
-        }
         #endregion Calibrate Folca Spot
         #endregion Denali
 
@@ -1524,6 +1488,15 @@ namespace RoterControlSupport
             List<ulong> response;
 
             SendRequestSync(CMD_UPDATECONFIGURATION_B, request, out response, 1000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void PrintConfiguration() {
+
+            List<ulong> request = new List<ulong>() { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_PRINTCONFIGURATION_B, request, out response, 1000);
             CheckErrorCode(response[0]);
         }
         #endregion System
@@ -1719,6 +1692,48 @@ namespace RoterControlSupport
 
             SendRequestSync(CMD_FILCAL, request, out response, wait_time);
 
+            CheckErrorCode(response[0]);
+        }
+
+        public void ResetFSPosition() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_RESETFSP, request, out response, 5000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void ReadFSPosition(out int p_x_offset, out int p_z_offset) {
+
+            p_x_offset = 0;
+            p_z_offset = 0;
+
+            List<ulong> request = new List<ulong>() { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_READFSP, request, out response, 15000);
+            CheckErrorCode(response[0]);
+
+            p_x_offset = (int)response[1];
+            p_z_offset = (int)response[2];
+        }
+
+        public void MoveFocalSpot(int p_direction, int p_offset) {
+
+            List<ulong> request = new List<ulong>() { (ulong)p_direction, (ulong)p_offset };
+            List<ulong> response;
+
+            SendRequestSync(CMD_MOVEFS, request, out response, 10000);
+            CheckErrorCode(response[0]);
+        }
+
+        public void FlashFSPosition() {
+
+            List<ulong> request = new List<ulong> { 0 };
+            List<ulong> response;
+
+            SendRequestSync(CMD_FLASHFSP, request, out response, 15000);
             CheckErrorCode(response[0]);
         }
         #endregion
