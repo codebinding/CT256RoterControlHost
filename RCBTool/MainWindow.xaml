@@ -652,6 +652,57 @@
                             </Grid>
                         </GroupBox>
                         <Label x:Name="ldtDetNop" Content="Return:" HorizontalAlignment="Left" Margin="50,835,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="cbxAverageDataEnabled" Content="Enable Average Data" HorizontalAlignment="Left" Margin="930,590,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="cbxUseOffsetData" Content="Use Offset Data" HorizontalAlignment="Left" Margin="930,625,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="cbxUseXrayData" Content="Use X-ray Data" HorizontalAlignment="Left" Margin="930,652,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="cbxRequestBlockData" Content="Request Block Data" HorizontalAlignment="Left" Margin="930,705,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="cbxRequestColumnData" Content="Request Column Data" HorizontalAlignment="Left" Margin="930,735,0,0" VerticalAlignment="Top"/>
+                        <CheckBox x:Name="cbxRequestSliceData" Content="Request Slice Data" HorizontalAlignment="Left" Margin="930,765,0,0" VerticalAlignment="Top"/>
+                        <Label Content="Slice Selection:" HorizontalAlignment="Left" Margin="1059,622,0,0" Height="16" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="cdtSliceSelection" HorizontalAlignment="Left" Margin="1059,648,0,0" VerticalAlignment="Top" Width="100" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <System:String>Slice 1</System:String>
+                            <System:String>Slice 256</System:String>
+                        </ComboBox>
+                        <Label Content="Column Selection 1:" HorizontalAlignment="Left" Margin="1181,625,0,0" Height="16" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="cdtColumnSelection1" HorizontalAlignment="Left" Margin="1181,645,0,0" VerticalAlignment="Top" Width="65" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <System:String>0</System:String>
+                            <System:String>1</System:String>
+                            <System:String>2</System:String>
+                            <System:String>3</System:String>
+                            <System:String>4</System:String>
+                            <System:String>5</System:String>
+                            <System:String>6</System:String>
+                            <System:String>7</System:String>
+                            <System:String>8</System:String>
+                            <System:String>Disable</System:String>
+                        </ComboBox>
+                        <Label Content="Column Selection 2:" HorizontalAlignment="Left" Margin="1181,685,0,0" Height="16" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="cdtColumnSelection2" HorizontalAlignment="Left" Margin="1181,705,0,0" VerticalAlignment="Top" Width="65" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <System:String>0</System:String>
+                            <System:String>1</System:String>
+                            <System:String>2</System:String>
+                            <System:String>3</System:String>
+                            <System:String>4</System:String>
+                            <System:String>5</System:String>
+                            <System:String>6</System:String>
+                            <System:String>7</System:String>
+                            <System:String>8</System:String>
+                            <System:String>Disable</System:String>
+                        </ComboBox>
+                        <Label Content="Column Selection 3:" HorizontalAlignment="Left" Margin="1181,745,0,0" Height="16" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="cdtColumnSelection3" HorizontalAlignment="Left" Margin="1181,765,0,0" VerticalAlignment="Top" Width="65" Height="25" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                            <System:String>0</System:String>
+                            <System:String>1</System:String>
+                            <System:String>2</System:String>
+                            <System:String>3</System:String>
+                            <System:String>4</System:String>
+                            <System:String>5</System:String>
+                            <System:String>6</System:String>
+                            <System:String>7</System:String>
+                            <System:String>8</System:String>
+                            <System:String>Disable</System:String>
+                        </ComboBox>
+                        <Button x:Name="btnUpdateConfiguration" Content="Update Configuration" HorizontalAlignment="Left" Margin="1141,0,0,89" VerticalAlignment="Bottom" Width="145" Click="btnUpdateConfiguration_Click"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>

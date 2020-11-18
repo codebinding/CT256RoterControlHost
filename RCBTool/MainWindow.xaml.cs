@@ -3270,6 +3270,15 @@ namespace RCBTool {
                 m_tbx_agg_reply[i].Text = $"{response[i]:X8}";
             }
         }
+
+        private void btnUpdateConfiguration_Click(object sender, RoutedEventArgs e) {
+
+            List<ulong> request = new List<ulong>();
+
+            ulong word64 = 0;
+
+            word64 = 
+        }
         #endregion Data Acquisition
 
         #region Thermal Control

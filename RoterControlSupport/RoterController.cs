@@ -53,6 +53,7 @@ namespace RoterControlSupport
         public const ushort CMD_UPDFW_HPS = 0x060c;
 
         // Bryce System (0x10)
+        public const ushort CMD_UPDATECONFIGURATION_B = 0x1040;
         public const ushort CMD_SETLOGLEVEL_B = 0x1041;
         public const ushort CMD_TURNOFFLOGOUTPUT_B = 0x1042;
         public const ushort CMD_TURNONFILEOUTPUT_B = 0x1043;
@@ -464,7 +465,7 @@ namespace RoterControlSupport
         }
 
         #region Acadia
-        #region System
+        #region Management
         public void SyncTime() {
 
             ulong unixTimeStamp = (ulong)(DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
@@ -686,7 +687,7 @@ namespace RoterControlSupport
 
             return WaitResponse(CMD_STARTDENALI, out response, p_wait_ms);
         }
-        #endregion System
+        #endregion Management
 
         #region File
         public void AbortTransmit() {
@@ -1517,6 +1518,16 @@ namespace RoterControlSupport
         #endregion Denali
 
         #region Bryce
+        #region System
+        public void UpdateConfiguration(List<ulong> request) {
+
+            List<ulong> response;
+
+            SendRequestSync(CMD_UPDATECONFIGURATION_B, request, out response, 1000);
+            CheckErrorCode(response[0]);
+        }
+        #endregion System
+
         #region X-ray
         public void InitHighVoltage() {
 
