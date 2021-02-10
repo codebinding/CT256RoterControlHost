@@ -164,6 +164,7 @@ namespace RCBTool {
             cbxPositionType.Items.Add("Relative");
 
             cbxTicksPerRotation = new ComboBox() { Margin = new Thickness(left_most + 450, top_most + 80, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxTicksPerRotation.Items.Add("1024");
             cbxTicksPerRotation.Items.Add("2048");
             cbxTicksPerRotation.Items.Add("4096");
             cbxTicksPerRotation.Items.Add("6144");
@@ -2287,15 +2288,34 @@ namespace RCBTool {
             acq_job.Collimation = "256*0.625";
             acq_job.SaveCrudeOffset = false;
 
-            ErrorInfo e = new ErrorInfo();
+            try {
+                ErrorInfo e = new ErrorInfo();
 
-            if (!m_cdw_client.ScanPrepare(acq_job, ref e)) {
+                if (!m_cdw_client.ScanPrepare(acq_job, ref e)) {
 
-                tbxInfo.AppendText("CDW ScanPrepare failed:" + e.ErrorMsg + "  " + e.ErrorCode);
-                tbxInfo.ScrollToEnd();
+                    this.Dispatcher.Invoke(new Action(() => {
+
+                        tbxInfo.AppendText("CDW ScanPrepare failed:" + e.ErrorMsg + "  " + e.ErrorCode);
+                        tbxInfo.ScrollToEnd();
+                    }));
+                }
+                else {
+
+                    this.Dispatcher.Invoke(new Action(() => {
+
+                        tbxInfo.AppendText("CDW ScanPrepare completed");
+                        tbxInfo.ScrollToEnd();
+                    }));
+                }
             }
-            tbxInfo.AppendText("CDW ScanPrepare completed");
-            tbxInfo.ScrollToEnd();
+            catch(Exception e) {
+
+                this.Dispatcher.Invoke(new Action(() => {
+
+                    tbxInfo.AppendText(e.Message);
+                    tbxInfo.ScrollToEnd();
+                }));
+            }
         }
 
         private void CrudeDataWriterScan() {
@@ -2303,15 +2323,34 @@ namespace RCBTool {
             if (!m_cdw_rpc_used)
                 return;
 
-            ErrorInfo e = new ErrorInfo();
+            try {
 
-            if (!m_cdw_client.ScanStart(ref e)) {
+                ErrorInfo e = new ErrorInfo();
 
-                tbxInfo.AppendText("ScanStart failed:" + e.ErrorMsg + "  " + e.ErrorCode);
-                tbxInfo.ScrollToEnd();
+                if (!m_cdw_client.ScanStart(ref e)) {
+
+                    this.Dispatcher.Invoke(new Action(() => {
+
+                        tbxInfo.AppendText("ScanStart failed:" + e.ErrorMsg + "  " + e.ErrorCode);
+                        tbxInfo.ScrollToEnd();
+                    }));
+                }
+                else {
+
+                    this.Dispatcher.Invoke(new Action(() => {
+                        tbxInfo.AppendText("CDW ScanStart completed");
+                        tbxInfo.ScrollToEnd();
+                    }));
+                }
             }
-            tbxInfo.AppendText("CDW ScanStart completed");
-            tbxInfo.ScrollToEnd();
+            catch(Exception e) {
+
+                this.Dispatcher.Invoke(new Action(() => {
+
+                    tbxInfo.AppendText(e.Message);
+                    tbxInfo.ScrollToEnd();
+                }));
+            }
         }
 
         private void GetExposureParameter() {
