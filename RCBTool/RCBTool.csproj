@@ -29,6 +29,9 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AcqInterfaceManaged">
+      <HintPath>..\..\..\FAWKESBASE\Release\RunTime64\AcqInterfaceManaged.dll</HintPath>
+    </Reference>
     <Reference Include="coreWinSubFramework, Version=1.0.0.11916, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\FAWKESBASE\Release\LIB64\coreWinSubFramework.dll</HintPath>
@@ -46,6 +49,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WrappedRpcAcqClient">
+      <HintPath>..\..\..\FAWKESBASE\Release\RunTime64\WrappedRpcAcqClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

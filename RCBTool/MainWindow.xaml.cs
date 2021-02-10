@@ -24,6 +24,8 @@ using System.Linq;
 
 using CoreWinSubFramework;
 using RoterControlSupport;
+using RecCWinLib.WrappedRpcAcqClient;
+using AcqWinLibMain;
 
 namespace RCBTool {
 
@@ -335,11 +337,14 @@ namespace RCBTool {
         private int m_x_step;
 
         private bool m_messaging_used = false;
+        private bool m_cdw_rpc_used = false;
 
         private const string gkResMainContactor = "contactor";
         private const string gkResDoor = "door";
         private const string gkResState = "state";
         private const string gkResTubeHeat = "tube_heat";
+
+        private WrappedRpcAcqClient m_cdw_client = null;
 
         public MainWindow() {
 
@@ -1099,6 +1104,22 @@ namespace RCBTool {
             catch (Exception ex) {
              
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnCreateCdwRpcClient_Click(object sender, RoutedEventArgs e) {
+
+            m_cdw_rpc_used = false;
+
+            try {
+
+                m_cdw_client = new WrappedRpcAcqClient(tbxCrudeDataWriterIp.Text, "35888");
+                m_cdw_client.PingCrudeDataWriter();
+                m_cdw_rpc_used = true;
+            }
+            catch(Exception ex) {
+
+                tbxInfo.AppendText($"Ping CrudeDataWriter: {ex.Message}");
             }
         }
 
@@ -2219,12 +2240,78 @@ namespace RCBTool {
 
                 GetExposureParameter();
 
+                new Thread(() => CrudeDataWriterPrepare()).Start();
+
+                Thread.Sleep(1000);
+                m_rcb.NotifyCStep(0);
+
                 new Thread(() => Prepare()).Start();
             }
             catch (Exception ex) {
 
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void CrudeDataWriterPrepare() {
+
+            if (!m_cdw_rpc_used)
+                return;
+
+            AcqJob acq_job = new AcqJob();
+            acq_job.Requestor = "RCBTool";
+            acq_job.ScanUID = "S123456789";
+            acq_job.FileName = "";
+            if (m_scan_parameters[0].TriggerMode == 0) {
+
+                acq_job.ScanType = "Scout";
+            }
+            else if (m_scan_parameters[0].TriggerMode == 1) {
+
+                acq_job.ScanType = "Helical";
+            }
+            else if (m_scan_parameters[0].TriggerMode == 2) {
+
+                acq_job.ScanType = "Axial";
+            }
+            else {
+
+                acq_job.ScanType = "";
+            }
+
+            acq_job.ShotNumber = m_scan_parameters[0].NumberOfShots;
+            acq_job.IntegrationLimit = m_scan_parameters[0].IntegrationLimit;
+            acq_job.IsTableIn = true;
+            acq_job.CorrectionLevel = 0;
+            acq_job.AngleEncoderSize = (uint)m_scan_parameters[0].TicksPerRotation;
+            acq_job.Collimation = "256*0.625";
+            acq_job.SaveCrudeOffset = false;
+
+            ErrorInfo e = new ErrorInfo();
+
+            if (!m_cdw_client.ScanPrepare(acq_job, ref e)) {
+
+                tbxInfo.AppendText("CDW ScanPrepare failed:" + e.ErrorMsg + "  " + e.ErrorCode);
+                tbxInfo.ScrollToEnd();
+            }
+            tbxInfo.AppendText("CDW ScanPrepare completed");
+            tbxInfo.ScrollToEnd();
+        }
+
+        private void CrudeDataWriterScan() {
+
+            if (!m_cdw_rpc_used)
+                return;
+
+            ErrorInfo e = new ErrorInfo();
+
+            if (!m_cdw_client.ScanStart(ref e)) {
+
+                tbxInfo.AppendText("ScanStart failed:" + e.ErrorMsg + "  " + e.ErrorCode);
+                tbxInfo.ScrollToEnd();
+            }
+            tbxInfo.AppendText("CDW ScanStart completed");
+            tbxInfo.ScrollToEnd();
         }
 
         private void GetExposureParameter() {
@@ -2381,6 +2468,7 @@ namespace RCBTool {
 
         private void btnScan_Click(object sender, RoutedEventArgs e) {
 
+            new Thread(() => CrudeDataWriterScan()).Start();
             new Thread(() => Scan()).Start();
         }
 
@@ -2417,6 +2505,11 @@ namespace RCBTool {
             this.Dispatcher.Invoke(new Action(() => btnAbortScan.IsEnabled = false));
 
             try {
+
+                if (m_cdw_rpc_used) {
+
+                    m_cdw_client.Abort();
+                }
 
                 m_rcb.Abort();
             }

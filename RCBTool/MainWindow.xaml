@@ -890,8 +890,10 @@
         <TextBox x:Name="tbxGantryPosition" HorizontalAlignment="Left" Height="23" Margin="480,0,0,45" TextWrapping="NoWrap" IsReadOnly="True" Width="80" MinWidth="0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center"/>
         <Label x:Name="lblDeviceId" Content="Peak CAN Id:" HorizontalAlignment="Right" Margin="0,0,100,50" VerticalAlignment="Bottom" FontWeight="Bold"/>
         <TextBox x:Name="tbxDeviceId" HorizontalAlignment="Right" Height="18" Margin="0,0,50,50" TextWrapping="Wrap" Text="1a" VerticalAlignment="Bottom" Width="40" MinWidth="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Button x:Name="btnRegisterYellowPage" Content="Register YP" HorizontalAlignment="Right" Margin="0,0,450,50" Width="100" Click="btnRegisterYellowPage_Click" Height="30" VerticalAlignment="Bottom"/>
-        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Right" Margin="0,0,320,50" VerticalAlignment="Bottom" Width="100" Click="btnConnect_Click" Height="30"/>
+        <TextBox x:Name="tbxCrudeDataWriterIp" HorizontalAlignment="Right" Height="18" Margin="0,0,332,50" TextWrapping="Wrap" Text="10.2.215.63" VerticalAlignment="Bottom" Width="176" MinWidth="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Button x:Name="btnRegisterYellowPage" Content="Register YP" HorizontalAlignment="Right" Margin="0,0,653,50" Width="100" Click="btnRegisterYellowPage_Click" Height="30" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnCreateCdwRpcClient" Content="CDW RPC Client" HorizontalAlignment="Right" Margin="0,0,524,49" Width="100" Height="30" VerticalAlignment="Bottom" Click="btnCreateCdwRpcClient_Click"/>
+        <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Right" Margin="0,0,200,50" VerticalAlignment="Bottom" Width="100" Click="btnConnect_Click" Height="30"/>
         <TextBox x:Name="tbxInfo" Margin="0,60,10,120" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console" HorizontalAlignment="Right" Width="430" />
     </Grid>
 </Window>
