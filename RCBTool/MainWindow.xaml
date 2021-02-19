@@ -427,14 +427,16 @@
                             <System:Int32>9</System:Int32>
                             <System:Int32>10</System:Int32>
                         </ComboBox>
-                        <CheckBox x:Name="cbxSimulation" Content="Motion/Data Simulation" HorizontalAlignment="Left" Margin="850,35,0,0" VerticalAlignment="Top"/>
-                        <Button x:Name="btnEstimate" Content="Estimate" Margin="350,665,0,0" Click="btnEstimate_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
-                        <TabControl x:Name="tabScanParameter" Margin="185,70,0,0" SelectedIndex="0" HorizontalAlignment="Left" Width="850" Height="540" VerticalAlignment="Top">
+                        <Button x:Name="btnEstimate" Content="Estimate" Margin="350,707,0,0" Click="btnEstimate_Click" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
+                        <TabControl x:Name="tabScanParameter" Margin="185,70,0,0" SelectedIndex="0" HorizontalAlignment="Left" Width="850" Height="600" VerticalAlignment="Top">
                         </TabControl>
-                        <Button x:Name="btnScan" Content="Scan" Margin="185,665,0,0" Click="btnScan_Click" HorizontalAlignment="Left" Width="120" Height="30" VerticalAlignment="Top"/>
-                        <Button x:Name="btnAbortScan" Content="Abort" Margin="915,630,0,0" Click="btnAbortScan_Click" Height="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
+                        <Button x:Name="btnScan" Content="Scan" Margin="185,707,0,0" Click="btnScan_Click" HorizontalAlignment="Left" Width="120" Height="30" VerticalAlignment="Top"/>
+                        <Button x:Name="ButtonMultiScan" Content="Prepare + Scan" Margin="515,707,0,0" Click="ButtonMultiScan_Click" HorizontalAlignment="Left" Width="120" Height="30" VerticalAlignment="Top"/>
+                        <Button x:Name="btnAbortScan" Content="Abort" Margin="915,707,0,0" Click="btnAbortScan_Click" Height="100" VerticalAlignment="Top" HorizontalAlignment="Left" Width="120"/>
                         <ProgressBar x:Name="pgbXrayProgress" Margin="25,474,0,0" HorizontalAlignment="Left" Width="120" Height="20" VerticalAlignment="Top" Visibility="Visible"/>
                         <TextBlock x:Name="tblXrayProgress" Text="0%" VerticalAlignment="Top" Margin="60,474,0,0" Visibility="Visible" HorizontalAlignment="Left" Width="47" TextAlignment="Center" />
+                        <Button x:Name="btnCreateCdwRpcClient" Content="CDW RPC Client" HorizontalAlignment="Right" Margin="0,0,1204,160" Width="120" Height="30" VerticalAlignment="Bottom" Click="btnCreateCdwRpcClient_Click"/>
+                        <TextBox x:Name="tbxCrudeDataWriterIp" HorizontalAlignment="Right" Height="18" Margin="0,0,983,164" TextWrapping="Wrap" Text="10.2.215.63" VerticalAlignment="Bottom" Width="176" MinWidth="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                     </Grid>
                 </ScrollViewer>
             </TabItem>
@@ -890,9 +892,7 @@
         <TextBox x:Name="tbxGantryPosition" HorizontalAlignment="Left" Height="23" Margin="480,0,0,45" TextWrapping="NoWrap" IsReadOnly="True" Width="80" MinWidth="0" VerticalAlignment="Bottom" HorizontalContentAlignment="Center"/>
         <Label x:Name="lblDeviceId" Content="Peak CAN Id:" HorizontalAlignment="Right" Margin="0,0,100,50" VerticalAlignment="Bottom" FontWeight="Bold"/>
         <TextBox x:Name="tbxDeviceId" HorizontalAlignment="Right" Height="18" Margin="0,0,50,50" TextWrapping="Wrap" Text="1a" VerticalAlignment="Bottom" Width="40" MinWidth="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <TextBox x:Name="tbxCrudeDataWriterIp" HorizontalAlignment="Right" Height="18" Margin="0,0,332,50" TextWrapping="Wrap" Text="10.2.215.63" VerticalAlignment="Bottom" Width="176" MinWidth="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Button x:Name="btnRegisterYellowPage" Content="Register YP" HorizontalAlignment="Right" Margin="0,0,653,50" Width="100" Click="btnRegisterYellowPage_Click" Height="30" VerticalAlignment="Bottom"/>
-        <Button x:Name="btnCreateCdwRpcClient" Content="CDW RPC Client" HorizontalAlignment="Right" Margin="0,0,524,49" Width="100" Height="30" VerticalAlignment="Bottom" Click="btnCreateCdwRpcClient_Click"/>
         <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Right" Margin="0,0,200,50" VerticalAlignment="Bottom" Width="100" Click="btnConnect_Click" Height="30"/>
         <TextBox x:Name="tbxInfo" Margin="0,60,10,120" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console" HorizontalAlignment="Right" Width="430" />
     </Grid>

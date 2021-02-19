@@ -1532,14 +1532,14 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void Prepare(List<SeriesParameter> p_scan_parameters) {
+        public void Prepare(List<ScanParameter> p_scan_parameters) {
 
             List<ulong> request = new List<ulong>();
             List<ulong> response;
 
             ulong data64 = 0;
 
-            foreach (SeriesParameter series in p_scan_parameters) {
+            foreach (ScanParameter series in p_scan_parameters) {
 
                 if(series.ScanType == 0) {  // 0: normal scan, 1: imA scan
 
@@ -1637,12 +1637,12 @@ namespace RoterControlSupport
             CheckErrorCode(response[0]);
         }
 
-        public void Estimate(List<SeriesParameter> p_scan_parameters) {
+        public void Estimate(List<ScanParameter> p_scan_parameters) {
 
             List<ulong> request = new List<ulong>();
             List<ulong> response;
 
-            foreach (SeriesParameter series in p_scan_parameters) {
+            foreach (ScanParameter series in p_scan_parameters) {
 
                 ulong data64 = 0;
 

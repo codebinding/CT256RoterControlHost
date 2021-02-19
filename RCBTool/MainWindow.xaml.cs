@@ -21,11 +21,13 @@ using Microsoft.Win32;
 using System.Windows.Media;
 using System.Threading;
 using System.Linq;
+using System.Windows.Threading;
 
 using CoreWinSubFramework;
 using RoterControlSupport;
 using RecCWinLib.WrappedRpcAcqClient;
 using AcqWinLibMain;
+using System.Threading.Tasks;
 
 namespace RCBTool {
 
@@ -116,6 +118,11 @@ namespace RCBTool {
 
         public ImaTable imaTable;
         public bool imaLoaded;
+
+        public Label lblScanUID;
+        public TextBox tbxScanUID;
+        public Label lblCollimation;
+        public ComboBox cbxCollimation;
 
         public ExposureControl() {
 
@@ -283,6 +290,19 @@ namespace RCBTool {
             imaTable = new ImaTable();
             imaLoaded = false;
 
+            // Line 17
+            lblScanUID = new Label() { Content = "Scan UID", Margin = new Thickness(left_most, top_most + 480, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            lblCollimation = new Label() { Content = "Collimation", Margin = new Thickness(left_most + 150, top_most + 480, 0, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+
+            // Line 18
+            tbxScanUID = new TextBox() { Text = "S100000001", Margin = new Thickness(left_most, top_most + 500, 0, 0), Height = 23, Width = 120, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center, MinWidth = 60 };
+            cbxCollimation = new ComboBox() { Margin = new Thickness(left_most + 150, top_most + 500, 0, 0), Width = 120, Height = 25, SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center, VerticalContentAlignment = VerticalAlignment.Center };
+            cbxDetectorDataSource.Items.Add("8*0.625");
+            cbxDetectorDataSource.Items.Add("16*0.625");
+            cbxDetectorDataSource.Items.Add("32*0.625");
+            cbxDetectorDataSource.Items.Add("64*0.625");
+            cbxDetectorDataSource.Items.Add("128*0.625");
+            cbxDetectorDataSource.Items.Add("256*0.625");
         }
     }
 
@@ -330,7 +350,7 @@ namespace RCBTool {
 
         private bool m_rcb_connected = false;
 
-        private List<SeriesParameter> m_scan_parameters = null;
+        private List<ScanParameter> m_scan_parameters = null;
         private BeamCalibrationTable m_fs_calibration_table = null;
         private BeamCombinedOffset m_fs_combined_offsets = null;
 
@@ -347,6 +367,7 @@ namespace RCBTool {
 
         private WrappedRpcAcqClient m_cdw_client = null;
 
+        #region GUI
         public MainWindow() {
 
             InitializeComponent();
@@ -468,7 +489,7 @@ namespace RCBTool {
             for (int tab = 0 ; tab < 10 ; tab++) {
 
                 TabItem ti = new TabItem();
-                ti.Header = $"Series {tab + 1}";
+                ti.Header = $"Scan {tab + 1}";
                 tabScanParameter.Items.Add(ti);
 
                 ExposureControl ec = new ExposureControl();
@@ -572,6 +593,13 @@ namespace RCBTool {
                 ec.btnLoadImaTable.Click += new RoutedEventHandler(btnLoadImaTable_Click);
                 gd.Children.Add(ec.btnLoadImaTable);
 
+                gd.Children.Add(ec.lblScanUID);
+                gd.Children.Add(ec.lblCollimation);
+
+                ec.tbxScanUID.Text = $"S12345678{tab}";
+                gd.Children.Add(ec.tbxScanUID);
+                gd.Children.Add(ec.cbxCollimation);
+
                 m_exposure_tabs.Add(ti);
 
                 if (tab != 0) {
@@ -629,6 +657,24 @@ namespace RCBTool {
 
             m_x_step = int.MaxValue;
         }
+
+        private void PrintInfo(string p_text, bool p_new_line = false)
+        {
+            Dispatcher.BeginInvoke(() =>
+            {
+                tbxInfo.AppendText(p_new_line ? p_text + "\n" : p_text);
+                tbxInfo.ScrollToEnd();
+            });
+        }
+
+        private void ShowExceptionMessageBox(string p_text)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                MessageBox.Show(this, p_text, "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            });
+        }
+        #endregion GUI
 
         #region Notification
         private void ProcessNotification() {
@@ -787,16 +833,10 @@ namespace RCBTool {
             this.Dispatcher.Invoke(new Action(() => tbxXStep.Text = $"{p_value}"));
         }
 
-        private void SimulateMStepCStep(int p_xstep) {
-
-            this.Dispatcher.Invoke(new Action(() => {
-
-                if (cbxSimulation.IsChecked == true) {
-
-                    m_rcb.NotifyCStep(m_x_step + 1);
-                    m_rcb.NotifyMStep(m_x_step);
-                }
-            }));
+        private void SimulateMStepCStep(int p_xstep)
+        {
+            m_rcb.NotifyCStep(m_x_step + 1);
+            m_rcb.NotifyMStep(m_x_step);
         }
 
         private void UpdateApe1Position(int p_value) {
@@ -1058,7 +1098,7 @@ namespace RCBTool {
 
             try {
 
-                int device_id = int.Parse(tbxDeviceId.Text, System.Globalization.NumberStyles.AllowHexSpecifier);
+                /*int device_id = int.Parse(tbxDeviceId.Text, System.Globalization.NumberStyles.AllowHexSpecifier);
 
                 if (m_rcb == null) {
 
@@ -1081,7 +1121,7 @@ namespace RCBTool {
                     m_thread_process_log.Start();
                 }
 
-                m_rcb.SyncTime();
+                m_rcb.SyncTime();*/
 
                 grdHouseKeeper.IsEnabled = true;
                 grdLog.IsEnabled = true;
@@ -2230,132 +2270,106 @@ namespace RCBTool {
             this.Dispatcher.Invoke(new Action(() => btnFilcal.IsEnabled = true));
         }
 
-        private void btnPrepare_Click(object sender, RoutedEventArgs e) {
+        private async void btnPrepare_Click(object sender, RoutedEventArgs e) {
 
-            try {
+            btnPrepare.IsEnabled = false;
 
-                if (lblDoor.Content.ToString() != "closed") {
+            await Task.Run(() => StartPrepare());
 
+            btnPrepare.IsEnabled = true;
+        }
+
+        private void StartPrepare()
+        {
+            try
+            {
+                if (lblDoor.Content.ToString() != "closed")
+                {
                     throw new Exception("Door is open");
                 }
 
                 GetExposureParameter();
 
-                new Thread(() => CrudeDataWriterPrepare()).Start();
-
-                Thread.Sleep(1000);
-                m_rcb.NotifyCStep(0);
-
-                new Thread(() => Prepare()).Start();
+                RCBPrepare(m_scan_parameters);
             }
-            catch (Exception ex) {
-
-                MessageBox.Show(ex.Message);
+            catch (Exception e)
+            {
+                ShowExceptionMessageBox(e.Message);
             }
         }
 
-        private void CrudeDataWriterPrepare() {
+        private void RCBPrepare(List<ScanParameter> p_scan_parameters)
+        {
+            m_rcb.Prepare(p_scan_parameters);
+        }
+
+        private void RCBPrepare(ScanParameter p_scan_parameter)
+        {
+            List<ScanParameter> scan_parameters = new List<ScanParameter>() { p_scan_parameter };
+            m_rcb.Prepare(scan_parameters);
+        }
+
+        private void CDWPrepare(ScanParameter p_scan_parameter)
+        {
 
             if (!m_cdw_rpc_used)
                 return;
 
             AcqJob acq_job = new AcqJob();
             acq_job.Requestor = "RCBTool";
-            acq_job.ScanUID = "S123456789";
+            acq_job.ScanUID = p_scan_parameter.ScanUID;
             acq_job.FileName = "";
-            if (m_scan_parameters[0].TriggerMode == 0) {
+            if (p_scan_parameter.TriggerMode == 0)
+            {
 
                 acq_job.ScanType = "Scout";
             }
-            else if (m_scan_parameters[0].TriggerMode == 1) {
+            else if (p_scan_parameter.TriggerMode == 1)
+            {
 
                 acq_job.ScanType = "Helical";
             }
-            else if (m_scan_parameters[0].TriggerMode == 2) {
+            else if (p_scan_parameter.TriggerMode == 2)
+            {
 
                 acq_job.ScanType = "Axial";
             }
-            else {
+            else
+            {
 
                 acq_job.ScanType = "";
             }
 
-            acq_job.ShotNumber = m_scan_parameters[0].NumberOfShots;
-            acq_job.IntegrationLimit = m_scan_parameters[0].IntegrationLimit;
+            acq_job.ShotNumber = p_scan_parameter.NumberOfShots;
+            acq_job.IntegrationLimit = p_scan_parameter.IntegrationLimit;
             acq_job.IsTableIn = true;
             acq_job.CorrectionLevel = 0;
-            acq_job.AngleEncoderSize = (uint)m_scan_parameters[0].TicksPerRotation;
-            acq_job.Collimation = "256*0.625";
+            acq_job.AngleEncoderSize = (uint)p_scan_parameter.TicksPerRotation;
+            acq_job.Collimation = p_scan_parameter.Collimation;
             acq_job.SaveCrudeOffset = false;
 
-            try {
-                ErrorInfo e = new ErrorInfo();
-
-                if (!m_cdw_client.ScanPrepare(acq_job, ref e)) {
-
-                    this.Dispatcher.Invoke(new Action(() => {
-
-                        tbxInfo.AppendText("CDW ScanPrepare failed:" + e.ErrorMsg + "  " + e.ErrorCode);
-                        tbxInfo.ScrollToEnd();
-                    }));
-                }
-                else {
-
-                    this.Dispatcher.Invoke(new Action(() => {
-
-                        tbxInfo.AppendText("CDW ScanPrepare completed");
-                        tbxInfo.ScrollToEnd();
-                    }));
-                }
-            }
-            catch(Exception e) {
-
-                this.Dispatcher.Invoke(new Action(() => {
-
-                    tbxInfo.AppendText(e.Message);
-                    tbxInfo.ScrollToEnd();
-                }));
+            ErrorInfo e = new ErrorInfo();
+            if (!m_cdw_client.ScanPrepare(acq_job, ref e))
+            {
+                throw new Exception("CDW ScanPrepare failed:" + e.ErrorMsg + "  " + e.ErrorCode);
             }
         }
 
-        private void CrudeDataWriterScan() {
-
+        private void CDWScan()
+        {
             if (!m_cdw_rpc_used)
                 return;
 
-            try {
-
-                ErrorInfo e = new ErrorInfo();
-
-                if (!m_cdw_client.ScanStart(ref e)) {
-
-                    this.Dispatcher.Invoke(new Action(() => {
-
-                        tbxInfo.AppendText("ScanStart failed:" + e.ErrorMsg + "  " + e.ErrorCode);
-                        tbxInfo.ScrollToEnd();
-                    }));
-                }
-                else {
-
-                    this.Dispatcher.Invoke(new Action(() => {
-                        tbxInfo.AppendText("CDW ScanStart completed");
-                        tbxInfo.ScrollToEnd();
-                    }));
-                }
-            }
-            catch(Exception e) {
-
-                this.Dispatcher.Invoke(new Action(() => {
-
-                    tbxInfo.AppendText(e.Message);
-                    tbxInfo.ScrollToEnd();
-                }));
+            ErrorInfo e = new ErrorInfo();
+            if (!m_cdw_client.ScanStart(ref e))
+            {
+                throw new Exception("ScanStart failed:" + e.ErrorMsg + "  " + e.ErrorCode);
             }
         }
 
         private void GetExposureParameter() {
 
-            m_scan_parameters = new List<SeriesParameter>();
+            m_scan_parameters = new List<ScanParameter>();
 
             for (int tab = 0 ; tab < m_exposure_tabs.Count ; tab++) {
 
@@ -2366,84 +2380,84 @@ namespace RCBTool {
 
                 ExposureControl ec = m_exposure_controls[tab];
 
-                SeriesParameter series_parameter = new SeriesParameter();
+                ScanParameter scan_parameter = new ScanParameter();
 
-                series_parameter.Kv = Convert.ToByte(ec.tbxKv.Text);
-                series_parameter.Ma = Convert.ToUInt16(ec.tbxMa.Text);
+                scan_parameter.Kv = Convert.ToByte(ec.tbxKv.Text);
+                scan_parameter.Ma = Convert.ToUInt16(ec.tbxMa.Text);
 
                 if (ec.cbxFss.Text == "Small") {
 
-                    series_parameter.Fss = 0;
+                    scan_parameter.Fss = 0;
                 }
                 else if (ec.cbxFss.Text == "Medium") {
 
-                    series_parameter.Fss = 1;
+                    scan_parameter.Fss = 1;
                 }
                 else if (ec.cbxFss.Text == "Large") {
 
-                    series_parameter.Fss = 2;
+                    scan_parameter.Fss = 2;
                 }
                 else {
                     throw new Exception("Illegal Focal Size");
                 }
 
-                series_parameter.ShotTimeInMSec = Convert.ToUInt32(ec.tbxExposureTime.Text);
-                series_parameter.NumberOfShots = Convert.ToByte(ec.tbxScanSteps.Text);
-                series_parameter.TriggerPosition = Convert.ToInt32(ec.tbxTriggerPosition.Text);
-                series_parameter.SeriesTimeInMSec = Convert.ToInt32(ec.tbxScanTime.Text);
-                series_parameter.DelayBeforeNextSeries = Convert.ToInt32(ec.tbxDelayBeforeNextSeries.Text);
-                series_parameter.DelayBetweenShots = Convert.ToInt32(ec.tbxDelayBetweenShots.Text);
+                scan_parameter.ShotTimeInMSec = Convert.ToUInt32(ec.tbxExposureTime.Text);
+                scan_parameter.NumberOfShots = Convert.ToByte(ec.tbxScanSteps.Text);
+                scan_parameter.TriggerPosition = Convert.ToInt32(ec.tbxTriggerPosition.Text);
+                scan_parameter.SeriesTimeInMSec = Convert.ToInt32(ec.tbxScanTime.Text);
+                scan_parameter.DelayBeforeNextSeries = Convert.ToInt32(ec.tbxDelayBeforeNextSeries.Text);
+                scan_parameter.DelayBetweenShots = Convert.ToInt32(ec.tbxDelayBetweenShots.Text);
 
-                series_parameter.EmergencyScan = (ec.ckbEmergencyScan.IsChecked == true) ? 1 : 0;
-                series_parameter.CardiacScan = (byte)ec.cbxCardiacScan.SelectedIndex;
-                series_parameter.PhasePercentage = Convert.ToInt32(ec.tbxPhasePercentage.Text);
-                series_parameter.TicksPerRotation = Convert.ToInt16(ec.cbxTicksPerRotation.SelectedValue);
-                series_parameter.ScanType = (ec.ckbIma.IsChecked == true) ? 1 : 0;
-                series_parameter.DitherType = (byte)ec.cbxDitherType.SelectedIndex;
-                series_parameter.EncoderSource = (byte)ec.cbxEncoderSource.SelectedIndex;
-                series_parameter.TimeoutBetweenArmXrayOn = Convert.ToInt32(ec.tbxTimeoutBetweenArmXrayOn.Text);
+                scan_parameter.EmergencyScan = (ec.ckbEmergencyScan.IsChecked == true) ? 1 : 0;
+                scan_parameter.CardiacScan = (byte)ec.cbxCardiacScan.SelectedIndex;
+                scan_parameter.PhasePercentage = Convert.ToInt32(ec.tbxPhasePercentage.Text);
+                scan_parameter.TicksPerRotation = Convert.ToInt16(ec.cbxTicksPerRotation.SelectedValue);
+                scan_parameter.ScanType = (ec.ckbIma.IsChecked == true) ? 1 : 0;
+                scan_parameter.DitherType = (byte)ec.cbxDitherType.SelectedIndex;
+                scan_parameter.EncoderSource = (byte)ec.cbxEncoderSource.SelectedIndex;
+                scan_parameter.TimeoutBetweenArmXrayOn = Convert.ToInt32(ec.tbxTimeoutBetweenArmXrayOn.Text);
 
-                series_parameter.CineScan = (byte)ec.cbxCineScan.SelectedIndex;
+                scan_parameter.CineScan = (byte)ec.cbxCineScan.SelectedIndex;
 
                 switch (ec.cbxTriggerMode.Text) {
 
                 case "Immediate":
-                    series_parameter.TriggerMode = 0;
+                    scan_parameter.TriggerMode = 0;
                     break;
 
                 case "Traverse":
-                    series_parameter.TriggerMode = 1;
+                    scan_parameter.TriggerMode = 1;
                     break;
 
                 case "Theta":
-                    series_parameter.TriggerMode = 2;
+                    scan_parameter.TriggerMode = 2;
                     break;
 
                 case "No X-ray":
-                    series_parameter.TriggerMode = 3;
+                    scan_parameter.TriggerMode = 3;
                     break;
                 }
 
-                series_parameter.RowNumber = Convert.ToByte(ec.tbxRowNumber.Text);
-                series_parameter.FilterMode = Convert.ToByte(ec.tbxFilterMode.Text);
-                series_parameter.ApertureMode = Convert.ToByte(ec.tbxApertureMode.Text);
+                scan_parameter.RowNumber = Convert.ToByte(ec.tbxRowNumber.Text);
+                scan_parameter.FilterMode = Convert.ToByte(ec.tbxFilterMode.Text);
+                scan_parameter.ApertureMode = Convert.ToByte(ec.tbxApertureMode.Text);
 
-                series_parameter.TimePerRotationInMSec = Convert.ToUInt16(ec.tbxTimePerRotationInMSec.Text);
-                series_parameter.OffsetIntegrationLimit = Convert.ToUInt16(ec.tbxOffsetIntegrationLimit.Text);
-                series_parameter.IntegrationLimit = Convert.ToUInt32(ec.tbxIntegrationLimit.Text);
-                series_parameter.IntegrationTime = Convert.ToUInt32(ec.tbxIntegrationTime.Text);
-                series_parameter.StartingSlice = Convert.ToByte(ec.tbxStartingSlice.Text);
-                series_parameter.ErrorRegisterReset = ec.cbxErrorRegisterReset.SelectedIndex;
-                series_parameter.EndingSlice = Convert.ToByte(ec.tbxEndingSlice.Text);
-                series_parameter.DataSource = (byte)ec.cbxDataSource.SelectedIndex;
-                series_parameter.InputSource = Convert.ToByte(ec.tbxInputSource.Text);
-                series_parameter.SampleMode = Convert.ToByte(ec.tbxSampleMode.Text);
-                series_parameter.Decimation = Convert.ToByte(ec.tbxDecimation.Text);
-                series_parameter.ClockSpeed = Convert.ToByte(ec.tbxClockSpeed.Text);
-                series_parameter.Range = Convert.ToByte(ec.tbxRange.Text);
-                series_parameter.PostConversionShutdown = (byte)ec.cbxPostConversionShutdown.SelectedIndex;
-                series_parameter.IntegrationAveraging = Convert.ToByte(ec.tbxIntegrationAveraging.Text);
-                series_parameter.DetectorDataSource = (byte)ec.cbxDetectorDataSource.SelectedIndex;
+                scan_parameter.TimePerRotationInMSec = Convert.ToUInt16(ec.tbxTimePerRotationInMSec.Text);
+                scan_parameter.OffsetIntegrationLimit = Convert.ToUInt16(ec.tbxOffsetIntegrationLimit.Text);
+                scan_parameter.IntegrationLimit = Convert.ToUInt32(ec.tbxIntegrationLimit.Text);
+                scan_parameter.IntegrationTime = Convert.ToUInt32(ec.tbxIntegrationTime.Text);
+                scan_parameter.StartingSlice = Convert.ToByte(ec.tbxStartingSlice.Text);
+                scan_parameter.ErrorRegisterReset = ec.cbxErrorRegisterReset.SelectedIndex;
+                scan_parameter.EndingSlice = Convert.ToByte(ec.tbxEndingSlice.Text);
+                scan_parameter.DataSource = (byte)ec.cbxDataSource.SelectedIndex;
+                scan_parameter.InputSource = Convert.ToByte(ec.tbxInputSource.Text);
+                scan_parameter.SampleMode = Convert.ToByte(ec.tbxSampleMode.Text);
+                scan_parameter.Decimation = Convert.ToByte(ec.tbxDecimation.Text);
+                scan_parameter.ClockSpeed = Convert.ToByte(ec.tbxClockSpeed.Text);
+                scan_parameter.Range = Convert.ToByte(ec.tbxRange.Text);
+                scan_parameter.PostConversionShutdown = (byte)ec.cbxPostConversionShutdown.SelectedIndex;
+                scan_parameter.IntegrationAveraging = Convert.ToByte(ec.tbxIntegrationAveraging.Text);
+                scan_parameter.DetectorDataSource = (byte)ec.cbxDetectorDataSource.SelectedIndex;
 
                 if (ec.ckbIma.IsChecked == true) {
 
@@ -2452,27 +2466,14 @@ namespace RCBTool {
                         throw new Exception("Ima tabel is not loaded");
                     }
 
-                    series_parameter.ImaTable = ec.imaTable;
+                    scan_parameter.ImaTable = ec.imaTable;
                 }
 
-                m_scan_parameters.Add(series_parameter);
+                scan_parameter.ScanUID = ec.tbxScanUID.Text;
+                scan_parameter.Collimation = ec.cbxCollimation.Text;
+
+                m_scan_parameters.Add(scan_parameter);
             }
-        }
-
-        private void Prepare() {
-
-            this.Dispatcher.Invoke(new Action(() => btnPrepare.IsEnabled = false));
-
-            try {
-
-                m_rcb.Prepare(m_scan_parameters);
-            }
-            catch (Exception ex) {
-
-                MessageBox.Show(ex.Message);
-            }
-
-            this.Dispatcher.Invoke(new Action(() => btnPrepare.IsEnabled = true));
         }
 
         private void btnLoadImaTable_Click(object sender, RoutedEventArgs e) {
@@ -2505,59 +2506,102 @@ namespace RCBTool {
             }
         }
 
-        private void btnScan_Click(object sender, RoutedEventArgs e) {
+        private async void btnScan_Click(object sender, RoutedEventArgs e) {
 
-            new Thread(() => CrudeDataWriterScan()).Start();
-            new Thread(() => Scan()).Start();
+            btnScan.IsEnabled = false;
+
+            await Task.Run(() => StartScan());
+
+            btnScan.IsEnabled = true;
         }
 
-        private void Scan() {
+        private void StartScan()
+        {
+            try
+            {
+                RCBScan();
+            }
+            catch (Exception e)
+            {
+                ShowExceptionMessageBox(e.Message);
+            }
+        }
 
-            this.Dispatcher.Invoke(new Action(() => btnScan.IsEnabled = false));
+        private void RCBScan()
+        {
+            int total_scan_time = 0;
 
-            try {
+            foreach (ScanParameter scan in m_scan_parameters)
+            {
 
-                int total_scan_time = 0;
+                total_scan_time += scan.SeriesTimeInMSec + scan.DelayBeforeNextSeries + 2000;  // boost time ~= 2 sec.
+            }
 
-                foreach (SeriesParameter series in m_scan_parameters) {
+            m_rcb.Expose(total_scan_time);
+        }
 
-                    total_scan_time += series.SeriesTimeInMSec + series.DelayBeforeNextSeries + 2000;  // boost time ~= 2 sec.
+        private async void ButtonMultiScan_Click(object sender, RoutedEventArgs e)
+        {
+            ButtonMultiScan.IsEnabled = false;
+
+            await Task.Run(() => StartMultiScan());
+
+            ButtonMultiScan.IsEnabled = true;
+        }
+
+        private void StartMultiScan()
+        {
+            try
+            {
+                if (lblDoor.Content.ToString() != "closed")
+                {
+                    throw new Exception("Door is open");
                 }
 
-                m_rcb.Expose(total_scan_time);
-            }
-            catch (Exception ex) {
+                GetExposureParameter();
 
-                MessageBox.Show(ex.Message);
-            }
+                foreach(ScanParameter scan in m_scan_parameters)
+                {
+                    List<Task> tasks = new List<Task>();
+                    tasks.Add(Task.Run(() => CDWPrepare(scan)));
+                    tasks.Add(Task.Run(() => RCBPrepare(scan)));
+                    Task.WaitAll(tasks.ToArray());
 
-            this.Dispatcher.Invoke(new Action(() => btnScan.IsEnabled = true));
-        }
-
-        private void btnAbortScan_Click(object sender, RoutedEventArgs e) {
-
-            new Thread(() => AbortScan()).Start();
-        }
-
-        private void AbortScan() {
-
-            this.Dispatcher.Invoke(new Action(() => btnAbortScan.IsEnabled = false));
-
-            try {
-
-                if (m_cdw_rpc_used) {
-
-                    m_cdw_client.Abort();
+                    RCBScan();
+                    Thread.Sleep(scan.DelayBeforeNextSeries);
                 }
-
-                m_rcb.Abort();
             }
-            catch (Exception ex) {
+            catch(AggregateException ae)
+            {
+                foreach (var e in ae.InnerExceptions)
+                    ShowExceptionMessageBox(e.Message);
+            }
+            catch (Exception e)
+            {
+                ShowExceptionMessageBox(e.Message);
+            }
+        }
 
-                MessageBox.Show(ex.Message);
+        private async void btnAbortScan_Click(object sender, RoutedEventArgs e) {
+
+            btnAbortScan.IsEnabled = false;
+
+            await Task.Run(() => AbortScan());
+
+            btnAbortScan.IsEnabled = true;
+            btnPrepare.IsEnabled = true;
+            btnScan.IsEnabled = true;
+            ButtonMultiScan.IsEnabled = true;
+        }
+
+        private void AbortScan()
+        {
+            if (m_cdw_rpc_used)
+            {
+                m_cdw_client.Abort();
             }
 
-            this.Dispatcher.Invoke(new Action(() => btnAbortScan.IsEnabled = true));
+            m_rcb.Abort();
         }
 
         private void btnEstimate_Click(object sender, RoutedEventArgs e) {

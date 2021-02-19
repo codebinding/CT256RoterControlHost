@@ -5,7 +5,7 @@ using System.Text;
 
 namespace RoterControlSupport {
 
-    public class SeriesParameter {
+    public class ScanParameter {
 
         // #0
         public byte Kv;   // 80kV, 100kV, 120kV, 140kV
@@ -60,7 +60,11 @@ namespace RoterControlSupport {
 
         public ImaTable ImaTable;
 
-        public SeriesParameter() {
+        // --
+        public string ScanUID;
+        public string Collimation;
+
+        public ScanParameter() {
 
             // #0
             Kv = 80;
@@ -112,6 +116,10 @@ namespace RoterControlSupport {
             OffsetIntegrationLimit = 0;
 
             ImaTable = null;
+
+            // --
+            ScanUID = "";
+            Collimation = "";
         }
     }
 }
